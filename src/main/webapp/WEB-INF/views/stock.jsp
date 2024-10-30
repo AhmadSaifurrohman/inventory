@@ -16,7 +16,6 @@
 
 
 <!-- Script untuk menginisialisasi DataTables -->
-<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
 <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {

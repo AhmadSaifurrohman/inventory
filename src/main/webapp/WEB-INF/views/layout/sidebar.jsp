@@ -21,6 +21,18 @@
                         <p>Stock</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/add-item" class="nav-link">
+                        <i class="nav-icon fas fa-plus"></i>
+                        <p>Tambah Barang</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/out-item" class="nav-link">
+                        <i class="nav-icon fas fa-arrow-circle-left"></i>
+                        <p>Barang Out</p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

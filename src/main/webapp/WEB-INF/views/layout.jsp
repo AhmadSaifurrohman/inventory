@@ -13,33 +13,6 @@
     <!-- JQWidgets Base -->
     <link href="${pageContext.request.contextPath}/static/jqwidgets/styles/jqx.base.css" rel="stylesheet">
 
-    <!-- AdminLTE JS -->
-    <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
-    <script src="${pageContext.request.contextPath}/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="${pageContext.request.contextPath}/static/dist/js/adminlte.min.js"></script>
-
-    <!-- JQWidgets -->
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcore.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdata.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxbuttons.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxscrollbar.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxlistbox.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdropdownlist.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxmenu.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.edit.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.selection.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.aggregates.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.sort.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.columnsresize.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.filter.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcheckbox.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcalendar.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdatetimeinput.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxnumberinput.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxrating.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.pager.js"></script>
-
     <style>
         /* JQWidgets */
         .jqx-widget-header {
@@ -120,5 +93,31 @@
         <!-- Footer -->
         <jsp:include page="layout/footer.jsp" />
     </div>
+    <!-- AdminLTE JS -->
+    <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
+    <script src="${pageContext.request.contextPath}/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="${pageContext.request.contextPath}/static/dist/js/adminlte.min.js"></script>
+
+    <!-- JQWidgets -->
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxlistbox.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdropdownlist.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.edit.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.selection.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.aggregates.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.sort.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.columnsresize.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.filter.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcheckbox.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcalendar.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdatetimeinput.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxnumberinput.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxrating.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.pager.js"></script>
 </body>
 </html>
