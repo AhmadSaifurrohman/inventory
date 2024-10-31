@@ -16,13 +16,13 @@
     <style>
         /* JQWidgets */
         .jqx-widget-header {
-            background: #314489;
+            background: #E4A800;
             color: white;
-            font-weight: normal;
+            font-weight: bold;
         }
 
         .jqx-fill-state-pressed {
-            background: #314489;
+            background: #E4A800;
             color: white;
         }
 
