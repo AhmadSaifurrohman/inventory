@@ -1,55 +1,58 @@
 package com.proj.inventory.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import com.proj.inventory.service.UserDetailsServiceImpl;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableJpaRepositories(basePackages = "com.proj.inventory.repository")
 public class SecurityConfig {
-    
-    private final UserDetailsServiceImpl userDetailService;
-    
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService){
-        this.userDetailService = userDetailsService;
+
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();        
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/login", "/resources/**").permitAll()  // Allow access to login and static resources
-                .requestMatchers("/admin/**").hasRole("ADMIN") // Only ADMIN role can access /admin
-                .anyRequest().authenticated()  // All other requests require authentication
-            )
-            .formLogin(form -> form
-                .loginPage("/login")  // Custom login page
-                .defaultSuccessUrl("/admin", true)  // Redirect to /admin after successful login
+        http.csrf().disable()
+            .authorizeHttpRequests()
+                .requestMatchers("/register", "/home").permitAll()
+                .anyRequest().authenticated()
+            .and()
+            .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/home", true)
                 .permitAll()
-            )
-            .logout(logout -> logout
-                .permitAll()
-            );
+            .and()
+            .logout()
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login?logout")
+                .permitAll();
 
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return userDetailService;
+    // Tidak perlu mendefinisikan AuthenticationManagerBuilder sebagai bean
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailsService)
+            .passwordEncoder(passwordEncoder());
     }
 }

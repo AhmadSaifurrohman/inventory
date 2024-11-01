@@ -1,80 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Log in</title>
+ <meta charset="UTF-8">
+ <title>Login</title>
+ <style>
+  body {
+   font-family: 'Arial', sans-serif;
+   margin: 0;
+   padding: 0;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+   background-color: #f4f4f4;
+  }
 
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/fontawesome-free/css/all.min.css">
-  <!-- icheck bootstrap -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="${pageContext.request.contextPath}/static/dist/css/adminlte.min.css">
+  .form-container {
+   background-color: #fff;
+   width: 400px;
+   padding: 20px;
+   border-radius: 8px;
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+   color: #5e057e;
+   text-align: center;
+   margin-bottom: 20px;
+  }
+
+  label {
+   display: block;
+   margin-bottom: 8px;
+   color: #5e057e;
+  }
+
+  input {
+   width: 100%;
+   padding: 8px;
+   margin-bottom: 16px;
+   border: 1px solid #ccc;
+   border-radius: 4px;
+   box-sizing: border-box;
+  }
+
+  button {
+   background-color: #5e057e;
+   color: #fff;
+   padding: 10px 20px;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-weight: bold;
+   transition: background-color 0.3s;
+  }
+
+  button:hover {
+   background-color: #299d00;
+  }
+
+  .form-footer {
+   text-align: center;
+   margin-top: 20px;
+   color: #888;
+  }
+
+  .error-message,
+  .logout-message {
+   background-color: #5e057e;
+   color: #fff;
+   padding: 10px;
+   border-radius: 3px;
+   text-align: center;
+  }
+ </style>
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
-    <!-- <a href="../../index2.html"><b>Admin</b>LTE</a> -->
-  </div>
-  <!-- /.login-logo -->
-  <div class="card">
-    <div class="card-body login-card-body">
-      <p class="login-box-msg">Sign in to start your session</p>
 
-      <form action="/product" method="post">
-        <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-envelope"></span>
-            </div>
-          </div>
-        </div>
-        <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password">
-          <div class="input-group-append">
-            <div class="input-group-text">
-              <span class="fas fa-lock"></span>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-8">
-            <div class="icheck-primary">
-              <input type="checkbox" id="remember">
-              <label for="remember">
-                Remember Me
-              </label>
-            </div>
-          </div>
-          <!-- /.col -->
-          <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-      </form>
+<body>
+ <div class="container">
+  <div class="form-container">
 
-      <!-- <p class="mb-1">
-        <a href="forgot-password.html">I forgot my password</a>
-      </p>
-      <p class="mb-0">
-        <a href="register.html" class="text-center">Register a new membership</a>
-      </p> -->
+   <div th:if="${param.error}">
+    <div class="error-message">
+     <p>Invalid Username or Password</p>
     </div>
-    <!-- /.login-card-body -->
-  </div>
-</div>
-<!-- /.login-box -->
+   </div>
 
-<!-- jQuery -->
-<script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
-<!-- Bootstrap 4 -->
-<script src="${pageContext.request.contextPath}/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<!-- AdminLTE App -->
-<script src="${pageContext.request.contextPath}/static/dist/js/adminlte.min.js"></script>
+   <div th:if="${param.logout}">
+    <div class="logout-message">
+     <p>Logout Successful!</p>
+    </div>
+   </div>
+
+   <h2>Login</h2>
+  <form action="/login" method="post">
+
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username"
+            placeholder="Enter your Username" required>
+
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password"
+            placeholder="Enter your Password" required>
+
+      <button type="submit">Login</button>
+  </form>
+
+  </div>
+ </div>
 </body>
+
 </html>

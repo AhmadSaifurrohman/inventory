@@ -4,12 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "tb_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    // @Column(unique = true)
     private String username;
     private String password;
     private String role;
@@ -17,10 +20,11 @@ public class User {
     // Getters and Setters
     // Constructor
     public User() {
+
     }
 
     public User(Integer id, String username, String password, String role) {
-        this.id = id;
+        super();
         this.username = username;
         this.password = password;
         this.role = role;
@@ -57,5 +61,10 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString() {
+     return "User [id=" + id + ", username=" + username + ", password=" + password + ", role=" + role + "]";
     }
 }
