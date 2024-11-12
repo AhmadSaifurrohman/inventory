@@ -49,3 +49,19 @@
         </div>
     </div>
 </section>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JavaScript untuk menampilkan notifikasi SweetAlert -->
+<% if (request.getAttribute("successMessage") != null) { %>
+<script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '<%= request.getAttribute("successMessage") %>',
+        showConfirmButton: false,
+        timer: 2000
+    });
+</script>
+<% } %>

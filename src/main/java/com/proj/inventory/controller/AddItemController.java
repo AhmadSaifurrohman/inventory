@@ -1,23 +1,25 @@
 package com.proj.inventory.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.proj.inventory.model.Item;
+import com.proj.inventory.repository.ItemRepository;
+
 @Controller
 public class AddItemController {
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     @GetMapping("/add-item")
     public String showAddItemForm(Model model) {
-        // Setel judul halaman
         model.addAttribute("title", "Tambah Barang - Inventory Management System");
-
-        // Tentukan konten untuk halaman tambah barang
         model.addAttribute("content", "add-item.jsp");
-
-        // Kembalikan layout.jsp sebagai template utama
         return "layout";
     }
 
@@ -30,9 +32,20 @@ public class AddItemController {
             @RequestParam("rackLocation") String rackLocation,
             Model model) {
 
-        // Proses untuk menyimpan data barang baru ke database dapat ditambahkan di sini
+        // Membuat objek item baru dan menyimpannya ke database
+        Item item = new Item();
+        item.setMaterialCode(materialCode);
+        item.setDescription(description);
+        item.setPortNumber(portNumber);
+        item.setUnit(unit);
+        item.setRackLocation(rackLocation);
 
-        // Redirect ke halaman stok setelah penambahan data berhasil
-        return "redirect:/stock";
+        itemRepository.save(item);
+
+        // Menambahkan notifikasi ke model
+        model.addAttribute("successMessage", "Barang berhasil ditambahkan!");
+        model.addAttribute("title", "Tambah Barang - Inventory Management System");
+        model.addAttribute("content", "add-item.jsp");
+        return "layout";
     }
 }
