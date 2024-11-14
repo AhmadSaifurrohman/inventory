@@ -1,21 +1,44 @@
 package com.proj.inventory.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
+import java.util.Optional;
 
-@Controller
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.proj.inventory.model.Stock;
+import com.proj.inventory.service.StockService;
+
+@RestController
+@RequestMapping("/api/stock")
 public class StockController {
 
-    @GetMapping("/stock")
-    public String showStock(Model model) {
-        // Setel judul halaman
-        model.addAttribute("title", "Stock - Inventory Management System");
+    @Autowired
+    private StockService stockService;
 
-        // Tentukan konten untuk halaman stok
-        model.addAttribute("content", "stock.jsp");
+    @GetMapping
+    public List<Stock> getAllStocks() {
+        return stockService.getAllStocks();
+    }
 
-        // Kembalikan layout.jsp sebagai template utama
-        return "layout";
+    @GetMapping("/{itemCode}")
+    public Optional<Stock> getStockByItemCode(@PathVariable String itemCode) {
+        return stockService.getStockByItemCode(itemCode);
+    }
+
+    @PostMapping
+    public Stock saveOrUpdateStock(@RequestBody Stock stock) {
+        return stockService.saveOrUpdateStock(stock);
+    }
+
+    @DeleteMapping("/{itemCode}")
+    public void deleteStock(@PathVariable String itemCode) {
+        stockService.deleteStock(itemCode);
     }
 }

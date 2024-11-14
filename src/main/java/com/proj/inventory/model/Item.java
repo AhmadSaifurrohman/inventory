@@ -1,38 +1,39 @@
 package com.proj.inventory.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "TB_MAS_ITEMCD")
 public class Item {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    private String materialCode;
+    @Column(name = "ITEMCODE", nullable = false)
+    private String itemCode;
+
+    @Column(name = "ITEMNAME")
+    private String itemName;
+
+    @Column(name = "DESCRIPTION")
     private String description;
-    private String portNumber;
-    private String unit;
-    private String rackLocation;
 
-    // Getters dan setters
-    public Long getId() {
-        return id;
+    // Getters and Setters
+    public String getItemCode() {
+        return itemCode;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 
-    public String getMaterialCode() {
-        return materialCode;
+    public String getItemName() {
+        return itemName;
     }
 
-    public void setMaterialCode(String materialCode) {
-        this.materialCode = materialCode;
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
     }
 
     public String getDescription() {
@@ -41,29 +42,5 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPortNumber() {
-        return portNumber;
-    }
-
-    public void setPortNumber(String portNumber) {
-        this.portNumber = portNumber;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getRackLocation() {
-        return rackLocation;
-    }
-
-    public void setRackLocation(String rackLocation) {
-        this.rackLocation = rackLocation;
     }
 }
