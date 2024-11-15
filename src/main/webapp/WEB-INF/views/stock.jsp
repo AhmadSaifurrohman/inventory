@@ -1,10 +1,37 @@
 <h1 class="m-0">Stock List</h1>
-<p class="lead">Berikut adalah daftar stok barang di gudang.</p>
+<!-- <p class="lead">Berikut adalah daftar stok barang di gudang.</p> -->
 
 <!-- Tabel menggunakan AdminLTE -->
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Daftar Stok Barang</h3>
+        <div class="d-flex justify-content-between w-100">
+            <a href="${pageContext.request.contextPath}/stock/add-stock" class="btn btn-primary" id="addBtn">Add</a>
+            <!-- <h3 class="card-title">Stock List</h3> -->
+            <!-- Form untuk Filter dan Search -->
+            <div class="card-tools">
+                <div class="row">
+                    <div class="col-md-3">
+                        <!-- Filter Item Code -->
+                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
+                    </div>
+                    <div class="col-md-3">
+                        <!-- Dropdown Location -->
+                        <select id="locationFilter" class="form-control">
+                            <option value="">Select Location</option>
+                            
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <!-- Tombol Search -->
+                        <button class="btn btn-success" id="searchBtn">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                       <!-- Tombol Excel -->
+                       <button class="btn btn-info" id="excelhBtn">Excel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -18,69 +45,99 @@
 <!-- Script untuk menginisialisasi DataTables -->
 <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript">
-    $(document).ready(function () {
-        // Data dummy untuk grid
-        const data = [];
-        for (let i = 0; i < 100; i++) {
-            data.push({
-                id: i + 1,
-                firstName: 'FirstName ${i + 1}',
-                lastName: 'LastName ${i + 1}',
-                age: 'Math.floor(Math.random() * 50) + 20',
-                email: 'user${i + 1}@example.com',
-                phone: '555-01${i + 1}',
-                address: 'Street ${i + 1}, City ${i + 1}',
-                department: 'Department ${i % 5}',
-                position: 'Position ${i % 10}',
-                salary: 'Math.floor(Math.random() * 50000) + 30000',
-                hireDate: '202${i % 10}-0${(i % 12) + 1}-01'
+
+     // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
+     function loadLocations() {
+        fetch('/api/master/locations')
+            .then(response => response.json())
+            .then(data => {
+                const locationFilter = document.getElementById('locationFilter');
+                // Hapus semua option selain default
+                locationFilter.innerHTML = '<option value="">Select Location</option>';
+                
+                // Loop melalui data lokasi dan menambahkannya ke dropdown
+                data.forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location.locCd;  // Value untuk option adalah locCd
+                    option.textContent = location.location;  // Teks yang ditampilkan adalah nama lokasi
+                    locationFilter.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching locations:', error);
             });
-        }
+    }
 
-        // Sumber data untuk jqxGrid
-        const source = {
-            localdata: data,
-            datatype: "array",
-            datafields: [
-                { name: "id", type: "number" },
-                { name: "firstName", type: "string" },
-                { name: "lastName", type: "string" },
-                { name: "age", type: "number" },
-                { name: "email", type: "string" },
-                { name: "phone", type: "string" },
-                { name: "address", type: "string" },
-                { name: "department", type: "string" },
-                { name: "position", type: "string" },
-                { name: "salary", type: "number" },
-                { name: "hireDate", type: "date" }
-            ]
-        };
+    $(document).ready(function () {
+        loadLocations();
 
-        const dataAdapter = new $.jqx.dataAdapter(source);
+        // Mengambil data dari API menggunakan AJAX
+        $.ajax({
+            url: '/stock/api',  // URL API untuk mendapatkan semua stok
+            type: 'GET',
+            success: function(data) {
+                // Data yang diterima dari API
+                const stockData = data.map((item, index) => ({
+                    id: item.id,
+                    material: item.itemCode, // Assuming itemCode is the 'Material'
+                    description: item.description,
+                    portNumber: item.portNum,
+                    baseUnit: item.unitCd,
+                    storageLocation: item.locationName
+                }));
 
-        // Inisialisasi jqxGrid
-        $("#jqxgrid").jqxGrid({
-            width: '100%',
-            height: 400,
-            source: dataAdapter,
-            pageable: true,
-            sortable: true,
-            filterable: true,
-            columnsresize: true,
-            autoshowfiltericon: true,
-            columns: [
-                { text: "ID", datafield: "id", width: 50 },
-                { text: "First Name", datafield: "firstName", width: 120 },
-                { text: "Last Name", datafield: "lastName", width: 120 },
-                { text: "Age", datafield: "age", width: 50, cellsalign: 'center', align: 'center' },
-                { text: "Email", datafield: "email", width: 180 },
-                { text: "Phone", datafield: "phone", width: 100 },
-                { text: "Address", datafield: "address", width: 250 },
-                { text: "Department", datafield: "department", width: 100 },
-                { text: "Position", datafield: "position", width: 100 },
-                { text: "Salary", datafield: "salary", width: 100, cellsformat: 'c2', cellsalign: 'right' },
-                { text: "Hire Date", datafield: "hireDate", width: 100, cellsformat: 'yyyy-MM-dd' }
-            ]
+                // Sumber data untuk jqxGrid
+                const source = {
+                    localdata: stockData,
+                    datatype: "array",
+                    datafields: [
+                        { name: "id", type: "number" },            // No
+                        { name: "material", type: "string" },       // Material
+                        { name: "description", type: "string" },    // Description
+                        { name: "portNumber", type: "number" },     // Port Number
+                        { name: "baseUnit", type: "string" },       // Base Unit
+                        { name: "storageLocation", type: "string" } // Storage Location
+                    ]
+                };
+
+                const dataAdapter = new $.jqx.dataAdapter(source);
+
+                // Inisialisasi jqxGrid dengan data dari API
+                $("#jqxgrid").jqxGrid({
+                    width: '100%',
+                    height: 400,
+                    source: dataAdapter,
+                    autoheight: true,
+                    pageable: true,
+                    sortable: true,
+                    pagesize: 10, // Show 10 rows per page
+                    columnsresize: true,
+                    showcolumnlines: true,
+                    showcolumnheaderlines: true,
+                    showtoolbar: true,
+                    pagerMode: 'default',
+                    columns: [
+                        { 
+                            text: "No", 
+                            datafield: "id", 
+                            width: 60, 
+                            cellsrenderer: function (row, column, value, rowData, columnData) {
+                                // Menggunakan row index untuk menghasilkan nomor urut
+                                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
+                            } 
+                        },           // Lebar untuk No
+                        { text: "Material", datafield: "material", width: 150 },  // Lebar untuk Material
+                        { text: "Description", datafield: "description", width: 180 },  // Lebar untuk Description
+                        { text: "Port Number", datafield: "portNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Port Number
+                        { text: "Base Unit", datafield: "baseUnit", width: 120 },    // Lebar untuk Base Unit
+                        { text: "Storage Location", datafield: "storageLocation", width: 150 } // Lebar untuk Storage Location
+                    ]
+                });
+            },
+            error: function(err) {
+                console.log('Error fetching data from API', err);
+            }
         });
     });
 </script>
+

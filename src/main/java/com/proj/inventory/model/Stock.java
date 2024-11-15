@@ -4,7 +4,10 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -26,8 +29,10 @@ public class Stock {
     @Column(name = "UNITCD")
     private String unitCd;
 
-    @Column(name = "LOCATION")
-    private String location;
+    // Relasi dengan tabel Location
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LOCATION", referencedColumnName = "LOCCD")
+    private Location location; // Relasi dengan Location
 
     @Column(name = "UPDATEDATE")
     @Temporal(TemporalType.TIMESTAMP)
@@ -69,11 +74,11 @@ public class Stock {
         this.unitCd = unitCd;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
