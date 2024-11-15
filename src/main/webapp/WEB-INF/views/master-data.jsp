@@ -88,8 +88,8 @@
       <div class="modal-body">
         <form id="addLocationForm">
           <div class="mb-3">
-            <label for="locationId" class="form-label">Location ID</label>
-            <input type="number" class="form-control" id="locationId" required>
+            <label for="locationId" class="form-label">Location Code</label>
+            <input type="text" class="form-control" id="locationId" required>
           </div>
           <div class="mb-3">
             <label for="locationName" class="form-label">Location Name</label>
@@ -116,16 +116,16 @@
       <div class="modal-body">
         <form id="addItemCodeForm">
           <div class="mb-3">
-            <label for="itemId" class="form-label">Item ID</label>
-            <input type="number" class="form-control" id="itemId" required>
-          </div>
-          <div class="mb-3">
             <label for="itemCode" class="form-label">Item Code</label>
             <input type="text" class="form-control" id="itemCode" required>
           </div>
           <div class="mb-3">
             <label for="itemName" class="form-label">Item Name</label>
             <input type="text" class="form-control" id="itemName" required>
+          </div>
+          <div class="mb-3">
+            <label for="descriptionItem" class="form-label">Description</label>
+            <input type="text" class="form-control" id="descriptionItem" required>
           </div>
         </form>
       </div>
@@ -148,8 +148,8 @@
       <div class="modal-body">
         <form id="addUnitForm">
           <div class="mb-3">
-            <label for="unitId" class="form-label">Unit ID</label>
-            <input type="number" class="form-control" id="unitId" required>
+            <label for="unitId" class="form-label">Unit Code</label>
+            <input type="text" class="form-control" id="unitId" required>
           </div>
           <div class="mb-3">
             <label for="unitName" class="form-label">Unit Name</label>
@@ -168,128 +168,142 @@
 <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
 <script>
   $(document).ready(function () {
-      // Data for each grid
-      var dataLocation = [
-          { id: 1, location: 'Security Room' },
-          { id: 2, location: 'Main Office' },
-          { id: 3, location: 'Warehouse' },
-          { id: 4, location: 'Auditorium' },
-          { id: 5, location: 'IT Room' },
-          { id: 6, location: 'Control Room' }
+    // Data for each grid from API
+    $.ajax({
+        url: '/api/master/locations', // Replace with your actual endpoint
+        method: 'GET',
+        success: function(dataLocation) {
+            // Modify the response to replace 'id' with 'no'
+            dataLocation = dataLocation.map(function(item, index) {
+                item.no = index + 1; // Assign a 'no' based on the index
+                delete item.id; // Remove 'id' field if necessary
+                return item;
+            });
 
-      ];
+            // Data Adapter for Location
+            var sourceLocation = {
+                localdata: dataLocation,
+                datatype: "array",
+                datafields: [
+                    { name: 'no', type: 'number' },
+                    { name: 'locCd', type: 'string' },
+                    { name: 'location', type: 'string' }
+                ]
+            };
 
-      var dataItemCode = [
-          { id: 1, itemCode: 'ITM001', name: 'Laptop' },
-          { id: 2, itemCode: 'ITM002', name: 'Mouse' },
-          { id: 3, itemCode: 'ITM003', name: 'Router' },
-          { id: 4, itemCode: 'ITM004', name: 'Keyboard' },
-          { id: 5, itemCode: 'ITM005', name: 'Monitor' },
-          { id: 6, itemCode: 'ITM006', name: 'Printer' },
-          { id: 7, itemCode: 'ITM007', name: 'Scanner' },
-          { id: 8, itemCode: 'ITM008', name: 'Tablet' },
-          { id: 9, itemCode: 'ITM009', name: 'Smartphone' },
-          { id: 10, itemCode: 'ITM010', name: 'Smartwatch' },
-          { id: 11, itemCode: 'ITM011', name: 'Camera' },
-          { id: 12, itemCode: 'ITM007', name: 'Scanner' },
-          { id: 13, itemCode: 'ITM008', name: 'Tablet' },
-          { id: 14, itemCode: 'ITM009', name: 'Smartphone' },
-          { id: 15, itemCode: 'ITM010', name: 'Smartwatch' },
-          { id: 16, itemCode: 'ITM011', name: 'Camera' }
-      ];
+            var dataAdapterLocation = new $.jqx.dataAdapter(sourceLocation);
 
-      var dataUnit = [
-          { id: 1, unit: 'Piece' },
-          { id: 2, unit: 'Box' },
-          { id: 3, unit: 'Carton' },
-          { id: 4, unit: 'Bundle' },
-          { id: 5, unit: 'Pallet' },
-          { id: 6, unit: 'Package' },
-          { id: 7, unit: 'Set' },
-          { id: 8, unit: 'Unit' },
-          { id: 9, unit: 'Case' },
-          { id: 10, unit: 'Container' },
-          { id: 11, unit: 'Roll' }
-      ];
+            // Initialize jqxGrid for Location
+            $("#jqxGrid1").jqxGrid({
+                width: '100%',
+                autoheight: true,
+                pageable: true,
+                pagesize: 10, // Show 10 rows per page
+                source: dataAdapterLocation,
+                columnsresize: true,
+                pagerMode: 'default',
+                columns: [
+                    { text: 'No', datafield: 'no', width: '10%' },
+                    { text: 'Loc Code', datafield: 'locCd', width: '20%' },
+                    { text: 'Location', datafield: 'location', width: '70%' }
+                ]
+            });
+        },
+        error: function() {
+            alert('Failed to load location data.');
+        }
+    });
 
-      // Create data sources
-      var sourceLocation = {
-          localdata: dataLocation,
-          datatype: "array",
-          datafields: [
-              { name: 'id', type: 'number' },
-              { name: 'location', type: 'string' }
-          ]
-      };
+    // Similar changes for item and unit grids
+    $.ajax({
+        url: '/api/master/items', // Replace with your actual endpoint
+        method: 'GET',
+        success: function(dataItemCode) {
+            // Modify the response to replace 'id' with 'no'
+            dataItemCode = dataItemCode.map(function(item, index) {
+                item.no = index + 1; // Assign a 'no' based on the index
+                delete item.id; // Remove 'id' field if necessary
+                return item;
+            });
 
-      var sourceItemCode = {
-          localdata: dataItemCode,
-          datatype: "array",
-          datafields: [
-              { name: 'id', type: 'number' },
-              { name: 'itemCode', type: 'string' },
-              { name: 'name', type: 'string' }
-          ]
-      };
+            // Data Adapter for ItemCode
+            var sourceItemCode = {
+                localdata: dataItemCode,
+                datatype: "array",
+                datafields: [
+                    { name: 'no', type: 'number' },
+                    { name: 'itemCode', type: 'string' },
+                    { name: 'itemName', type: 'string' }
+                ]
+            };
 
-      var sourceUnit = {
-          localdata: dataUnit,
-          datatype: "array",
-          datafields: [
-              { name: 'id', type: 'number' },
-              { name: 'unit', type: 'string' }
-          ]
-      };
+            var dataAdapterItemCode = new $.jqx.dataAdapter(sourceItemCode);
 
-      var dataAdapterLocation = new $.jqx.dataAdapter(sourceLocation);
-      var dataAdapterItemCode = new $.jqx.dataAdapter(sourceItemCode);
-      var dataAdapterUnit = new $.jqx.dataAdapter(sourceUnit);
+            // Initialize jqxGrid for ItemCode
+            $("#jqxGrid2").jqxGrid({
+                width: '100%',
+                autoheight: true,
+                pageable: true,
+                pagesize: 10, // Show 10 rows per page
+                source: dataAdapterItemCode,
+                columnsresize: true,
+                pagerMode: 'default',
+                columns: [
+                    { text: 'No', datafield: 'no', width: '10%' },
+                    { text: 'Item Code', datafield: 'itemCode', width: '45%' },
+                    { text: 'Name', datafield: 'itemName', width: '45%' }
+                ]
+            });
+        },
+        error: function() {
+            alert('Failed to load item data.');
+        }
+    });
 
-      // Initialize jqxGrid for Location
-      $("#jqxGrid1").jqxGrid({
-          width: '100%',
-          autoheight: true,
-          pageable: true,
-          pagesize: 10, // Show 10 rows per page
-          source: dataAdapterLocation,
-          columnsresize: true,
-          pagerMode: 'default',
-          columns: [
-              { text: 'ID', datafield: 'id', width: '10%' },
-              { text: 'Location', datafield: 'location', width: '90%' }
-          ]
-      });
+    $.ajax({
+        url: '/api/master/units', // Replace with your actual endpoint
+        method: 'GET',
+        success: function(dataUnit) {
+            // Modify the response to replace 'id' with 'no'
+            dataUnit = dataUnit.map(function(item, index) {
+                item.no = index + 1; // Assign a 'no' based on the index
+                delete item.id; // Remove 'id' field if necessary
+                return item;
+            });
 
-      // Initialize jqxGrid for ItemCode
-      $("#jqxGrid2").jqxGrid({
-          width: '100%',
-          autoheight: true,
-          pageable: true,
-          pagesize: 10, // Show 10 rows per page
-          source: dataAdapterItemCode,
-          columnsresize: true,
-          pagerMode: 'default',
-          columns: [
-              { text: 'ID', datafield: 'id', width: '10%' },
-              { text: 'Item Code', datafield: 'itemCode', width: '45%' },
-              { text: 'Name', datafield: 'name', width: '45%' }
-          ]
-      });
+            // Data Adapter for Unit
+            var sourceUnit = {
+                localdata: dataUnit,
+                datatype: "array",
+                datafields: [
+                    { name: 'no', type: 'number' },
+                    { name: 'unitCd', type: 'string' },
+                    { name: 'description', type: 'string' }
+                ]
+            };
 
-      // Initialize jqxGrid for Unit
-      $("#jqxGrid3").jqxGrid({
-          width: '100%',
-          autoheight: true,
-          pageable: true,
-          pagesize: 10, // Show 10 rows per page
-          source: dataAdapterUnit,
-          columnsresize: true,
-          pagerMode: 'default',
-          columns: [
-              { text: 'ID', datafield: 'id', width: '10%' },
-              { text: 'Unit', datafield: 'unit', width: '90%' }
-          ]
-      });
+            var dataAdapterUnit = new $.jqx.dataAdapter(sourceUnit);
+
+            // Initialize jqxGrid for Unit
+            $("#jqxGrid3").jqxGrid({
+                width: '100%',
+                autoheight: true,
+                pageable: true,
+                pagesize: 10, // Show 10 rows per page
+                source: dataAdapterUnit,
+                columnsresize: true,
+                pagerMode: 'default',
+                columns: [
+                    { text: 'No', datafield: 'no', width: '10%' },
+                    { text: 'Unit Code', datafield: 'unitCd', width: '20%' },
+                    { text: 'Unit', datafield: 'desciption', width: '70%' }
+                ]
+            });
+        },
+        error: function() {
+            alert('Failed to load unit data.');
+        }
+    });
 
 
 
@@ -308,42 +322,97 @@
 
     // Save Location
     $('#saveLocation').click(function () {
-        var id = $('#locationId').val();
-        var location = $('#locationName').val();
+      var locationId = $('#locationId').val();
+      var locationName = $('#locationName').val();
 
-        if (id && location) {
-            // Add new row to jqxGrid
-            $("#jqxGrid1").jqxGrid('addrow', null, { id: id, location: location });
-            $('#addLocationModal').modal('hide');
-            $('#addLocationForm')[0].reset(); // Reset form
-        }
+      console.log(locationId);
+      console.log(locationName);
+
+      if(locationId && locationName) {
+        $.ajax({
+          url: '/api/master/locations', // Replace with your API endpoint
+          method: 'POST',
+          contentType: 'application/json', 
+          data: JSON.stringify({
+              locCd: locationId,
+              location: locationName
+          }),
+          success: function(response) {
+            // Handle success (for example, show a success message)
+            alert('Location added successfully!');
+            $('#addLocationModal').modal('hide'); // Close modal
+            $("#jqxGrid1").jqxGrid('refresh');
+          },
+          error: function(xhr, status, error) {
+            // Handle error (for example, show an error message)
+            alert('Error: ' + error);
+          }
+        });
+      } else {
+        alert("Please fill in all fields.");
+      }
     });
 
-    // Save ItemCode
+    // Save Item Code
     $('#saveItemCode').click(function () {
-        var id = $('#itemId').val();
-        var itemCode = $('#itemCode').val();
-        var name = $('#itemName').val();
+      var itemCode = $('#itemCode').val();
+      var itemName = $('#itemName').val();
+      var description = $('#descriptionItem').val();
 
-        if (id && itemCode && name) {
-            // Add new row to jqxGrid
-            $("#jqxGrid2").jqxGrid('addrow', null, { id: id, itemCode: itemCode, name: name });
-            $('#addItemCodeModal').modal('hide');
-            $('#addItemCodeForm')[0].reset(); // Reset form
-        }
+      if(itemCode && itemName) {
+        $.ajax({
+          url: '/api/master/items', // Replace with your API endpoint
+          method: 'POST',
+          contentType: 'application/json', 
+          data: JSON.stringify({
+            itemCode: itemCode,
+            itemName: itemName,
+            desciption: description
+          }),
+          success: function(response) {
+            // Handle success (for example, show a success message)
+            alert('Item Code added successfully!');
+            $('#addItemCodeModal').modal('hide'); // Close modal
+            // Optionally, reload the grid or update the item code list here
+          },
+          error: function(xhr, status, error) {
+            // Handle error (for example, show an error message)
+            alert('Error: ' + error);
+          }
+        });
+      } else {
+        alert("Please fill in all fields.");
+      }
     });
 
     // Save Unit
     $('#saveUnit').click(function () {
-        var id = $('#unitId').val();
-        var unit = $('#unitName').val();
+      var unitId = $('#unitId').val();
+      var unitName = $('#unitName').val();
 
-        if (id && unit) {
-            // Add new row to jqxGrid
-            $("#jqxGrid3").jqxGrid('addrow', null, { id: id, unit: unit });
-            $('#addUnitModal').modal('hide');
-            $('#addUnitForm')[0].reset(); // Reset form
-        }
+      if(unitId && unitName) {
+        $.ajax({
+          url: '/api/master/units', // Replace with your API endpoint
+          method: 'POST',
+          contentType: 'application/json', 
+          data: JSON.stringify({
+            unitCd: unitId,
+            desciption: unitName
+          }),
+          success: function(response) {
+            // Handle success (for example, show a success message)
+            alert('Unit added successfully!');
+            $('#addUnitModal').modal('hide'); // Close modal
+            // Optionally, reload the grid or update the unit list here
+          },
+          error: function(xhr, status, error) {
+            // Handle error (for example, show an error message)
+            alert('Error: ' + error);
+          }
+        });
+      } else {
+        alert("Please fill in all fields.");
+      }
     });
   });
 
