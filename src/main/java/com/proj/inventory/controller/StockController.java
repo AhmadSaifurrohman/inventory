@@ -3,6 +3,9 @@ package com.proj.inventory.controller;
 import com.proj.inventory.dto.StockDTO;
 import com.proj.inventory.model.Stock;
 import com.proj.inventory.service.StockService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +24,10 @@ public class StockController {
 
     // Endpoint untuk menampilkan halaman Stock
     @GetMapping
-    public String showStockPage(Model model) {
+    public String showStockPage(Model model, HttpServletRequest request) {
         // Setel judul halaman
-        model.addAttribute("title", "Stock - Inventory Management System");
-
+        model.addAttribute("title", "Stock");
+        model.addAttribute("currentUrl", request.getRequestURI());
         // Tentukan konten untuk halaman stok
         model.addAttribute("content", "stock.jsp");
 

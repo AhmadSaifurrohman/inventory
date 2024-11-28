@@ -5,58 +5,61 @@
     max-height: 500px; /* Atur tinggi maksimum untuk konten */
     overflow-y: auto;  /* Aktifkan scroll ketika konten melebihi tinggi */
   }
+
+  #columntablejqxGrid1 .jqx-checkbox-default, #columntablejqxGrid2 .jqx-checkbox-default, #columntablejqxGrid3 .jqx-checkbox-default {
+	    display: none;
+	}
 </style>
 
 
-<div class="content-header">
-    <div class="container-fluid">
-        <div class="row mb-2">
-            <div class="col-sm-6">
-                <h1 class="m-0">Master Data</h1>
-            </div>
-        </div>
-    </div>
-</div>
-
 <section class="content">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-12">
+      <div class="card card-secondary">
+          <div class="card-header">
+              <h3 class="card-title">ItemCode</h3>
+              <div class="card-tools">
+                  <button type="button" id="AddItemCode" class="btn btn-primary btn-sm">
+                    <i class="fas fa-plus"></i> Add
+                  </button>
+                  <button type="button" id="editItemCode" class="btn btn-success btn-sm" disabled>
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                      <i class="fas fa-minus"></i>
+                  </button>
+              </div>
+          </div>
+          <div class="card-body" style="min-height: 500px; max-height: 500px;">
+              <div id="jqxGrid2"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
         <div class="card card-secondary">
             <div class="card-header">
-                <h3 class="card-title">Location 1</h3>
+                <h3 class="card-title">Location</h3>
                 <div class="card-tools">
                     <button type="button" id="addLoc" class="btn btn-primary btn-sm">
                       <i class="fas fa-plus"></i> Add
+                    </button>
+                    <button type="button" id="editLoc" class="btn btn-success btn-sm" disabled>
+                      <i class="fas fa-edit"></i> Edit
                     </button>
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                       <i class="fas fa-minus"></i>
                     </button>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="min-height: 500px; max-height: 500px;">
                 <div id="jqxGrid1"></div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card card-secondary">
-            <div class="card-header">
-                <h3 class="card-title">ItemCode</h3>
-                <div class="card-tools">
-                    <button type="button" id="AddItemCode" class="btn btn-primary btn-sm">
-                      <i class="fas fa-plus"></i> Add
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div id="jqxGrid2"></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
+    
+    <div class="col-md-6">
         <div class="card card-secondary">
             <div class="card-header">
                 <h3 class="card-title">Unit</h3>
@@ -64,12 +67,15 @@
                     <button type="button" id="addUnit" class="btn btn-primary btn-sm">
                       <i class="fas fa-plus"></i> Add
                     </button>
+                    <button type="button" id="editUnit" class="btn btn-success btn-sm" disabled>
+                      <i class="fas fa-edit"></i> Edit
+                    </button>
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
                         <i class="fas fa-minus"></i>
                     </button>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="min-height: 500px; max-height: 500px;">
                 <div id="jqxGrid3"></div>
             </div>
         </div>
@@ -86,7 +92,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addLocationForm">
+        <form id="addLocationForm" data-mode="add">
           <div class="mb-3">
             <label for="locationId" class="form-label">Location Code</label>
             <input type="text" class="form-control" id="locationId" required>
@@ -114,7 +120,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addItemCodeForm">
+        <form id="addItemCodeForm" data-mode="add">
           <div class="mb-3">
             <label for="itemCode" class="form-label">Item Code</label>
             <input type="text" class="form-control" id="itemCode" required>
@@ -126,6 +132,14 @@
           <div class="mb-3">
             <label for="descriptionItem" class="form-label">Description</label>
             <input type="text" class="form-control" id="descriptionItem" required>
+          </div>
+          <div class="mb-3">
+            <label for="partNum" class="form-label">Part Number</label>
+            <input type="text" class="form-control" id="partNum" required>
+          </div>
+          <div class="mb-3">
+            <label for="safetyStock" class="form-label">Safety Stock</label>
+            <input type="text" class="form-control" id="safetyStock" required>
           </div>
         </form>
       </div>
@@ -146,7 +160,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form id="addUnitForm">
+        <form id="addUnitForm" data-mode="add">
           <div class="mb-3">
             <label for="unitId" class="form-label">Unit Code</label>
             <input type="text" class="form-control" id="unitId" required>
@@ -165,12 +179,12 @@
   </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
+
 <script>
   $(document).ready(function () {
     // Data for each grid from API
     $.ajax({
-        url: '/api/master/locations', // Replace with your actual endpoint
+        url: '/master/api/locations', // Replace with your actual endpoint
         method: 'GET',
         success: function(dataLocation) {
             // Modify the response to replace 'id' with 'no'
@@ -202,11 +216,23 @@
                 source: dataAdapterLocation,
                 columnsresize: true,
                 pagerMode: 'default',
+                selectionmode: 'checkbox',
                 columns: [
-                    { text: 'No', datafield: 'no', width: '10%' },
+                    { text: 'No', datafield: 'no', width: '6%' },
                     { text: 'Loc Code', datafield: 'locCd', width: '20%' },
                     { text: 'Location', datafield: 'location', width: '70%' }
                 ]
+            });
+
+            $('#jqxGrid1').on('rowselect', function (event) {
+                var rowsSelected = $("#jqxGrid1").jqxGrid('getselectedrowindexes');
+                if (rowsSelected.length > 1) {
+                    // Unselect previously selected rows
+                    $("#jqxGrid1").jqxGrid('unselectrow', rowsSelected[0]);
+                }
+
+                // Enable edit button if one row is selected
+                $('#editLoc').prop('disabled', rowsSelected.length === 0);
             });
         },
         error: function() {
@@ -216,7 +242,7 @@
 
     // Similar changes for item and unit grids
     $.ajax({
-        url: '/api/master/items', // Replace with your actual endpoint
+        url: '/master/api/items', // Replace with your actual endpoint
         method: 'GET',
         success: function(dataItemCode) {
             // Modify the response to replace 'id' with 'no'
@@ -233,7 +259,10 @@
                 datafields: [
                     { name: 'no', type: 'number' },
                     { name: 'itemCode', type: 'string' },
-                    { name: 'itemName', type: 'string' }
+                    { name: 'itemName', type: 'string' },
+                    { name: 'description', type: 'string' },
+                    { name: 'partNum', type: 'string' },
+                    { name: 'safetyStock', type: 'string' }
                 ]
             };
 
@@ -248,11 +277,28 @@
                 source: dataAdapterItemCode,
                 columnsresize: true,
                 pagerMode: 'default',
+                selectionmode: 'checkbox',
+                showfilterrow: true,		
+	              filterable: true,
                 columns: [
-                    { text: 'No', datafield: 'no', width: '10%' },
-                    { text: 'Item Code', datafield: 'itemCode', width: '45%' },
-                    { text: 'Name', datafield: 'itemName', width: '45%' }
+                    { text: 'No', datafield: 'no', width: '6%' },
+                    { text: 'Item Code', datafield: 'itemCode', width: '20%' },
+                    { text: 'Name', datafield: 'itemName', width: '20%' },
+                    { text: 'Description', datafield: 'description', width: '20%' },
+                    { text: 'Part Number', datafield: 'partNum', width: '20%' },
+                    { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' }
                 ]
+            });
+
+            $('#jqxGrid2').on('rowselect', function (event) {
+                var rowsSelected = $("#jqxGrid2").jqxGrid('getselectedrowindexes');
+                if (rowsSelected.length > 1) {
+                    // Unselect previously selected rows
+                    $("#jqxGrid2").jqxGrid('unselectrow', rowsSelected[0]);
+                }
+
+                // Enable edit button if one row is selected
+                $('#editItemCode').prop('disabled', rowsSelected.length === 0);
             });
         },
         error: function() {
@@ -261,7 +307,7 @@
     });
 
     $.ajax({
-        url: '/api/master/units', // Replace with your actual endpoint
+        url: '/master/api/units', // Replace with your actual endpoint
         method: 'GET',
         success: function(dataUnit) {
             // Modify the response to replace 'id' with 'no'
@@ -293,11 +339,23 @@
                 source: dataAdapterUnit,
                 columnsresize: true,
                 pagerMode: 'default',
+                selectionmode: 'checkbox',
                 columns: [
-                    { text: 'No', datafield: 'no', width: '10%' },
+                    { text: 'No', datafield: 'no', width: '6%' },
                     { text: 'Unit Code', datafield: 'unitCd', width: '20%' },
-                    { text: 'Unit', datafield: 'desciption', width: '70%' }
+                    { text: 'Unit', datafield: 'description', width: '70%' }
                 ]
+            });
+
+            $('#jqxGrid3').on('rowselect', function (event) {
+                var rowsSelected = $("#jqxGrid3").jqxGrid('getselectedrowindexes');
+                if (rowsSelected.length > 1) {
+                    // Unselect previously selected rows
+                    $("#jqxGrid3").jqxGrid('unselectrow', rowsSelected[0]);
+                }
+
+                // Enable edit button if one row is selected
+                $('#editUnit').prop('disabled', rowsSelected.length === 0);
             });
         },
         error: function() {
@@ -310,27 +368,101 @@
     // Open modal when clicking 'Add' button
     $('#addLoc').click(function () {
         $('#addLocationModal').modal('show');
+        $('#addLocationForm').attr('data-mode', 'add');
+        $('#locationId').prop('disabled', false); // Enable itemCode field
+        $('#addLocationForm')[0].reset(); // Clear form inputs
     });
 
     $('#AddItemCode').click(function () {
-        $('#addItemCodeModal').modal('show');
+      // Set modal mode to add
+      $('#addItemCodeModal').modal('show');
+      $('#addItemCodeForm').attr('data-mode', 'add'); // Set mode to add
+      $('#itemCode').prop('disabled', false); // Enable itemCode field
+      $('#addItemCodeForm')[0].reset(); // Clear form inputs
     });
 
     $('#addUnit').click(function () {
         $('#addUnitModal').modal('show');
+        $('#addUnitForm').attr('data-mode', 'add');
+        $('#unitId').prop('disabled', false); // Enable itemCode field
+        $('#addUnitForm')[0].reset(); // Clear form inputs
+    });
+
+    // Open Edit Modal
+    $('#editItemCode').click(function () {
+      var selectedRowIndex = $("#jqxGrid2").jqxGrid('getselectedrowindex');
+      if (selectedRowIndex === -1) {
+        alert('Please select a row to edit.');
+        return;
+      }
+
+      // Get row data
+      var rowData = $("#jqxGrid2").jqxGrid('getrowdata', selectedRowIndex);
+
+      // Populate the modal with row data
+      $('#itemCode').val(rowData.itemCode);
+      $('#itemName').val(rowData.itemName);
+      $('#descriptionItem').val(rowData.description);
+      $('#partNum').val(rowData.partNum);
+      $('#safetyStock').val(rowData.safetyStock);
+
+      // Set modal mode to edit
+      $('#addItemCodeModal').modal('show');
+      $('#addItemCodeForm').attr('data-mode', 'edit'); // Set mode to edit
+      $('#itemCode').prop('disabled', true); // Disable itemCode field
+    });
+
+    // Open Edit Location Modal
+    $('#editLoc').click(function () {
+      var selectedRowIndex = $("#jqxGrid1").jqxGrid('getselectedrowindex');
+      if (selectedRowIndex === -1) {
+        alert('Please select a row to edit.');
+        return;
+      }
+
+      // Get row data
+      var rowData = $("#jqxGrid1").jqxGrid('getrowdata', selectedRowIndex);
+      console.log(rowData);
+      // Populate the modal with row data
+      $('#locationId').val(rowData.locCd);
+      $('#locationName').val(rowData.location);
+
+      // Set modal mode to edit
+      $('#addLocationModal').modal('show');
+      $('#addLocationForm').attr('data-mode', 'edit'); // Set mode to edit
+      $('#locationId').prop('disabled', true); // Disable itemCode field
+    });
+
+    // Open Edit Location Modal
+    $('#editUnit').click(function () {
+      var selectedRowIndex = $("#jqxGrid3").jqxGrid('getselectedrowindex');
+      if (selectedRowIndex === -1) {
+        alert('Please select a row to edit.');
+        return;
+      }
+
+      // Get row data
+      var rowData = $("#jqxGrid3").jqxGrid('getrowdata', selectedRowIndex);
+      console.log(rowData);
+      // Populate the modal with row data
+      $('#unitId').val(rowData.unitCd);
+      $('#unitName').val(rowData.description);
+
+      // Set modal mode to edit
+      $('#addUnitModal').modal('show');
+      $('#addUnitForm').attr('data-mode', 'edit'); // Set mode to edit
+      $('#unitId').prop('disabled', true); // Disable itemCode field
     });
 
     // Save Location
     $('#saveLocation').click(function () {
+      var mode = $('#addLocationForm').attr('data-mode'); // Get current mode (add or edit)
       var locationId = $('#locationId').val();
       var locationName = $('#locationName').val();
 
-      console.log(locationId);
-      console.log(locationName);
-
       if(locationId && locationName) {
         $.ajax({
-          url: '/api/master/locations', // Replace with your API endpoint
+          url: '/master/api/locations', // Replace with your API endpoint
           method: 'POST',
           contentType: 'application/json', 
           data: JSON.stringify({
@@ -355,28 +487,35 @@
 
     // Save Item Code
     $('#saveItemCode').click(function () {
+      var mode = $('#addItemCodeForm').attr('data-mode'); // Get current mode (add or edit)
       var itemCode = $('#itemCode').val();
       var itemName = $('#itemName').val();
       var description = $('#descriptionItem').val();
+      var partNum = $('#partNum').val();
+      var safetyStock = $('#safetyStock').val();
 
-      if(itemCode && itemName) {
+      if (itemCode && itemName) {
+        var apiUrl = '/master/api/items';
+        var method = 'POST';
+
+
         $.ajax({
-          url: '/api/master/items', // Replace with your API endpoint
-          method: 'POST',
-          contentType: 'application/json', 
+          url: apiUrl,
+          method: method,
+          contentType: 'application/json',
           data: JSON.stringify({
             itemCode: itemCode,
             itemName: itemName,
-            desciption: description
+            description: description,
+            partNum: partNum,
+            safetyStock: safetyStock
           }),
-          success: function(response) {
-            // Handle success (for example, show a success message)
-            alert('Item Code added successfully!');
+          success: function (response) {
+            alert('Item Code ' + (mode === 'add' ? 'added' : 'updated') + ' successfully!');
             $('#addItemCodeModal').modal('hide'); // Close modal
             // Optionally, reload the grid or update the item code list here
           },
-          error: function(xhr, status, error) {
-            // Handle error (for example, show an error message)
+          error: function (xhr, status, error) {
             alert('Error: ' + error);
           }
         });
@@ -392,12 +531,12 @@
 
       if(unitId && unitName) {
         $.ajax({
-          url: '/api/master/units', // Replace with your API endpoint
+          url: '/master/api/units', // Replace with your API endpoint
           method: 'POST',
           contentType: 'application/json', 
           data: JSON.stringify({
             unitCd: unitId,
-            desciption: unitName
+            description: unitName
           }),
           success: function(response) {
             // Handle success (for example, show a success message)
@@ -415,7 +554,6 @@
       }
     });
   });
-
 
 
 </script>

@@ -1,6 +1,9 @@
 package com.proj.inventory.controller;
 
 import com.proj.inventory.service.DashboardService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,10 +22,10 @@ public class DashboardController {
 
     // Endpoint untuk menampilkan halaman dashboard
     @GetMapping("/")
-    public String home(Model model) {
+    public String home(Model model, HttpServletRequest request) {
         // Setel judul halaman
         model.addAttribute("title", "Dashboard - Inventory Management System");
-
+        model.addAttribute("currentUrl", request.getRequestURI());
         // Tentukan konten yang akan dimuat ke dalam layout.jsp
         model.addAttribute("content", "dashboard.jsp");
 

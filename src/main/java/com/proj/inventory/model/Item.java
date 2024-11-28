@@ -19,6 +19,12 @@ public class Item {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @Column(name = "PARTNUM")
+    private String partNum;
+
+    @Column(name = "SAFETYSTOCK")
+    private String safetyStock;
+
     // Getters and Setters
     public String getItemCode() {
         return itemCode;
@@ -42,5 +48,21 @@ public class Item {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPartNum() {
+        return partNum;
+    }
+
+    public void setPartNum(String partNum) {
+        this.partNum = partNum;
+    }
+
+    public String getSafetyStock() {
+        return safetyStock;
+    }
+
+    public void setSafetyStock(String safetyStock) {
+        this.safetyStock = safetyStock;
     }
 }

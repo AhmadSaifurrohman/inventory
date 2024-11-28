@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= request.getAttribute("title") != null ? request.getAttribute("title") : "Inventory Management System" %></title>
+    <title>Inventory Management System</title>
 
     <!-- AdminLTE CSS -->
     <link href="${pageContext.request.contextPath}/static/dist/css/adminlte.min.css" rel="stylesheet">
@@ -13,16 +13,21 @@
     <!-- JQWidgets Base -->
     <link href="${pageContext.request.contextPath}/static/jqwidgets/styles/jqx.base.css" rel="stylesheet">
 
-    <style>
+    <!-- Select2 -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+
+    <style>      
         /* JQWidgets */
         .jqx-widget-header {
-            background: #314489;
+            background: #6C757D;
             color: white;
             font-weight: normal;
         }
 
         .jqx-fill-state-pressed {
-            background: #314489;
+            background: #4d5359;
             color: white;
         }
 
@@ -73,30 +78,17 @@
     </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
-    <div class="wrapper">
-        <!-- Header -->
-        <jsp:include page="layout/header.jsp" />
+    
 
-        <!-- Sidebar -->
-        <jsp:include page="layout/sidebar.jsp" />
-
-        <!-- Content Wrapper -->
-        <div class="content-wrapper">
-            <section class="content">
-                <div class="container-fluid">
-                    <!-- Menyertakan konten dinamis -->
-                    <jsp:include page="${content}" />
-                </div>
-            </section>
-        </div>
-
-        <!-- Footer -->
-        <jsp:include page="layout/footer.jsp" />
-    </div>
     <!-- AdminLTE JS -->
+    <!-- <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script> -->
     <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/dist/js/adminlte.min.js"></script>
+
+    <!-- Select2 -->
+    <script src="${pageContext.request.contextPath}/static/plugins/select2/js/select2.full.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
 
     <!-- JQWidgets -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcore.js"></script>
@@ -119,5 +111,44 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxnumberinput.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxrating.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxgrid.pager.js"></script>
+    <div class="wrapper">
+        <!-- Header -->
+        <jsp:include page="layout/header.jsp" />
+
+        <!-- Sidebar -->
+        <jsp:include page="layout/sidebar.jsp" />
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+
+            <title><%= request.getAttribute("title") != null ? request.getAttribute("title") : "Inventory Management System" %></title>
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1><%= request.getAttribute("title") != null ? request.getAttribute("title") : "" %></h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active"><%= request.getAttribute("title") != null ? request.getAttribute("title") : "" %></li>
+                        </ol>
+                    </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Menyertakan konten dinamis -->
+                    <jsp:include page="${content}" />
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <jsp:include page="layout/footer.jsp" />
+    </div>
+    
 </body>
 </html>

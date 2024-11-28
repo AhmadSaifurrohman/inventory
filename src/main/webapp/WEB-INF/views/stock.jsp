@@ -1,13 +1,22 @@
-<h1 class="m-0">Stock List</h1>
-<!-- <p class="lead">Berikut adalah daftar stok barang di gudang.</p> -->
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+</style>
 
 <!-- Tabel menggunakan AdminLTE -->
 <div class="card">
     <div class="card-header">
         <div class="d-flex justify-content-between w-100">
-            <a href="${pageContext.request.contextPath}/stock/add-stock" class="btn btn-primary" id="addBtn">Add</a>
-            <!-- <h3 class="card-title">Stock List</h3> -->
-            <!-- Form untuk Filter dan Search -->
+            <!-- Tombol di sebelah kiri -->
+            <div class="d-flex">
+                <a href="#" class="btn btn-primary mr-2" id="addBtn">Add</a>
+                <a href="#" class="btn btn-danger" id="outBtn">Out</a>
+                <!-- ${pageContext.request.contextPath}/stock/add-stock -->
+            </div>
+            
+            <!-- Tombol dan filter di sebelah kanan -->
             <div class="card-tools">
                 <div class="row">
                     <div class="col-md-3">
@@ -18,7 +27,6 @@
                         <!-- Dropdown Location -->
                         <select id="locationFilter" class="form-control">
                             <option value="">Select Location</option>
-                            
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -26,12 +34,13 @@
                         <button class="btn btn-success" id="searchBtn">Search</button>
                     </div>
                     <div class="col-md-3">
-                       <!-- Tombol Excel -->
-                       <button class="btn btn-info" id="excelhBtn">Excel</button>
+                        <!-- Tombol Excel -->
+                        <button class="btn btn-info" id="excelhBtn">Excel</button>
                     </div>
                 </div>
             </div>
         </div>
+        
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -41,14 +50,122 @@
 </div>
 <!-- /.card -->
 
+<!-- Modal Add -->
+<div class="modal fade" id="addModal" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form Add -->
+                    <div class="form-group">
+                        <label for="materialCode">Material Code</label>
+                        <select class="form-control select2" id="materialCode" style="width: 100%;" name="materialCode" required>
+                            <option value="" selected>Select Material Code</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rackLocation">Rack Location</label>
+                        <select class="form-control select2" id="rackLocation" style="width: 100%;" name="rackLocation" required>
+                            <option value="" selected>Select Location</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit">Unit</label>
+                        <select class="form-control select2" id="unit" style="width: 100%;" name="unit" required>
+                            <option value="" selected>Select Unit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="portNumber">Port Number</label>
+                        <input type="text" class="form-control" id="portNumber" name="portNumber" placeholder="Enter Port Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="text" class="form-control" id="quantity" name="quantity" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveStock()">Add Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Edit Stock</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form Add -->
+                    <div class="form-group">
+                        <label for="editMaterialCode">Material Code</label>
+                        <select class="form-control select2" id="editMaterialCode" style="width: 100%;" name="editMaterialCode" required>
+                            <option value="" selected>Select Material Code</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRackLocation">Rack Location</label>
+                        <select class="form-control select2" id="editRackLocation" style="width: 100%;" name="editRackLocation" required>
+                            <option value="" selected>Select Location</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUnit">Unit</label>
+                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" required>
+                            <option value="" selected>Select Unit</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPortNumber">Port Number</label>
+                        <input type="text" class="form-control" id="editPortNumber" name="editPortNumber" placeholder="Enter Port Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editQuantity">Quantity</label>
+                        <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" onclick="updateStock()">Out Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
 <!-- Script untuk menginisialisasi DataTables -->
-<script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>
+<!-- <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script> -->
 <script type="text/javascript">
 
      // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
      function loadLocations() {
-        fetch('/api/master/locations')
+        fetch('/master/api/locations')
             .then(response => response.json())
             .then(data => {
                 const locationFilter = document.getElementById('locationFilter');
@@ -68,7 +185,53 @@
             });
     }
 
+    // Function to save stock via AJAX
+    function saveStock() {
+        const stockData = {
+            itemCode: $('#materialCode').val(),
+            description: $('#description').val(),
+            portNum: $('#portNumber').val(),
+            unitCd: $('#unit').val(),
+            location: $('#rackLocation').val(),
+        };
+
+        // Menampilkan setiap variabel di console
+        console.log("Material Code:", stockData.itemCode);
+        console.log("Description:", stockData.description);
+        console.log("Port Number:", stockData.portNum);
+        console.log("Unit:", stockData.unitCd);
+        console.log("Rack Location:", stockData.location);
+
+        $.ajax({
+            url: '${pageContext.request.contextPath}/stock/api',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(stockData),
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Stock berhasil ditambahkan!',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                // Reset form setelah submit sukses
+                $('#stockForm')[0].reset();
+            },
+            error: function (err) {
+                console.error("Error saving stock:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat menyimpan data.',
+                    showConfirmButton: true
+                });
+            }
+        });
+    }
+
+
     $(document).ready(function () {
+        $('.select2').select2();
         loadLocations();
 
         // Mengambil data dari API menggunakan AJAX
@@ -138,6 +301,65 @@
                 console.log('Error fetching data from API', err);
             }
         });
+
+        $("#addBtn").on("click", function () {
+            $("#addModal").modal("show");
+        });
+
+        // Menampilkan modal Edit dan menginisialisasi Select2 di dalamnya
+        $("#outBtn").on("click", function () {
+            $("#editModal").modal("show");
+        });
+
+        $.ajax({
+            url: '${pageContext.request.contextPath}/master/api/items',
+            type: 'GET',
+            success: function (data) {
+                let materialCodeDropdown = $('#materialCode');
+                data.forEach(function (item) {
+                    // Gabungkan itemCode dan itemName dengan tanda hubung
+                    materialCodeDropdown.append('<option value="' + item.itemCode + '">' + item.itemCode + ' - ' + item.itemName + '</option>');
+                });
+            },
+            error: function (err) {
+                console.error("Error fetching material codes:", err);
+            }
+        });
+
+        // AJAX untuk mengambil data Unit
+        $.ajax({
+            url: '${pageContext.request.contextPath}/master/api/units',
+            type: 'GET',
+            success: function (data) {
+                let unitDropdown = $('#unit');
+                data.forEach(function (unit) {
+                    unitDropdown.append('<option value="' + unit.unitCd + '">' + unit.unitCd + ' - ' + unit.description + '</option>');
+                });
+            },
+            error: function (err) {
+                console.error("Error fetching rack locations:", err);
+            }
+        });
+
+        // AJAX untuk mengambil data Rack Location
+        $.ajax({
+            url: '${pageContext.request.contextPath}/master/api/locations',
+            type: 'GET',
+            success: function (data) {
+                let rackLocationDropdown = $('#rackLocation');
+                data.forEach(function (location) {
+                    rackLocationDropdown.append('<option value="' + location.locCd + '">' + location.locCd + ' - ' + location.location + '</option>');
+                });
+            },
+            error: function (err) {
+                console.error("Error fetching rack locations:", err);
+            }
+        });
+
+
+        
+
+
     });
 </script>
 

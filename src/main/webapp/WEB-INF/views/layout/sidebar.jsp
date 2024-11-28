@@ -10,37 +10,25 @@
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                 <li class="nav-item">
-                    <a href="/" class="nav-link">
+                    <a href="/" class="nav-link ${currentUrl == '/' ? 'active' : ''}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>Dashboard</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/stock" class="nav-link">
-                        <i class="nav-icon fas fa-box"></i>
-                        <p>Stock</p>
-                    </a>
+                  <a href="/stock" class="nav-link ${currentUrl == '/stock' ? 'active' : ''}">
+                      <i class="nav-icon fas fa-box"></i>
+                      <p>Stock</p>
+                  </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/add-item" class="nav-link">
-                        <i class="nav-icon fas fa-plus"></i>
-                        <p>Barang In</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/out-item" class="nav-link">
-                        <i class="nav-icon fas fa-arrow-circle-left"></i>
-                        <p>Barang Out</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/add-item" class="nav-link">
+                    <a href="/add-item" class="nav-link ">
                         <i class="nav-icon fas fa-plus"></i>
                         <p>Stock Transaksi</p>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/master" class="nav-link">
+                    <a href="/master" class="nav-link ${currentUrl == '/master' ? 'active' : ''}">
                         <i class="nav-icon fas fa-pencil-alt"></i>
                         <p>Master Data</p>
                     </a>
