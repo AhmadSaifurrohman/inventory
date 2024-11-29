@@ -1,18 +1,17 @@
 package com.proj.inventory.controller;
 
-import com.proj.inventory.service.DashboardService;
-
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.proj.inventory.service.DashboardService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 public class DashboardController {
@@ -24,7 +23,7 @@ public class DashboardController {
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
         // Setel judul halaman
-        model.addAttribute("title", "Dashboard - Inventory Management System");
+        model.addAttribute("title", "Dashboard");
         model.addAttribute("currentUrl", request.getRequestURI());
         // Tentukan konten yang akan dimuat ke dalam layout.jsp
         model.addAttribute("content", "dashboard.jsp");

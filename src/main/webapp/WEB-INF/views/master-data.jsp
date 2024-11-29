@@ -4,81 +4,103 @@
   .card-body {
     max-height: 500px; /* Atur tinggi maksimum untuk konten */
     overflow-y: auto;  /* Aktifkan scroll ketika konten melebihi tinggi */
+    padding: 10px; /* Kurangi padding agar jaraknya lebih rapat */
   }
 
-  #columntablejqxGrid1 .jqx-checkbox-default, #columntablejqxGrid2 .jqx-checkbox-default, #columntablejqxGrid3 .jqx-checkbox-default {
-	    display: none;
-	}
-</style>
+  .row {
+    margin-bottom: 10px; /* Kurangi margin antar row */
+  }
 
+  .col-md-12, .col-md-6 {
+    padding: 0px; /* Mengurangi padding di dalam kolom */
+  }
+
+  .card {
+    margin-bottom: 5px; /* Mengurangi jarak antar card */
+  }
+
+  .card-header {
+    padding: 5px 10px; /* Mengurangi padding di header */
+  }
+
+  #columntablejqxGrid1 .jqx-checkbox-default, 
+  #columntablejqxGrid2 .jqx-checkbox-default, 
+  #columntablejqxGrid3 .jqx-checkbox-default {
+    display: none;
+  }
+</style>
 
 <section class="content">
   <div class="row">
+    <!-- Kolom 1: ItemCode -->
     <div class="col-md-12">
       <div class="card card-secondary">
-          <div class="card-header">
-              <h3 class="card-title">ItemCode</h3>
-              <div class="card-tools">
-                  <button type="button" id="AddItemCode" class="btn btn-primary btn-sm">
-                    <i class="fas fa-plus"></i> Add
-                  </button>
-                  <button type="button" id="editItemCode" class="btn btn-success btn-sm" disabled>
-                    <i class="fas fa-edit"></i> Edit
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                      <i class="fas fa-minus"></i>
-                  </button>
-              </div>
+        <div class="card-header">
+          <h3 class="card-title">ItemCode</h3>
+          <div class="card-tools">
+            <button type="button" id="AddItemCode" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Add
+            </button>
+            <button type="button" id="editItemCode" class="btn btn-success btn-sm" disabled>
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
           </div>
-          <div class="card-body" style="min-height: 500px; max-height: 500px;">
-              <div id="jqxGrid2"></div>
-          </div>
+        </div>
+        <div class="card-body">
+          <div id="jqxGrid2" class="jqxGrid"></div>
+        </div>
       </div>
     </div>
   </div>
+
   <div class="row">
+    <!-- Kolom 2: Location -->
     <div class="col-md-6">
-        <div class="card card-secondary">
-            <div class="card-header">
-                <h3 class="card-title">Location</h3>
-                <div class="card-tools">
-                    <button type="button" id="addLoc" class="btn btn-primary btn-sm">
-                      <i class="fas fa-plus"></i> Add
-                    </button>
-                    <button type="button" id="editLoc" class="btn btn-success btn-sm" disabled>
-                      <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body" style="min-height: 500px; max-height: 500px;">
-                <div id="jqxGrid1"></div>
-            </div>
+      <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">Location</h3>
+          <div class="card-tools">
+            <button type="button" id="addLoc" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Add
+            </button>
+            <button type="button" id="editLoc" class="btn btn-success btn-sm" disabled>
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
         </div>
+        <div class="card-body">
+          <div id="jqxGrid1" class="jqxGrid"></div>
+        </div>
+      </div>
     </div>
-    
+
+    <!-- Kolom 3: Unit -->
     <div class="col-md-6">
-        <div class="card card-secondary">
-            <div class="card-header">
-                <h3 class="card-title">Unit</h3>
-                <div class="card-tools">
-                    <button type="button" id="addUnit" class="btn btn-primary btn-sm">
-                      <i class="fas fa-plus"></i> Add
-                    </button>
-                    <button type="button" id="editUnit" class="btn btn-success btn-sm" disabled>
-                      <i class="fas fa-edit"></i> Edit
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body" style="min-height: 500px; max-height: 500px;">
-                <div id="jqxGrid3"></div>
-            </div>
+      <div class="card card-secondary">
+        <div class="card-header">
+          <h3 class="card-title">Unit</h3>
+          <div class="card-tools">
+            <button type="button" id="addUnit" class="btn btn-primary btn-sm">
+              <i class="fas fa-plus"></i> Add
+            </button>
+            <button type="button" id="editUnit" class="btn btn-success btn-sm" disabled>
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
         </div>
+        <div class="card-body">
+          <div id="jqxGrid3" class="jqxGrid"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -281,7 +303,7 @@
                 showfilterrow: true,		
 	              filterable: true,
                 columns: [
-                    { text: 'No', datafield: 'no', width: '6%' },
+                    { text: 'No', datafield: 'no', width: '8%' },
                     { text: 'Item Code', datafield: 'itemCode', width: '20%' },
                     { text: 'Name', datafield: 'itemName', width: '20%' },
                     { text: 'Description', datafield: 'description', width: '20%' },

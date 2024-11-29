@@ -3,6 +3,11 @@
     .select2-container .select2-selection--single {
         height: 38px;
     }
+
+    .modal-body {
+        max-height: 500px; /* Sesuaikan tinggi sesuai kebutuhan */
+        overflow-y: auto;  /* Aktifkan scroll vertikal jika konten melebihi tinggi */
+    }
 </style>
 
 <!-- Tabel menggunakan AdminLTE -->
@@ -70,10 +75,12 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="rackLocation">Rack Location</label>
-                        <select class="form-control select2" id="rackLocation" style="width: 100%;" name="rackLocation" required>
-                            <option value="" selected>Select Location</option>
-                        </select>
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="portNumber">Part Number</label>
+                        <input type="text" class="form-control" id="portNumber" name="portNumber" placeholder="Enter Port Number" required>
                     </div>
                     <div class="form-group">
                         <label for="unit">Unit</label>
@@ -82,12 +89,10 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="description">Description</label>
-                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="portNumber">Port Number</label>
-                        <input type="text" class="form-control" id="portNumber" name="portNumber" placeholder="Enter Port Number" required>
+                        <label for="rackLocation">Rack Location</label>
+                        <select class="form-control select2" id="rackLocation" style="width: 100%;" name="rackLocation" required>
+                            <option value="" selected>Select Location</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="quantity">Quantity</label>
@@ -110,17 +115,31 @@
         <div class="modal-content">
             <form id="editForm" method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addModalLabel">Edit Stock</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Stock</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Form Add -->
+                    <!-- Form Edit -->
                     <div class="form-group">
                         <label for="editMaterialCode">Material Code</label>
                         <select class="form-control select2" id="editMaterialCode" style="width: 100%;" name="editMaterialCode" required>
                             <option value="" selected>Select Material Code</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDescription">Description</label>
+                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPortNumber">Part Number</label>
+                        <input type="text" class="form-control" id="editPortNumber" name="editPortNumber" placeholder="Enter Port Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editUnit">Unit</label>
+                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" required>
+                            <option value="" selected>Select Unit</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -130,22 +149,16 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editUnit">Unit</label>
-                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" required>
-                            <option value="" selected>Select Unit</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editDescription">Description</label>
-                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editPortNumber">Port Number</label>
-                        <input type="text" class="form-control" id="editPortNumber" name="editPortNumber" placeholder="Enter Port Number" required>
-                    </div>
-                    <div class="form-group">
                         <label for="editQuantity">Quantity</label>
                         <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editDepartment">Department Pickup</label>
+                        <input type="text" class="form-control" id="editDepartment" name="editDepartment" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPic">PIC Pickup</label>
+                        <input type="text" class="form-control" id="editPic" name="editPic" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -156,7 +169,6 @@
         </div>
     </div>
 </div>
-
 
 
 <!-- Script untuk menginisialisasi DataTables -->
@@ -268,9 +280,9 @@
                 // Inisialisasi jqxGrid dengan data dari API
                 $("#jqxgrid").jqxGrid({
                     width: '100%',
-                    height: 400,
+                    height: 430,
                     source: dataAdapter,
-                    autoheight: true,
+                    autoheight: false,
                     pageable: true,
                     sortable: true,
                     pagesize: 10, // Show 10 rows per page
@@ -355,11 +367,6 @@
                 console.error("Error fetching rack locations:", err);
             }
         });
-
-
-        
-
-
     });
 </script>
 

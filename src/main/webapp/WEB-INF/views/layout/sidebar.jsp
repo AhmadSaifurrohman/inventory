@@ -22,7 +22,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/add-item" class="nav-link ">
+                    <a href="/transactions" class="nav-link ${currentUrl == '/transactions' ? 'active' : ''}">
                         <i class="nav-icon fas fa-plus"></i>
                         <p>Stock Transaksi</p>
                     </a>
@@ -33,35 +33,6 @@
                         <p>Master Data</p>
                     </a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon fas fa-pencil-alt"></i>
-                      <p>
-                        Master Data
-                        <i class="right fas fa-angle-left"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      <li class="nav-item">
-                        <a href="./index.html" class="nav-link">
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>Lokasi</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="./index2.html" class="nav-link">
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>Material Code</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="./index3.html" class="nav-link">
-                          <i class="far fa-circle nav-icon"></i>
-                          <p>Unit</p>
-                        </a>
-                      </li>
-                    </ul>
-                </li> -->
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
