@@ -2,6 +2,8 @@ package com.proj.inventory.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,9 +13,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "TB_INVSTOCK")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Stock {
 
     @Id
@@ -29,10 +33,10 @@ public class Stock {
     @Column(name = "UNITCD")
     private String unitCd;
 
-    // Relasi dengan tabel Location
-    @ManyToOne(fetch = FetchType.LAZY)
+    // Relasi ManyToOne dengan Location
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "LOCATION", referencedColumnName = "LOCCD")
-    private Location location; // Relasi dengan Location
+    private Location location;
 
     @Column(name = "UPDATEDATE")
     @Temporal(TemporalType.TIMESTAMP)

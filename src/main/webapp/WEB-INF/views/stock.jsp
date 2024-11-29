@@ -173,6 +173,7 @@
 
 <!-- Script untuk menginisialisasi DataTables -->
 <!-- <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
 
      // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
@@ -204,8 +205,13 @@
             description: $('#description').val(),
             portNum: $('#portNumber').val(),
             unitCd: $('#unit').val(),
-            location: $('#rackLocation').val(),
+            location: {
+                locCd: $('#rackLocation').val() // Gunakan locCd yang sesuai
+            },
+            quantity: $('#quantity').val()
         };
+
+        console.log("Data JSON yang dikirim:", stockData);
 
         // Menampilkan setiap variabel di console
         console.log("Material Code:", stockData.itemCode);
@@ -213,6 +219,7 @@
         console.log("Port Number:", stockData.portNum);
         console.log("Unit:", stockData.unitCd);
         console.log("Rack Location:", stockData.location);
+        console.log("Quantity:", stockData.quantity);
 
         $.ajax({
             url: '${pageContext.request.contextPath}/stock/api',
@@ -258,7 +265,8 @@
                     description: item.description,
                     portNumber: item.portNum,
                     baseUnit: item.unitCd,
-                    storageLocation: item.locationName
+                    storageLocation: item.locationName,
+                    quantity: item.quantity
                 }));
 
                 // Sumber data untuk jqxGrid
@@ -271,7 +279,9 @@
                         { name: "description", type: "string" },    // Description
                         { name: "portNumber", type: "number" },     // Port Number
                         { name: "baseUnit", type: "string" },       // Base Unit
-                        { name: "storageLocation", type: "string" } // Storage Location
+                        { name: "storageLocation", type: "string" }, // Storage Location
+                        { name: "quantity", type: "string" } // Quantity
+
                     ]
                 };
 
@@ -305,7 +315,8 @@
                         { text: "Description", datafield: "description", width: 180 },  // Lebar untuk Description
                         { text: "Port Number", datafield: "portNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Port Number
                         { text: "Base Unit", datafield: "baseUnit", width: 120 },    // Lebar untuk Base Unit
-                        { text: "Storage Location", datafield: "storageLocation", width: 150 } // Lebar untuk Storage Location
+                        { text: "Storage Location", datafield: "storageLocation", width: 150 }, // Lebar untuk Storage Location
+                        { text: "Quantity", datafield: "quantity", width: 150 } // Lebar untuk Storage Location
                     ]
                 });
             },

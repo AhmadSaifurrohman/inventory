@@ -54,10 +54,9 @@ public class StockController {
             dto.setQuantity(stock.getQuantity());
             dto.setPortNum(stock.getPortNum());
             dto.setUnitCd(stock.getUnitCd());
-            
+            dto.setQuantity(stock.getQuantity());
             
             System.out.println("Location for stock with itemCode " + stock.getItemCode() + ": " + stock.getLocation().getLocation());
-
 
             // Dapatkan nama lokasi terkait
             if (stock.getLocation() != null) {
@@ -88,6 +87,7 @@ public class StockController {
         System.out.println("Port Number: " + stock.getPortNum());
         System.out.println("Unit: " + stock.getUnitCd());
         System.out.println("Rack Location: " + stock.getLocation());
+        System.out.println("Quantity: " + stock.getQuantity());
 
         return stockService.saveOrUpdateStock(stock);
     }

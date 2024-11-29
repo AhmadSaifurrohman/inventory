@@ -16,6 +16,14 @@ public class Location {
     @Column(name = "LOCATION")
     private String location;
 
+    // Default constructor (penting untuk JPA dan Jackson)
+    public Location() {}
+
+    // Constructor untuk deserialisasi dari String
+    public Location(String locCd) {
+        this.locCd = locCd;
+    }
+
     // Getters and Setters
     public String getLocCd() {
         return locCd;
@@ -31,5 +39,10 @@ public class Location {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public String toString() {
+        return locCd; // Digunakan untuk representasi string
     }
 }
