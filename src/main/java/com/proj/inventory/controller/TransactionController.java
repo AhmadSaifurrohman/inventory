@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proj.inventory.model.Transaction;
 import com.proj.inventory.service.TransactionService;
@@ -33,9 +35,25 @@ public class TransactionController {
 
     // Endpoint untuk mengambil semua transaksi
     @GetMapping("/all")
-    public List<Transaction> getAllTransactions() {
-        return transactionService.getAllTransactions();
+    @ResponseBody
+    public List<Transaction> getAllTransactions(
+            @RequestParam(required = false) String itemCode,
+            @RequestParam(required = false) String transDate) {
+
+        System.out.println("API /transactions/all was called");
+
+        // Mencari transaksi berdasarkan itemCode dan transDate (jika diberikan)
+        if (itemCode != null && transDate != null) {
+            return transactionService.findTransactionsByItemCodeAndDate(itemCode, transDate);
+        } else if (itemCode != null) {
+            return transactionService.findTransactionsByItemCode(itemCode);
+        } else if (transDate != null) {
+            return transactionService.findTransactionsByDate(transDate);
+        } else {
+            return transactionService.getAllTransactions();
+        }
     }
+
 
     @PostMapping("/inbound")
     public Transaction recordInboundTransaction(@RequestBody Transaction transaction) {

@@ -22,10 +22,15 @@
                             <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
                         </div>
                         <div class="col-md-3">
-                            <!-- Dropdown Location -->
-                            <select id="locationFilter" class="form-control">
-                                <option value="">Select Location</option>
-                            </select>
+                            <!-- Filter Tanggal -->
+                            <div class="form-group">
+                                <div class="input-group date" id="dateFilter" data-target-input="nearest">
+                                    <input type="text" class="form-control datetimepicker-input" data-target="#dateFilter" placeholder="Select Date" />
+                                    <div class="input-group-append" data-target="#dateFilter" data-toggle="datetimepicker">
+                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-3">
                             <!-- Tombol Search -->
@@ -53,7 +58,7 @@
 <script type="text/javascript">
     // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
     function loadLocations() {
-        fetch('${pageContext.request.contextPath}/api/master/locations')
+        fetch('/master/api/locations')
             .then(response => response.json())
             .then(data => {
                 const locationFilter = document.getElementById('locationFilter');
@@ -73,32 +78,55 @@
     $(document).ready(function () {
         loadLocations();
 
-        // Mengambil data dari API menggunakan AJAX
+        $('#dateFilter').daterangepicker({
+            autoUpdateInput: false, // Menonaktifkan update otomatis input
+            locale: {
+                cancelLabel: 'Clear', // Menambahkan tombol untuk membersihkan input
+                format: 'YYYY-MM-DD'  // Format tanggal yang diinginkan
+            }
+        });
+
+        // Menangani event saat tanggal dipilih
+        $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val(''); // Membersihkan input saat tombol "Clear" diklik
+        });
+
+        // Ambil data transaksi menggunakan AJAX
         $.ajax({
-            url: '${pageContext.request.contextPath}/transactions/api', // URL API untuk mendapatkan semua transaksi
-            type: 'GET',
+            url: '/transactions/all', // Ganti dengan endpoint transaksi Anda
+            method: 'GET',
             success: function(data) {
-                // Sumber data untuk jqxGrid
-                const source = {
+                // Modifikasi response jika perlu (misalnya mengganti 'transNo' menjadi 'no' atau menambah informasi lainnya)
+                data = data.map(function(item, index) {
+                    item.no = index + 1; // Menambahkan 'no' berdasarkan index
+                    return item;
+                });
+
+                // Data Adapter untuk Transaksi
+                var source = {
                     localdata: data,
                     datatype: "array",
                     datafields: [
-                        { name: "transNo", type: "number" },
-                        { name: "itemCode", type: "string" },
-                        { name: "transactionType", type: "string" },
-                        { name: "transQty", type: "number" },
-                        { name: "qtyBefore", type: "number" },
-                        { name: "qtyAfter", type: "number" },
-                        { name: "locBefore", type: "string" },
-                        { name: "locAfter", type: "string" },
-                        { name: "transDate", type: "date" },
-                        { name: "userId", type: "string" }
+                        { name: 'transNo', type: 'number' },
+                        { name: 'itemCode', type: 'string' },
+                        { name: 'transactionType', type: 'string' },
+                        { name: 'transQty', type: 'number' },
+                        { name: 'qtyBefore', type: 'number' },
+                        { name: 'qtyAfter', type: 'number' },
+                        { name: 'transDate', type: 'date' },
+                        { name: 'userId', type: 'string' },
+                        { name: 'picPickup', type: 'string' },
+                        { name: 'deptPickup', type: 'string' }
                     ]
                 };
 
-                const dataAdapter = new $.jqx.dataAdapter(source);
+                var dataAdapter = new $.jqx.dataAdapter(source);
 
-                // Inisialisasi jqxGrid dengan data dari API
+                // Inisialisasi jqxGrid untuk Transaksi
                 $("#jqxgrid").jqxGrid({
                     width: '100%',
                     height: 400,
@@ -106,39 +134,59 @@
                     pageable: true,
                     sortable: true,
                     filterable: true,
-                    autoshowfiltericon: true,
                     columnsresize: true,
                     columns: [
-                        { text: "Transaction No", datafield: "transNo", width: 100 },
-                        { text: "Item Code", datafield: "itemCode", width: 150 },
-                        { text: "Transaction Type", datafield: "transactionType", width: 150 },
-                        { text: "Quantity", datafield: "transQty", width: 100, cellsalign: 'right', align: 'center' },
-                        { text: "Qty Before", datafield: "qtyBefore", width: 100, cellsalign: 'right', align: 'center' },
-                        { text: "Qty After", datafield: "qtyAfter", width: 100, cellsalign: 'right', align: 'center' },
-                        { text: "Location Before", datafield: "locBefore", width: 150 },
-                        { text: "Location After", datafield: "locAfter", width: 150 },
-                        { text: "Transaction Date", datafield: "transDate", width: 150, cellsformat: 'dd-MM-yyyy HH:mm' },
-                        { text: "User", datafield: "userId", width: 100 }
+                        { 
+                            text: "No", 
+                            datafield: "id", 
+                            width: 60, 
+                            cellsrenderer: function (row, column, value, rowData, columnData) {
+                                // Menggunakan row index untuk menghasilkan nomor urut
+                                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
+                            } 
+                        },           // Lebar untuk No
+                        { text: 'Transaction No', datafield: 'transNo', width: '15%' },
+                        { text: 'Item Code', datafield: 'itemCode', width: '15%' },
+                        { text: 'Transaction Type', datafield: 'transactionType', width: '15%' },
+                        { text: 'Quantity', datafield: 'transQty', width: '12%', cellsalign: 'right', align: 'center' },
+                        { text: 'Qty Before', datafield: 'qtyBefore', width: '12%', cellsalign: 'right', align: 'center' },
+                        { text: 'Qty After', datafield: 'qtyAfter', width: '12%', cellsalign: 'right', align: 'center' },
+                        { text: 'Transaction Date', datafield: 'transDate', width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
+                        { text: 'User', datafield: 'userId', width: '12%' },
+                        { text: 'PIC Pickup', datafield: 'picPickup', width: '12%' },
+                        { text: 'Dept Pickup', datafield: 'deptPickup', width: '12%' },
                     ]
                 });
+
+                // Event listener untuk pemilihan baris
+                $('#jqxgrid').on('rowselect', function (event) {
+                    var rowsSelected = $("#jqxgrid").jqxGrid('getselectedrowindexes');
+                    if (rowsSelected.length > 1) {
+                        // Batalkan seleksi sebelumnya jika lebih dari satu baris dipilih
+                        $("#jqxgrid").jqxGrid('unselectrow', rowsSelected[0]);
+                    }
+
+                    // Enable tombol edit jika satu baris terpilih
+                    $('#editTransaction').prop('disabled', rowsSelected.length === 0);
+                });
             },
-            error: function(err) {
-                console.error('Error fetching transactions:', err);
+            error: function() {
+                alert('Failed to load transaction data.');
             }
         });
 
         // Event listener untuk tombol search
         $("#searchBtn").on("click", function() {
             const itemCode = $("#itemCodeFilter").val();
-            const location = $("#locationFilter").val();
+            const dateRange = $("#dateFilter").val();
             const queryParams = {};
 
             if (itemCode) queryParams.itemCode = itemCode;
-            if (location) queryParams.location = location;
+            if (transDate) queryParams.transDate = transDate;
 
             // Mengambil data dengan filter menggunakan queryParams
             $.ajax({
-                url: '${pageContext.request.contextPath}/transactions/api', 
+                url: '/transactions/all', // Ganti dengan endpoint transaksi Anda
                 type: 'GET',
                 data: queryParams,
                 success: function(data) {
@@ -147,16 +195,16 @@
                         localdata: data,
                         datatype: "array",
                         datafields: [
-                            { name: "transNo", type: "number" },
-                            { name: "itemCode", type: "string" },
-                            { name: "transactionType", type: "string" },
-                            { name: "transQty", type: "number" },
-                            { name: "qtyBefore", type: "number" },
-                            { name: "qtyAfter", type: "number" },
-                            { name: "locBefore", type: "string" },
-                            { name: "locAfter", type: "string" },
-                            { name: "transDate", type: "date" },
-                            { name: "userId", type: "string" }
+                            { name: 'transNo', type: 'number' },
+                            { name: 'itemCode', type: 'string' },
+                            { name: 'transactionType', type: 'string' },
+                            { name: 'transQty', type: 'number' },
+                            { name: 'qtyBefore', type: 'number' },
+                            { name: 'qtyAfter', type: 'number' },
+                            { name: 'transDate', type: 'date' },
+                            { name: 'userId', type: 'string' },
+                            { name: 'picPickup', type: 'string' },
+                            { name: 'deptPickup', type: 'string' }
                         ]
                     };
 

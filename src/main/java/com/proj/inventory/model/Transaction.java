@@ -42,14 +42,14 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     private Date transDate;
 
-    @Column(name = "LOC_BEFORE")
-    private String locBefore;
-
-    @Column(name = "LOC_AFTER")
-    private String locAfter;
-
     @Column(name = "USERID")
     private String userId;
+
+    @Column(name = "PIC_PICKUP")
+    private String picPickup;
+
+    @Column(name = "DEPT_PICKUP")
+    private String deptPickup;
 
     // Getters and Setters
     public Long getTransNo() {
@@ -116,27 +116,27 @@ public class Transaction {
         this.transDate = transDate;
     }
 
-    public String getLocBefore() {
-        return locBefore;
-    }
-
-    public void setLocBefore(String locBefore) {
-        this.locBefore = locBefore;
-    }
-
-    public String getLocAfter() {
-        return locAfter;
-    }
-
-    public void setLocAfter(String locAfter) {
-        this.locAfter = locAfter;
-    }
-
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getPicPickup() {
+        return picPickup;
+    }
+
+    public void setPicPickup(String picPickup) {
+        this.picPickup = picPickup;
+    }
+
+    public String getDeptPickup() {
+        return deptPickup;
+    }
+
+    public void setLocAfter(String deptPickup) {
+        this.deptPickup = deptPickup;
     }
 }

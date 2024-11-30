@@ -2,9 +2,9 @@
 
 <style>
   .card-body {
-    max-height: 500px; /* Atur tinggi maksimum untuk konten */
-    overflow-y: auto;  /* Aktifkan scroll ketika konten melebihi tinggi */
-    padding: 10px; /* Kurangi padding agar jaraknya lebih rapat */
+    max-height: 400px;  /* Atur tinggi maksimum untuk card body */
+    overflow-y: auto;   /* Menambahkan scroll jika konten melebihi tinggi */
+    padding: 0px;
   }
 
   .row {
@@ -16,7 +16,7 @@
   }
 
   .card {
-    margin-bottom: 5px; /* Mengurangi jarak antar card */
+    margin-bottom: 5px 10px; /* Mengurangi jarak antar card */
   }
 
   .card-header {
@@ -232,7 +232,8 @@
             // Initialize jqxGrid for Location
             $("#jqxGrid1").jqxGrid({
                 width: '100%',
-                autoheight: true,
+                height: 350,  /* Mengatur tinggi grid */
+                autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
                 source: dataAdapterLocation,
@@ -293,7 +294,8 @@
             // Initialize jqxGrid for ItemCode
             $("#jqxGrid2").jqxGrid({
                 width: '100%',
-                autoheight: true,
+                height: 350,  /* Mengatur tinggi grid */
+                autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
                 source: dataAdapterItemCode,
@@ -355,7 +357,8 @@
             // Initialize jqxGrid for Unit
             $("#jqxGrid3").jqxGrid({
                 width: '100%',
-                autoheight: true,
+                height: 350,  /* Mengatur tinggi grid */
+                autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
                 source: dataAdapterUnit,

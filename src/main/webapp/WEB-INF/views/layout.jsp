@@ -13,6 +13,9 @@
     <!-- JQWidgets Base -->
     <link href="${pageContext.request.contextPath}/static/jqwidgets/styles/jqx.base.css" rel="stylesheet">
 
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/daterangepicker/daterangepicker.css">
+
     <!-- Select2 -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/select2/css/select2.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
@@ -90,6 +93,9 @@
 
     <!-- Select2 JS -->
     <script src="${pageContext.request.contextPath}/static/plugins/select2/js/select2.full.min.js"></script>
+
+    <!-- Date Range Picker -->
+    <script src="${pageContext.request.contextPath}/static/plugins/daterangepicker/daterangepicker.js"></script>
 
     <!-- JQWidgets JS -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcore.js"></script>
