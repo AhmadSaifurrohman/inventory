@@ -79,8 +79,8 @@
                         <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" required>
                     </div>
                     <div class="form-group">
-                        <label for="portNumber">Part Number</label>
-                        <input type="text" class="form-control" id="portNumber" name="portNumber" placeholder="Enter Port Number" required>
+                        <label for="partNumber">Part Number</label>
+                        <input type="text" class="form-control" id="partNumber" name="partNumber" placeholder="Enter Part Number" required>
                     </div>
                     <div class="form-group">
                         <label for="unit">Unit</label>
@@ -133,8 +133,8 @@
                         <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
                     </div>
                     <div class="form-group">
-                        <label for="editPortNumber">Part Number</label>
-                        <input type="text" class="form-control" id="editPortNumber" name="editPortNumber" placeholder="Enter Port Number" required>
+                        <label for="editPartNumber">Part Number</label>
+                        <input type="text" class="form-control" id="editPartNumber" name="editPartNumber" placeholder="Enter Part Number" required>
                     </div>
                     <div class="form-group">
                         <label for="editUnit">Unit</label>
@@ -176,39 +176,41 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
 
-     // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
-     function loadLocations() {
-        fetch('/master/api/locations')
-            .then(response => response.json())
-            .then(data => {
-                const locationFilter = document.getElementById('locationFilter');
-                // Hapus semua option selain default
-                locationFilter.innerHTML = '<option value="">Select Location</option>';
-                
-                // Loop melalui data lokasi dan menambahkannya ke dropdown
-                data.forEach(location => {
-                    const option = document.createElement('option');
-                    option.value = location.locCd;  // Value untuk option adalah locCd
-                    option.textContent = location.location;  // Teks yang ditampilkan adalah nama lokasi
-                    locationFilter.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching locations:', error);
+    // Fungsi untuk mengambil lokasi dari API dan mengisi dropdown
+    function loadLocations() {
+    fetch('/master/api/locations')
+        .then(response => response.json())
+        .then(data => {
+            const locationFilter = document.getElementById('locationFilter');
+            // Hapus semua option selain default
+            locationFilter.innerHTML = '<option value="">Select Location</option>';
+            
+            // Loop melalui data lokasi dan menambahkannya ke dropdown
+            data.forEach(location => {
+                const option = document.createElement('option');
+                option.value = location.locCd;  // Value untuk option adalah locCd
+                option.textContent = location.location;  // Teks yang ditampilkan adalah nama lokasi
+                locationFilter.appendChild(option);
             });
+        })
+        .catch(error => {
+            console.error('Error fetching locations:', error);
+        });
     }
 
     // Function to save stock via AJAX
     function saveStock() {
+        const quantity = $('#quantity').val();
+        console.log("Type of quantity: " + typeof quantity);
         const stockData = {
             itemCode: $('#materialCode').val(),
             description: $('#description').val(),
-            portNum: $('#portNumber').val(),
+            partNum: $('#partNumber').val(),
             unitCd: $('#unit').val(),
             location: {
                 locCd: $('#rackLocation').val() // Gunakan locCd yang sesuai
             },
-            quantity: $('#quantity').val()
+            transQty: $('#quantity').val()
         };
 
         console.log("Data JSON yang dikirim:", stockData);
@@ -216,13 +218,13 @@
         // Menampilkan setiap variabel di console
         console.log("Material Code:", stockData.itemCode);
         console.log("Description:", stockData.description);
-        console.log("Port Number:", stockData.portNum);
+        console.log("Part Number:", stockData.partNum);
         console.log("Unit:", stockData.unitCd);
         console.log("Rack Location:", stockData.location);
-        console.log("Quantity:", stockData.quantity);
+        console.log("Quantity:", stockData.transQty);
 
         $.ajax({
-            url: '${pageContext.request.contextPath}/stock/api',
+            url: '/transactions/inbound', // Mengubah endpoint ke transactions/inbound
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(stockData),
@@ -234,7 +236,8 @@
                     timer: 2000
                 });
                 // Reset form setelah submit sukses
-                $('#stockForm')[0].reset();
+                $('#addForm')[0].reset();
+                $('#addModal').modal('hide'); // Menutup modal setelah sukses
             },
             error: function (err) {
                 console.error("Error saving stock:", err);
@@ -263,7 +266,7 @@
                     id: item.id,
                     material: item.itemCode, // Assuming itemCode is the 'Material'
                     description: item.description,
-                    portNumber: item.portNum,
+                    partNumber: item.partNum,
                     baseUnit: item.unitCd,
                     storageLocation: item.locationName,
                     quantity: item.quantity
@@ -277,11 +280,10 @@
                         { name: "id", type: "number" },            // No
                         { name: "material", type: "string" },       // Material
                         { name: "description", type: "string" },    // Description
-                        { name: "portNumber", type: "number" },     // Port Number
+                        { name: "partNumber", type: "number" },     // Part Number
                         { name: "baseUnit", type: "string" },       // Base Unit
                         { name: "storageLocation", type: "string" }, // Storage Location
                         { name: "quantity", type: "string" } // Quantity
-
                     ]
                 };
 
@@ -313,7 +315,7 @@
                         },           // Lebar untuk No
                         { text: "Material", datafield: "material", width: 150 },  // Lebar untuk Material
                         { text: "Description", datafield: "description", width: 180 },  // Lebar untuk Description
-                        { text: "Port Number", datafield: "portNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Port Number
+                        { text: "Part Number", datafield: "partNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Part Number
                         { text: "Base Unit", datafield: "baseUnit", width: 120 },    // Lebar untuk Base Unit
                         { text: "Storage Location", datafield: "storageLocation", width: 150 }, // Lebar untuk Storage Location
                         { text: "Quantity", datafield: "quantity", width: 150 } // Lebar untuk Storage Location
@@ -380,4 +382,3 @@
         });
     });
 </script>
-

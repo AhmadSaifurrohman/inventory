@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "TB_INVSTOCK")
@@ -27,8 +26,8 @@ public class Stock {
     @Column(name = "QUANTITY")
     private int quantity;
 
-    @Column(name = "PORTNUM")
-    private String portNum;
+    @Column(name = "PARTNUM")
+    private String partNum;
 
     @Column(name = "UNITCD")
     private String unitCd;
@@ -62,12 +61,12 @@ public class Stock {
         this.quantity = quantity;
     }
 
-    public String getPortNum() {
-        return portNum;
+    public String getPartNum() {
+        return partNum;
     }
 
-    public void setPortNum(String portNum) {
-        this.portNum = portNum;
+    public void setPartNum(String partNum) {
+        this.partNum = partNum;
     }
 
     public String getUnitCd() {

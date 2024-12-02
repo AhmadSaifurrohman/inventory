@@ -3,13 +3,14 @@ package com.proj.inventory.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proj.inventory.model.Transaction;
@@ -33,35 +34,39 @@ public class TransactionController {
         return "layout";
     }
 
-    // Endpoint untuk mengambil semua transaksi
+    // Endpoint untuk mendapatkan semua transaksi
     @GetMapping("/all")
     @ResponseBody
-    public List<Transaction> getAllTransactions(
-            @RequestParam(required = false) String itemCode,
-            @RequestParam(required = false) String transDate) {
-
-        System.out.println("API /transactions/all was called");
-
-        // Mencari transaksi berdasarkan itemCode dan transDate (jika diberikan)
-        if (itemCode != null && transDate != null) {
-            return transactionService.findTransactionsByItemCodeAndDate(itemCode, transDate);
-        } else if (itemCode != null) {
-            return transactionService.findTransactionsByItemCode(itemCode);
-        } else if (transDate != null) {
-            return transactionService.findTransactionsByDate(transDate);
-        } else {
-            return transactionService.getAllTransactions();
-        }
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        List<Transaction> transactions = transactionService.getAllTransactions();
+        return ResponseEntity.ok(transactions);
     }
 
-
+    // Endpoint untuk mencatat transaksi inbound
     @PostMapping("/inbound")
-    public Transaction recordInboundTransaction(@RequestBody Transaction transaction) {
-        return transactionService.recordInboundTransaction(transaction);
+    public ResponseEntity<Transaction> recordInboundTransaction(@RequestBody Transaction transaction) {
+        Transaction savedTransaction = transactionService.recordInboundTransaction(transaction);
+        System.out.println("Data JSON yang diterima: " + transaction.toString());  // Debug semua properti
+        System.out.println("Quantity yang diterima: " + transaction.getTransQty());
+        return ResponseEntity.ok(savedTransaction);
     }
 
     @PostMapping("/outbound")
     public Transaction recordOutboundTransaction(@RequestBody Transaction transaction) {
         return transactionService.recordOutboundTransaction(transaction);
+    }
+
+    // Endpoint untuk mendapatkan transaksi berdasarkan itemCode
+    @GetMapping("/api/{itemCode}")
+    public ResponseEntity<List<Transaction>> getTransactionsByItemCode(@PathVariable String itemCode) {
+        List<Transaction> transactions = transactionService.findTransactionsByItemCode(itemCode);
+        return ResponseEntity.ok(transactions);
+    }
+
+    // Endpoint untuk mendapatkan transaksi berdasarkan tanggal
+    @GetMapping("/api/date/{transDate}")
+    public ResponseEntity<List<Transaction>> getTransactionsByDate(@PathVariable String transDate) {
+        List<Transaction> transactions = transactionService.findTransactionsByDate(transDate);
+        return ResponseEntity.ok(transactions);
     }
 }

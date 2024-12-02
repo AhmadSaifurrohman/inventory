@@ -1,10 +1,11 @@
 package com.proj.inventory.controller;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.proj.inventory.dto.StockDTO;
 import com.proj.inventory.model.Stock;
+import com.proj.inventory.model.Transaction;
 import com.proj.inventory.service.StockService;
+import com.proj.inventory.service.TransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -27,6 +28,9 @@ public class StockController {
 
     @Autowired
     private StockService stockService;
+
+    @Autowired
+    private TransactionService transactionService;
 
     // Endpoint untuk menampilkan halaman Stock
     @GetMapping
@@ -41,61 +45,42 @@ public class StockController {
         return "layout";
     }
 
-    // REST API: Mengambil semua data stok
-    @GetMapping("/api")
-    @ResponseBody
-    public List<StockDTO> getAllStocks() {
-        List<Stock> stocks = stockService.getAllStocks();
-        List<StockDTO> stockDTOs = new ArrayList<>();
-
-        for (Stock stock : stocks) {
-            StockDTO dto = new StockDTO();
-            dto.setItemCode(stock.getItemCode());
-            dto.setQuantity(stock.getQuantity());
-            dto.setPortNum(stock.getPortNum());
-            dto.setUnitCd(stock.getUnitCd());
-            dto.setQuantity(stock.getQuantity());
-            
-            System.out.println("Location for stock with itemCode " + stock.getItemCode() + ": " + stock.getLocation().getLocation());
-
-            // Dapatkan nama lokasi terkait
-            if (stock.getLocation() != null) {
-                dto.setLocationName(stock.getLocation().getLocation());
-            }
-            
-            stockDTOs.add(dto);
-        }
-
-        return stockDTOs;
-    }
-
-    // REST API: Mengambil data stok berdasarkan itemCode
-    @GetMapping("/api/{itemCode}")
-    @ResponseBody
-    public Optional<Stock> getStockByItemCode(@PathVariable String itemCode) {
-        return stockService.getStockByItemCode(itemCode);
-    }
-
-    // REST API: Menyimpan atau memperbarui data stok
+    // Endpoint untuk menambah stok
     @PostMapping("/api")
-    @ResponseBody
-    public Stock saveOrUpdateStock(@RequestBody Stock stock) {
+    public ResponseEntity<Stock> addStock(@RequestBody Stock stock) {
+        // Mencatat transaksi inbound
+        Transaction transaction = new Transaction();
+        transaction.setItemCode(stock.getItemCode());
+        transaction.setTransQty(stock.getQuantity());
+        transaction.setUnitCd(stock.getUnitCd());
+        transaction.setTransDate(new Date()); // Set tanggal transaksi
+        transaction.setTransactionType("inbound"); // Set tipe transaksi
 
-        // Console output menggunakan System.out.println
-        System.out.println("Material Code: " + stock.getItemCode());
-        // System.out.println("Description: " + stock.getDescription());
-        System.out.println("Port Number: " + stock.getPortNum());
-        System.out.println("Unit: " + stock.getUnitCd());
-        System.out.println("Rack Location: " + stock.getLocation());
-        System.out.println("Quantity: " + stock.getQuantity());
+        // Mencatat transaksi dan memperbarui stok
+        transactionService.recordInboundTransaction(transaction);
 
-        return stockService.saveOrUpdateStock(stock);
+        // Mengembalikan response dengan status sukses
+        return ResponseEntity.ok(stock);
     }
 
-    // REST API: Menghapus data stok berdasarkan itemCode
+    // Endpoint lainnya (misalnya, untuk mendapatkan semua stok)
+    @GetMapping("/api")
+    public ResponseEntity<List<Stock>> getAllStocks() {
+        List<Stock> stocks = stockService.getAllStocks();
+        return ResponseEntity.ok(stocks);
+    }
+
+    // Endpoint untuk menghapus stok
     @DeleteMapping("/api/{itemCode}")
-    @ResponseBody
-    public void deleteStock(@PathVariable String itemCode) {
+    public ResponseEntity<Void> deleteStock(@PathVariable String itemCode) {
         stockService.deleteStock(itemCode);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Endpoint untuk mendapatkan stok berdasarkan itemCode
+    @GetMapping("/api/{itemCode}")
+    public ResponseEntity<Stock> getStockByItemCode(@PathVariable String itemCode) {
+        Optional<Stock> stock = stockService.getStockByItemCode(itemCode);
+        return stock.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

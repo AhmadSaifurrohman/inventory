@@ -3,7 +3,7 @@ package com.proj.inventory.dto;
 public class StockDTO {
     private String itemCode;
     private int quantity;
-    private String portNum;
+    private String partNum;
     private String unitCd;
     private String locationName;  // Nama lokasi
 
@@ -24,12 +24,12 @@ public class StockDTO {
         this.quantity = quantity;
     }
 
-    public String getPortNum() {
-        return portNum;
+    public String getPartNum() {
+        return partNum;
     }
 
-    public void setPortNum(String portNum) {
-        this.portNum = portNum;
+    public void setPartNum(String partNum) {
+        this.partNum = partNum;
     }
 
     public String getUnitCd() {

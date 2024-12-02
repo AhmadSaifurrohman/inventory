@@ -4,9 +4,12 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -50,6 +53,11 @@ public class Transaction {
 
     @Column(name = "DEPT_PICKUP")
     private String deptPickup;
+
+    // Ubah type 'String' menjadi 'Location'
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "LOCATION", referencedColumnName = "LOCCD")
+    private Location location;
 
     // Getters and Setters
     public Long getTransNo() {
@@ -136,7 +144,15 @@ public class Transaction {
         return deptPickup;
     }
 
-    public void setLocAfter(String deptPickup) {
+    public void setDeptPickup(String deptPickup) {
         this.deptPickup = deptPickup;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

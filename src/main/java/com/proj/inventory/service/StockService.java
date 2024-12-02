@@ -23,6 +23,11 @@ public class StockService {
         return stockRepository.findById(itemCode);
     }
 
+    // Mengubah method ini untuk mencari stok berdasarkan ITEMCODE dan LOCATION
+    public Optional<Stock> getStockByItemCodeAndLocation(String itemCode, String locationCode) {
+        return stockRepository.findByItemCodeAndLocation(itemCode, locationCode); // Menggunakan locationCode sebagai String
+    }
+
     public Stock saveOrUpdateStock(Stock stock) {
         return stockRepository.save(stock);
     }
