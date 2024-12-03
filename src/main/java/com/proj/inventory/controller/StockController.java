@@ -3,6 +3,7 @@ package com.proj.inventory.controller;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.proj.inventory.dto.StockDTO;
 import com.proj.inventory.model.Stock;
 import com.proj.inventory.model.Transaction;
 import com.proj.inventory.service.StockService;
@@ -65,10 +68,54 @@ public class StockController {
 
     // Endpoint lainnya (misalnya, untuk mendapatkan semua stok)
     @GetMapping("/api")
-    public ResponseEntity<List<Stock>> getAllStocks() {
+    public ResponseEntity<List<StockDTO>> getAllStocks() {
         List<Stock> stocks = stockService.getAllStocks();
-        return ResponseEntity.ok(stocks);
+        
+        // Mapping Stock ke StockDTO
+        List<StockDTO> stockDTOs = stocks.stream()
+                                        .map(this::mapToDTO)
+                                        .collect(Collectors.toList());
+
+        // System.out.println("Stock DTO List : " + stockDTOs);
+        return ResponseEntity.ok(stockDTOs);
     }
+
+    
+
+    @GetMapping("/api/filter")
+    public ResponseEntity<List<StockDTO>> getFilteredStocks(
+            @RequestParam(value = "itemCode", required = false) String itemCode,
+            @RequestParam(value = "location", required = false) String location) {
+              
+        List<Stock> stocks = stockService.getFilteredStocks(itemCode, location);
+        
+        // Mapping Stock ke StockDTO
+        List<StockDTO> stockDTOs = stocks.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(stockDTOs);
+    }
+
+
+    private StockDTO mapToDTO(Stock stock) {
+        StockDTO stockDTO = new StockDTO();
+        stockDTO.setItemCode(stock.getItemCode());
+        stockDTO.setQuantity(stock.getQuantity());
+        stockDTO.setPartNum(stock.getPartNum());
+        stockDTO.setUnitCd(stock.getUnitCd());
+        stockDTO.setLocationName(stock.getLocation().getLocation());  // Menampilkan nama lokasi
+        
+        // Mengambil data dari relasi Item (jika ada)
+        if (stock.getItem() != null) {
+            stockDTO.setItemName(stock.getItem().getItemName());
+            stockDTO.setItemDescription(stock.getItem().getDescription());
+            stockDTO.setSafetyStock(stock.getItem().getSafetyStock());
+        }
+        
+        return stockDTO;
+    }
+    
 
     // Endpoint untuk menghapus stok
     @DeleteMapping("/api/{itemCode}")

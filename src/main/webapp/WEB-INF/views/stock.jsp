@@ -262,14 +262,18 @@
             type: 'GET',
             success: function(data) {
                 // Data yang diterima dari API
+                console.log('Hasil all stock : ', data);
                 const stockData = data.map((item, index) => ({
                     id: item.id,
                     material: item.itemCode, // Assuming itemCode is the 'Material'
-                    description: item.description,
+                    materialName: item.itemName, 
+                    description: item.itemDescription,
                     partNumber: item.partNum,
                     baseUnit: item.unitCd,
                     storageLocation: item.locationName,
-                    quantity: item.quantity
+                    quantity: item.quantity,
+                    safetyStock: item.safetyStock,
+                    location: item.locationName
                 }));
 
                 // Sumber data untuk jqxGrid
@@ -279,11 +283,13 @@
                     datafields: [
                         { name: "id", type: "number" },            // No
                         { name: "material", type: "string" },       // Material
+                        { name: "materialName", type: "string" },       // Material
                         { name: "description", type: "string" },    // Description
                         { name: "partNumber", type: "number" },     // Part Number
                         { name: "baseUnit", type: "string" },       // Base Unit
                         { name: "storageLocation", type: "string" }, // Storage Location
-                        { name: "quantity", type: "string" } // Quantity
+                        { name: "quantity", type: "string" }, // Quantity
+                        { name: "safetyStock", type: "string" } // Safety Stock
                     ]
                 };
 
@@ -314,11 +320,13 @@
                             } 
                         },           // Lebar untuk No
                         { text: "Material", datafield: "material", width: 150 },  // Lebar untuk Material
+                        { text: "Material Name", datafield: "materialName", width: 150 },  // Lebar untuk Material
                         { text: "Description", datafield: "description", width: 180 },  // Lebar untuk Description
                         { text: "Part Number", datafield: "partNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Part Number
                         { text: "Base Unit", datafield: "baseUnit", width: 120 },    // Lebar untuk Base Unit
                         { text: "Storage Location", datafield: "storageLocation", width: 150 }, // Lebar untuk Storage Location
-                        { text: "Quantity", datafield: "quantity", width: 150 } // Lebar untuk Storage Location
+                        { text: "Quantity", datafield: "quantity", width: 150 }, // Lebar untuk Storage Location
+                        { text: "Safety Stock", datafield: "safetyStock", width: 150 } // Lebar untuk Storage Location
                     ]
                 });
             },
@@ -381,4 +389,93 @@
             }
         });
     });
+
+    $("#searchBtn").on("click", function() {
+        const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
+        const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
+
+
+        console.log('ItemCodeFilter : ', itemCodeFilter);
+        console.log('locationFilter : ', locationFilter);
+
+        $.ajax({
+            url: '/stock/api/filter',
+            type: 'GET',
+            data: {
+                itemCode: itemCodeFilter,
+                location: locationFilter
+            },
+            success: function(data) {
+                console.log('Filtered Stock Data:', data);
+
+                const stockData = data.map((item, index) => ({
+                    id: item.id,
+                    material: item.itemCode, // Assuming itemCode is the 'Material'
+                    materialName: item.itemName, 
+                    description: item.itemDescription,
+                    partNumber: item.partNum,
+                    baseUnit: item.unitCd,
+                    storageLocation: item.locationName,
+                    quantity: item.quantity,
+                    safetyStock: item.safetyStock,
+                    location: item.locationName
+                }));
+
+                const source = {
+                    localdata: stockData,
+                    datatype: "array",
+                    datafields: [
+                        { name: "id", type: "number" },
+                        { name: "material", type: "string" },
+                        { name: "materialName", type: "string" },
+                        { name: "description", type: "string" },
+                        { name: "partNumber", type: "number" },
+                        { name: "baseUnit", type: "string" },
+                        { name: "storageLocation", type: "string" },
+                        { name: "quantity", type: "string" },
+                        { name: "safetyStock", type: "string" }
+                    ]
+                };
+
+                const dataAdapter = new $.jqx.dataAdapter(source);
+
+                $("#jqxgrid").jqxGrid({
+                    width: '100%',
+                    height: 430,
+                    source: dataAdapter,
+                    autoheight: false,
+                    pageable: true,
+                    sortable: true,
+                    pagesize: 10,
+                    columnsresize: true,
+                    showcolumnlines: true,
+                    showcolumnheaderlines: true,
+                    showtoolbar: true,
+                    pagerMode: 'default',
+                    columns: [
+                        { 
+                            text: "No", 
+                            datafield: "id", 
+                            width: 60, 
+                            cellsrenderer: function (row, column, value, rowData, columnData) {
+                                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
+                            }
+                        },
+                        { text: "Material", datafield: "material", width: 150 },
+                        { text: "Material Name", datafield: "materialName", width: 150 },
+                        { text: "Description", datafield: "description", width: 180 },
+                        { text: "Part Number", datafield: "partNumber", width: 100, cellsalign: 'center', align: 'center' },
+                        { text: "Base Unit", datafield: "baseUnit", width: 120 },
+                        { text: "Storage Location", datafield: "storageLocation", width: 150 },
+                        { text: "Quantity", datafield: "quantity", width: 150 },
+                        { text: "Safety Stock", datafield: "safetyStock", width: 150 }
+                    ]
+                });
+            },
+            error: function(err) {
+                console.log('Error fetching filtered data from API', err);
+            }
+        });
+    });
+
 </script>

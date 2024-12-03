@@ -94,6 +94,9 @@
     <!-- Select2 JS -->
     <script src="${pageContext.request.contextPath}/static/plugins/select2/js/select2.full.min.js"></script>
 
+    <!-- InputMask -->
+    <script src="${pageContext.request.contextPath}/static/plugins/moment/moment.min.js"></script>
+
     <!-- Date Range Picker -->
     <script src="${pageContext.request.contextPath}/static/plugins/daterangepicker/daterangepicker.js"></script>
 

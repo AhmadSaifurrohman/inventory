@@ -204,190 +204,93 @@
 
 <script>
   $(document).ready(function () {
-    // Data for each grid from API
-    $.ajax({
-        url: '/master/api/locations', // Replace with your actual endpoint
-        method: 'GET',
-        success: function(dataLocation) {
-            // Modify the response to replace 'id' with 'no'
-            dataLocation = dataLocation.map(function(item, index) {
-                item.no = index + 1; // Assign a 'no' based on the index
-                delete item.id; // Remove 'id' field if necessary
-                return item;
-            });
+    // Initialize jqxGrid for Location, Item, and Unit
+    function initializeGrid(gridId, columns, dataAdapter) {
+        $(gridId).jqxGrid({
+            width: '100%',
+            height: 350,  /* Mengatur tinggi grid */
+            autoheight: false,  /* Nonaktifkan autoheight */
+            pageable: true,
+            pagesize: 10, // Show 10 rows per page
+            source: dataAdapter,
+            columnsresize: true,
+            pagerMode: 'default',
+            selectionmode: 'checkbox',
+            columns: columns
+        });
+    }
 
-            // Data Adapter for Location
-            var sourceLocation = {
-                localdata: dataLocation,
-                datatype: "array",
-                datafields: [
-                    { name: 'no', type: 'number' },
-                    { name: 'locCd', type: 'string' },
-                    { name: 'location', type: 'string' }
-                ]
-            };
+    // Define columns for Location, Item, and Unit
+    var locationColumns = [
+        { text: 'No', datafield: 'no', width: '6%' },
+        { text: 'Loc Code', datafield: 'locCd', width: '20%' },
+        { text: 'Location', datafield: 'location', width: '70%' }
+    ];
 
-            var dataAdapterLocation = new $.jqx.dataAdapter(sourceLocation);
+    var itemColumns = [
+        { text: 'No', datafield: 'no', width: '8%' },
+        { text: 'Item Code', datafield: 'itemCode', width: '20%' },
+        { text: 'Name', datafield: 'itemName', width: '20%' },
+        { text: 'Description', datafield: 'description', width: '20%' },
+        { text: 'Part Number', datafield: 'partNum', width: '20%' },
+        { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' }
+    ];
 
-            // Initialize jqxGrid for Location
-            $("#jqxGrid1").jqxGrid({
-                width: '100%',
-                height: 350,  /* Mengatur tinggi grid */
-                autoheight: false,  /* Nonaktifkan autoheight */
-                pageable: true,
-                pagesize: 10, // Show 10 rows per page
-                source: dataAdapterLocation,
-                columnsresize: true,
-                pagerMode: 'default',
-                selectionmode: 'checkbox',
-                columns: [
-                    { text: 'No', datafield: 'no', width: '6%' },
-                    { text: 'Loc Code', datafield: 'locCd', width: '20%' },
-                    { text: 'Location', datafield: 'location', width: '70%' }
-                ]
-            });
+    var unitColumns = [
+        { text: 'No', datafield: 'no', width: '6%' },
+        { text: 'Unit Code', datafield: 'unitCd', width: '20%' },
+        { text: 'Unit', datafield: 'description', width: '70%' }
+    ];
 
-            $('#jqxGrid1').on('rowselect', function (event) {
-                var rowsSelected = $("#jqxGrid1").jqxGrid('getselectedrowindexes');
-                if (rowsSelected.length > 1) {
-                    // Unselect previously selected rows
-                    $("#jqxGrid1").jqxGrid('unselectrow', rowsSelected[0]);
-                }
+    // Define functions to handle data AJAX response and update grid
+    function handleDataResponse(url, gridId, columns) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(data) {
+                // Modify the response to replace 'id' with 'no'
+                data = data.map(function(item, index) {
+                    item.no = index + 1; // Assign a 'no' based on the index
+                    delete item.id; // Remove 'id' field if necessary
+                    return item;
+                });
 
-                // Enable edit button if one row is selected
-                $('#editLoc').prop('disabled', rowsSelected.length === 0);
-            });
-        },
-        error: function() {
-            alert('Failed to load location data.');
-        }
-    });
+                // Data Adapter
+                var source = {
+                    localdata: data,
+                    datatype: "array",
+                    datafields: columns.map(function(col) {
+                        return { name: col.datafield, type: 'string' };
+                    })
+                };
 
-    // Similar changes for item and unit grids
-    $.ajax({
-        url: '/master/api/items', // Replace with your actual endpoint
-        method: 'GET',
-        success: function(dataItemCode) {
-            // Modify the response to replace 'id' with 'no'
-            dataItemCode = dataItemCode.map(function(item, index) {
-                item.no = index + 1; // Assign a 'no' based on the index
-                delete item.id; // Remove 'id' field if necessary
-                return item;
-            });
+                var dataAdapter = new $.jqx.dataAdapter(source);
 
-            // Data Adapter for ItemCode
-            var sourceItemCode = {
-                localdata: dataItemCode,
-                datatype: "array",
-                datafields: [
-                    { name: 'no', type: 'number' },
-                    { name: 'itemCode', type: 'string' },
-                    { name: 'itemName', type: 'string' },
-                    { name: 'description', type: 'string' },
-                    { name: 'partNum', type: 'string' },
-                    { name: 'safetyStock', type: 'string' }
-                ]
-            };
+                // Initialize the jqxGrid with the new dataAdapter
+                initializeGrid(gridId, columns, dataAdapter);
+                
+                // Handle row select
+                $(gridId).on('rowselect', function (event) {
+                    var rowsSelected = $(gridId).jqxGrid('getselectedrowindexes');
+                    if (rowsSelected.length > 1) {
+                        // Unselect previously selected rows
+                        $(gridId).jqxGrid('unselectrow', rowsSelected[0]);
+                    }
 
-            var dataAdapterItemCode = new $.jqx.dataAdapter(sourceItemCode);
+                    // Enable edit button if one row is selected
+                    $(gridId + 'Edit').prop('disabled', rowsSelected.length === 0);
+                });
+            },
+            error: function() {
+                alert('Failed to load data.');
+            }
+        });
+    }
 
-            // Initialize jqxGrid for ItemCode
-            $("#jqxGrid2").jqxGrid({
-                width: '100%',
-                height: 350,  /* Mengatur tinggi grid */
-                autoheight: false,  /* Nonaktifkan autoheight */
-                pageable: true,
-                pagesize: 10, // Show 10 rows per page
-                source: dataAdapterItemCode,
-                columnsresize: true,
-                pagerMode: 'default',
-                selectionmode: 'checkbox',
-                showfilterrow: true,		
-	              filterable: true,
-                columns: [
-                    { text: 'No', datafield: 'no', width: '8%' },
-                    { text: 'Item Code', datafield: 'itemCode', width: '20%' },
-                    { text: 'Name', datafield: 'itemName', width: '20%' },
-                    { text: 'Description', datafield: 'description', width: '20%' },
-                    { text: 'Part Number', datafield: 'partNum', width: '20%' },
-                    { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' }
-                ]
-            });
-
-            $('#jqxGrid2').on('rowselect', function (event) {
-                var rowsSelected = $("#jqxGrid2").jqxGrid('getselectedrowindexes');
-                if (rowsSelected.length > 1) {
-                    // Unselect previously selected rows
-                    $("#jqxGrid2").jqxGrid('unselectrow', rowsSelected[0]);
-                }
-
-                // Enable edit button if one row is selected
-                $('#editItemCode').prop('disabled', rowsSelected.length === 0);
-            });
-        },
-        error: function() {
-            alert('Failed to load item data.');
-        }
-    });
-
-    $.ajax({
-        url: '/master/api/units', // Replace with your actual endpoint
-        method: 'GET',
-        success: function(dataUnit) {
-            // Modify the response to replace 'id' with 'no'
-            dataUnit = dataUnit.map(function(item, index) {
-                item.no = index + 1; // Assign a 'no' based on the index
-                delete item.id; // Remove 'id' field if necessary
-                return item;
-            });
-
-            // Data Adapter for Unit
-            var sourceUnit = {
-                localdata: dataUnit,
-                datatype: "array",
-                datafields: [
-                    { name: 'no', type: 'number' },
-                    { name: 'unitCd', type: 'string' },
-                    { name: 'description', type: 'string' }
-                ]
-            };
-
-            var dataAdapterUnit = new $.jqx.dataAdapter(sourceUnit);
-
-            // Initialize jqxGrid for Unit
-            $("#jqxGrid3").jqxGrid({
-                width: '100%',
-                height: 350,  /* Mengatur tinggi grid */
-                autoheight: false,  /* Nonaktifkan autoheight */
-                pageable: true,
-                pagesize: 10, // Show 10 rows per page
-                source: dataAdapterUnit,
-                columnsresize: true,
-                pagerMode: 'default',
-                selectionmode: 'checkbox',
-                columns: [
-                    { text: 'No', datafield: 'no', width: '6%' },
-                    { text: 'Unit Code', datafield: 'unitCd', width: '20%' },
-                    { text: 'Unit', datafield: 'description', width: '70%' }
-                ]
-            });
-
-            $('#jqxGrid3').on('rowselect', function (event) {
-                var rowsSelected = $("#jqxGrid3").jqxGrid('getselectedrowindexes');
-                if (rowsSelected.length > 1) {
-                    // Unselect previously selected rows
-                    $("#jqxGrid3").jqxGrid('unselectrow', rowsSelected[0]);
-                }
-
-                // Enable edit button if one row is selected
-                $('#editUnit').prop('disabled', rowsSelected.length === 0);
-            });
-        },
-        error: function() {
-            alert('Failed to load unit data.');
-        }
-    });
-
+    // Handle AJAX requests for different grids
+    handleDataResponse('/master/api/locations', '#jqxGrid1', locationColumns);
+    handleDataResponse('/master/api/items', '#jqxGrid2', itemColumns);
+    handleDataResponse('/master/api/units', '#jqxGrid3', unitColumns);
 
 
     // Open modal when clicking 'Add' button
@@ -498,7 +401,9 @@
             // Handle success (for example, show a success message)
             alert('Location added successfully!');
             $('#addLocationModal').modal('hide'); // Close modal
-            $("#jqxGrid1").jqxGrid('refresh');
+           
+            // Refresh the jqxGrid for locations
+            handleDataResponse('/master/api/locations', '#jqxGrid1', locationColumns);
           },
           error: function(xhr, status, error) {
             // Handle error (for example, show an error message)
@@ -539,6 +444,7 @@
             alert('Item Code ' + (mode === 'add' ? 'added' : 'updated') + ' successfully!');
             $('#addItemCodeModal').modal('hide'); // Close modal
             // Optionally, reload the grid or update the item code list here
+            handleDataResponse('/master/api/items', '#jqxGrid2', itemColumns);
           },
           error: function (xhr, status, error) {
             alert('Error: ' + error);
@@ -547,7 +453,10 @@
       } else {
         alert("Please fill in all fields.");
       }
+      
     });
+
+ 
 
     // Save Unit
     $('#saveUnit').click(function () {
@@ -568,6 +477,7 @@
             alert('Unit added successfully!');
             $('#addUnitModal').modal('hide'); // Close modal
             // Optionally, reload the grid or update the unit list here
+            handleDataResponse('/master/api/units', '#jqxGrid3', unitColumns);
           },
           error: function(xhr, status, error) {
             // Handle error (for example, show an error message)

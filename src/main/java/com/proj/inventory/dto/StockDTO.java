@@ -6,6 +6,9 @@ public class StockDTO {
     private String partNum;
     private String unitCd;
     private String locationName;  // Nama lokasi
+    private String itemName;      // Nama item (dari relasi ke Item)
+    private String itemDescription; // Deskripsi item (jika diperlukan)
+    private String safetyStock;
 
     // Getters and Setters
     public String getItemCode() {
@@ -46,5 +49,29 @@ public class StockDTO {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public void setItemDescription(String itemDescription) {
+        this.itemDescription = itemDescription;
+    }
+
+    public String getSafetyStock() {
+        return safetyStock;
+    }
+
+    public void setSafetyStock(String safetyStock) {
+        this.safetyStock = safetyStock;
     }
 }

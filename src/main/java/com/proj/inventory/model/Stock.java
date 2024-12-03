@@ -37,6 +37,12 @@ public class Stock {
     @JoinColumn(name = "LOCATION", referencedColumnName = "LOCCD")
     private Location location;
 
+    // Relasi ManyToOne dengan Item
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ITEMCODE", referencedColumnName = "ITEMCODE", insertable = false, updatable = false)
+    private Item item; // Relasi dengan Item
+
+
     @Column(name = "UPDATEDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
@@ -83,6 +89,14 @@ public class Stock {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public Date getUpdateDate() {

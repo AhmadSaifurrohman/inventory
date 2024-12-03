@@ -10,48 +10,49 @@
 </style>
 
 <div class="row">
-    <!-- Tabel menggunakan AdminLTE -->
-    <div class="card w-100">
-        <div class="card-header">
-            <div class="d-flex justify-content-between w-100">
+    <div class="col-md-12">
+         <!-- Tabel menggunakan AdminLTE -->
+        <div class="card">
+            <div class="card-header">
                 <!-- Form untuk Filter dan Search -->
-                <div class="card-tools">
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <!-- Filter Item Code -->
                             <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
                         </div>
                         <div class="col-md-3">
-                            <!-- Filter Tanggal -->
                             <div class="form-group">
-                                <div class="input-group date" id="dateFilter" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input" data-target="#dateFilter" placeholder="Select Date" />
-                                    <div class="input-group-append" data-target="#dateFilter" data-toggle="datetimepicker">
-                                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="far fa-calendar-alt"></i>
+                                    </span>
                                     </div>
+                                    <input type="text" class="form-control float-right" id="reservation">
                                 </div>
+                                <!-- /.input group -->
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-1">
                             <!-- Tombol Search -->
                             <button class="btn btn-success" id="searchBtn">Search</button>
                         </div>
                         <div class="col-md-3">
                             <!-- Tombol Excel -->
-                            <button class="btn btn-info" id="excelBtn">Export to Excel</button>
+                            <button class="btn btn-info" id="excelBtn">Export Excel</button>
                         </div>
-                    </div>
-                </div>
+                    </div>  
             </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <!-- Tabel jqxGrid -->
+                <div id="jqxgrid"></div>
+            </div>
+            <!-- /.card-body -->
         </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-            <!-- Tabel jqxGrid -->
-            <div id="jqxgrid"></div>
-        </div>
-        <!-- /.card-body -->
-    </div>
     <!-- /.card -->
+    </div>
+   
 </div>
 
 <!-- Script untuk menginisialisasi DataTables -->
@@ -78,22 +79,24 @@
     $(document).ready(function () {
         loadLocations();
 
-        $('#dateFilter').daterangepicker({
-            autoUpdateInput: false, // Menonaktifkan update otomatis input
-            locale: {
-                cancelLabel: 'Clear', // Menambahkan tombol untuk membersihkan input
-                format: 'YYYY-MM-DD'  // Format tanggal yang diinginkan
-            }
-        });
+        // $('#dateFilter').daterangepicker({
+        //     autoUpdateInput: false, // Menonaktifkan update otomatis input
+        //     locale: {
+        //         cancelLabel: 'Clear', // Menambahkan tombol untuk membersihkan input
+        //         format: 'YYYY-MM-DD'  // Format tanggal yang diinginkan
+        //     }
+        // });
 
-        // Menangani event saat tanggal dipilih
-        $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
-            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        });
+        // // Menangani event saat tanggal dipilih
+        // $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
+        //     $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        // });
 
-        $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
-            $(this).val(''); // Membersihkan input saat tombol "Clear" diklik
-        });
+        // $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
+        //     $(this).val(''); // Membersihkan input saat tombol "Clear" diklik
+        // });
+
+        $('#reservation').daterangepicker();
 
         // Ambil data transaksi menggunakan AJAX
         $.ajax({
