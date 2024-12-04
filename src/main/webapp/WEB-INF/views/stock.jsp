@@ -252,6 +252,62 @@
         });
     }
 
+    function updateStock() {
+        const stockData = {
+            itemCode: $('#editMaterialCode').val(),
+            description: $('#editDescription').val(),
+            partNum: $('#editPartNumber').val(),
+            unitCd: $('#editUnit').val(),
+            location: {
+                locCd: $('#editRackLocation').val() // Gunakan locCd yang sesuai
+            },
+            transQty: $('#editQuantity').val(),
+            department: $('#editDepartment').val(),
+            pic: $('#editPic').val()
+        };
+
+        console.log("Data JSON yang dikirim:", stockData);
+
+        // Menampilkan setiap variabel di console
+        console.log("Material Code:", stockData.itemCode);
+        console.log("Description:", stockData.description);
+        console.log("Part Number:", stockData.partNum);
+        console.log("Unit:", stockData.unitCd);
+        console.log("Rack Location:", stockData.location);
+        console.log("Quantity:", stockData.transQty);
+        console.log("Department Pickup:", stockData.department);
+        console.log("PIC Pickup:", stockData.pic);
+
+        $.ajax({
+            url: '/transactions/outbound', // Ganti dengan endpoint yang sesuai untuk Outbound Stock
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(stockData),
+            success: function (response) {
+                console.log("Response from backend:", response);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Stock berhasil dikeluarkan!',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                // Reset form setelah submit sukses
+                $('#editForm')[0].reset();
+                $('#editModal').modal('hide'); // Menutup modal setelah sukses
+                handleStockDataResponse('/stock/api', '#jqxgrid', stockColumns); // Memperbarui grid stock setelah update
+            },
+            error: function (err) {
+                console.error("Error updating stock:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: 'Terjadi kesalahan saat mengupdate data.',
+                    showConfirmButton: true
+                });
+            }
+        });
+    }
+
     var stockColumns = [
             {
                 text: "No",
@@ -289,66 +345,71 @@
 
     // Function to handle data response and initialize grid
     function handleStockDataResponse(url, gridId, columns) {
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function (data) {
-                    // Process data
-                    const stockData = data.map((item, index) => ({
-                        id: index + 1, // Nomor urut berdasarkan index
-                        material: item.itemCode,
-                        materialName: item.itemName,
-                        description: item.itemDescription,
-                        partNumber: item.partNum,
-                        baseUnit: item.unitCd,
-                        storageLocation: item.locationName,
-                        quantity: item.quantity,
-                        safetyStock: item.safetyStock
-                    }));
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function (data) {
+                // Process data
+                const stockData = data.map((item, index) => ({
+                    id: index + 1, // Nomor urut berdasarkan index
+                    material: item.itemCode,
+                    materialName: item.itemName,
+                    description: item.itemDescription,
+                    partNumber: item.partNum,
+                    baseUnit: item.unitCd,
+                    storageLocation: item.locationName,
+                    quantity: item.quantity,
+                    safetyStock: item.safetyStock
+                }));
 
-                    // Data Adapter
-                    const source = {
-                        localdata: stockData,
-                        datatype: "array",
-                        datafields: columns.map(col => ({ name: col.datafield, type: 'string' }))
-                    };
+                // Data Adapter
+                const source = {
+                    localdata: stockData,
+                    datatype: "array",
+                    datafields: columns.map(col => ({ name: col.datafield, type: 'string' }))
+                };
 
-                    const dataAdapter = new $.jqx.dataAdapter(source);
+                const dataAdapter = new $.jqx.dataAdapter(source);
 
-                    // Initialize jqxGrid with dataAdapter
-                    initializeGrid(gridId, columns, dataAdapter);
-                },
-                error: function (err) {
-                    console.log('Error fetching data from API', err);
-                }
-            });
-        }
+                // Initialize jqxGrid with dataAdapter
+                initializeGrid(gridId, columns, dataAdapter);
+            },
+            error: function (err) {
+                console.log('Error fetching data from API', err);
+            }
+        });
+    }
 
     $(document).ready(function () {
+        // Inisialisasi select2
         $('.select2').select2();
         loadLocations();
 
-        // Call the function to fetch data and initialize the stock grid
+        // Fungsi untuk memuat data stok dan menginisialisasi grid
         handleStockDataResponse('/stock/api', '#jqxgrid', stockColumns);
 
-
+        // Menampilkan modal Add
         $("#addBtn").on("click", function () {
             $("#addModal").modal("show");
         });
 
-        // Menampilkan modal Edit dan menginisialisasi Select2 di dalamnya
+        // Menampilkan modal Edit
         $("#outBtn").on("click", function () {
             $("#editModal").modal("show");
         });
 
+        // Mengambil data untuk Material Codes
         $.ajax({
             url: '${pageContext.request.contextPath}/master/api/items',
             type: 'GET',
             success: function (data) {
-                let materialCodeDropdown = $('#materialCode');
+                let materialCodeDropdownAdd = $('#materialCode');  // Untuk modal Add
+                let materialCodeDropdownEdit = $('#editMaterialCode');  // Untuk modal Edit
+
                 data.forEach(function (item) {
                     // Gabungkan itemCode dan itemName dengan tanda hubung
-                    materialCodeDropdown.append('<option value="' + item.itemCode + '">' + item.itemCode + ' - ' + item.itemName + '</option>');
+                    materialCodeDropdownAdd.append('<option value="' + item.itemCode + '">' + item.itemCode + ' - ' + item.itemName + '</option>');
+                    materialCodeDropdownEdit.append('<option value="' + item.itemCode + '">' + item.itemCode + ' - ' + item.itemName + '</option>');
                 });
             },
             error: function (err) {
@@ -356,76 +417,112 @@
             }
         });
 
-        // AJAX untuk mengambil data Unit
+        // Mengambil data Unit
         $.ajax({
             url: '${pageContext.request.contextPath}/master/api/units',
             type: 'GET',
             success: function (data) {
-                let unitDropdown = $('#unit');
+                let unitDropdownAdd = $('#unit');  // Untuk modal Add
+                let unitDropdownEdit = $('#editUnit');  // Untuk modal Edit
+
                 data.forEach(function (unit) {
-                    unitDropdown.append('<option value="' + unit.unitCd + '">' + unit.unitCd + ' - ' + unit.description + '</option>');
+                    unitDropdownAdd.append('<option value="' + unit.unitCd + '">' + unit.unitCd + ' - ' + unit.description + '</option>');
+                    unitDropdownEdit.append('<option value="' + unit.unitCd + '">' + unit.unitCd + ' - ' + unit.description + '</option>');
                 });
             },
             error: function (err) {
-                console.error("Error fetching rack locations:", err);
+                console.error("Error fetching units:", err);
             }
         });
 
-        // AJAX untuk mengambil data Rack Location
+        // Mengambil data Rack Locations
         $.ajax({
             url: '${pageContext.request.contextPath}/master/api/locations',
             type: 'GET',
             success: function (data) {
-                let rackLocationDropdown = $('#rackLocation');
+                let rackLocationDropdownAdd = $('#rackLocation');  // Untuk modal Add
+                let rackLocationDropdownEdit = $('#editRackLocation');  // Untuk modal Edit
+
                 data.forEach(function (location) {
-                    rackLocationDropdown.append('<option value="' + location.locCd + '">' + location.locCd + ' - ' + location.location + '</option>');
+                    rackLocationDropdownAdd.append('<option value="' + location.locCd + '">' + location.locCd + ' - ' + location.location + '</option>');
+                    rackLocationDropdownEdit.append('<option value="' + location.locCd + '">' + location.locCd + ' - ' + location.location + '</option>');
                 });
             },
             error: function (err) {
-                console.error("Error fetching rack locations:", err);
+                console.error("Error fetching locations:", err);
             }
+        });
+
+        // Menggunakan Select2 di dalam modal Edit dan Add
+        $('#editModal').on('shown.bs.modal', function () {
+            $('.select2').select2();  // Inisialisasi Select2 pada modal Edit
+        });
+
+        $('#addModal').on('shown.bs.modal', function () {
+            $('.select2').select2();  // Inisialisasi Select2 pada modal Add
         });
     });
 
-    $('#materialCode').on('change', function () {
-        var selectedItemCode = $(this).val();
-        console.log('selectedItemCode', selectedItemCode);
-        if (selectedItemCode) {
-            // Ambil data dari server berdasarkan itemCode
-            $.ajax({
-                url: '${pageContext.request.contextPath}/master/api/get-item-details', // Ganti dengan endpoint yang sesuai
-                type: 'GET',
-                contentType: 'application/json', // Tell the server we're sending JSON
-                accept: 'application/json', 
-                data: { itemCode: selectedItemCode },
-                success: function (response) {
-                    console.log('hasil response', response);
-                    if (response) {
-                        // Isi field Description dan Part Number
-                        $('#description').val(response.description);
-                        $('#partNumber').val(response.partNumber);
-                    } else {
-                        // Jika data tidak ditemukan
-                        $('#description').val('');
-                        $('#partNumber').val('');
-                        Swal.fire('Error', 'Material code not found', 'error');
+    $(document).ready(function () {
+        // Event listener untuk materialCode di modal Add dan Edit
+        $('#materialCode, #editMaterialCode').on('change', function () {
+            var selectedItemCode = $(this).val();
+            console.log('selectedItemCode', selectedItemCode);
+            
+            // Tentukan apakah yang dipilih adalah dropdown modal Add atau Edit
+            var targetModal = $(this).closest('.modal').attr('id'); // Mengetahui modal yang aktif (addModal atau editModal)
+            
+            if (selectedItemCode) {
+                // Ambil data dari server berdasarkan itemCode
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/master/api/get-item-details',  // Ganti dengan endpoint yang sesuai
+                    type: 'GET',
+                    contentType: 'application/json',
+                    accept: 'application/json', 
+                    data: { itemCode: selectedItemCode },
+                    success: function (response) {
+                        console.log('hasil response', response);
+                        if (response) {
+                            // Isi field Description dan Part Number untuk modal yang aktif
+                            if (targetModal === 'addModal') {
+                                $('#description').val(response.description);
+                                $('#partNumber').val(response.partNumber);
+                            } else if (targetModal === 'editModal') {
+                                $('#editDescription').val(response.description);
+                                $('#editPartNumber').val(response.partNumber);
+                            }
+                        } else {
+                            // Jika data tidak ditemukan
+                            if (targetModal === 'addModal') {
+                                $('#description').val('');
+                                $('#partNumber').val('');
+                            } else if (targetModal === 'editModal') {
+                                $('#editDescription').val('');
+                                $('#editPartNumber').val('');
+                            }
+                            Swal.fire('Error', 'Material code not found', 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Failed to fetch data from server', 'error');
                     }
-                },
-                error: function () {
-                    Swal.fire('Error', 'Failed to fetch data from server', 'error');
+                });
+            } else {
+                // Kosongkan field jika tidak ada itemCode yang dipilih
+                if (targetModal === 'addModal') {
+                    $('#description').val('');
+                    $('#partNumber').val('');
+                } else if (targetModal === 'editModal') {
+                    $('#editDescription').val('');
+                    $('#editPartNumber').val('');
                 }
-            });
-        } else {
-            // Kosongkan field jika tidak ada itemCode yang dipilih
-            $('#description').val('');
-            $('#partNumber').val('');
-        }
+            }
+        });
     });
 
     $("#searchBtn").on("click", function() {
         const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
         const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
-
 
         console.log('ItemCodeFilter : ', itemCodeFilter);
         console.log('locationFilter : ', locationFilter);
