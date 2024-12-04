@@ -10,6 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -20,6 +22,10 @@ import jakarta.persistence.TemporalType;
 public class Stock {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment
+    @Column(name = "ID", nullable = false)
+    private Long id;
+
     @Column(name = "ITEMCODE", nullable = false)
     private String itemCode;
 
@@ -42,7 +48,6 @@ public class Stock {
     @JoinColumn(name = "ITEMCODE", referencedColumnName = "ITEMCODE", insertable = false, updatable = false)
     private Item item; // Relasi dengan Item
 
-
     @Column(name = "UPDATEDATE")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
@@ -51,6 +56,14 @@ public class Stock {
     private String userUpdate;
 
     // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getItemCode() {
         return itemCode;
     }

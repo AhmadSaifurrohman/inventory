@@ -76,11 +76,11 @@
                     </div>
                     <div class="form-group">
                         <label for="description">Description</label>
-                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" required>
+                        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Description" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="partNumber">Part Number</label>
-                        <input type="text" class="form-control" id="partNumber" name="partNumber" placeholder="Enter Part Number" required>
+                        <input type="text" class="form-control" id="partNumber" name="partNumber" placeholder="Enter Part Number" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="unit">Unit</label>
@@ -238,6 +238,7 @@
                 // Reset form setelah submit sukses
                 $('#addForm')[0].reset();
                 $('#addModal').modal('hide'); // Menutup modal setelah sukses
+                handleStockDataResponse('/stock/api', '#jqxgrid', stockColumns);
             },
             error: function (err) {
                 console.error("Error saving stock:", err);
@@ -251,89 +252,85 @@
         });
     }
 
+    var stockColumns = [
+            {
+                text: "No",
+                datafield: "id",
+                width: '3%',
+                cellsrenderer: function (row, column, value) {
+                    // Menggunakan row index untuk menghasilkan nomor urut
+                    return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
+                }
+            },
+            { text: "Material", datafield: "material", width: '7%', cellsalign: 'center', align: 'center' },
+            { text: "Material Name", datafield: "materialName", width: '15%', cellsalign: 'left', align: 'center' },
+            { text: "Description", datafield: "description", width: '30%', cellsalign: 'left', align: 'center' },
+            { text: "Part Number", datafield: "partNumber", width: '15%', cellsalign: 'center', align: 'center' },
+            { text: "Base Unit", datafield: "baseUnit", width: '10%', cellsalign: 'center', align: 'center' },
+            { text: "Storage Location", datafield: "storageLocation", width: '10%', cellsalign: 'center', align: 'center' },
+            { text: "Quantity", datafield: "quantity", width: '5%', cellsalign: 'center', align: 'center' },
+            { text: "Safety Stock", datafield: "safetyStock", width: '5%' , cellsalign: 'center', align: 'center'}
+        ];
+
+    function initializeGrid(gridId, columns, dataAdapter) {
+            $(gridId).jqxGrid({
+                width: '100%',
+                height: 350,  /* Mengatur tinggi grid */
+                autoheight: false,  /* Nonaktifkan autoheight */
+                pageable: true,
+                pagesize: 10, // Show 10 rows per page
+                source: dataAdapter,
+                columnsresize: true,
+                pagerMode: 'default',
+                // selectionmode: 'checkbox',
+                columns: columns
+            });
+        }
+
+    // Function to handle data response and initialize grid
+    function handleStockDataResponse(url, gridId, columns) {
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    // Process data
+                    const stockData = data.map((item, index) => ({
+                        id: index + 1, // Nomor urut berdasarkan index
+                        material: item.itemCode,
+                        materialName: item.itemName,
+                        description: item.itemDescription,
+                        partNumber: item.partNum,
+                        baseUnit: item.unitCd,
+                        storageLocation: item.locationName,
+                        quantity: item.quantity,
+                        safetyStock: item.safetyStock
+                    }));
+
+                    // Data Adapter
+                    const source = {
+                        localdata: stockData,
+                        datatype: "array",
+                        datafields: columns.map(col => ({ name: col.datafield, type: 'string' }))
+                    };
+
+                    const dataAdapter = new $.jqx.dataAdapter(source);
+
+                    // Initialize jqxGrid with dataAdapter
+                    initializeGrid(gridId, columns, dataAdapter);
+                },
+                error: function (err) {
+                    console.log('Error fetching data from API', err);
+                }
+            });
+        }
 
     $(document).ready(function () {
         $('.select2').select2();
         loadLocations();
 
-        // Mengambil data dari API menggunakan AJAX
-        $.ajax({
-            url: '/stock/api',  // URL API untuk mendapatkan semua stok
-            type: 'GET',
-            success: function(data) {
-                // Data yang diterima dari API
-                console.log('Hasil all stock : ', data);
-                const stockData = data.map((item, index) => ({
-                    id: item.id,
-                    material: item.itemCode, // Assuming itemCode is the 'Material'
-                    materialName: item.itemName, 
-                    description: item.itemDescription,
-                    partNumber: item.partNum,
-                    baseUnit: item.unitCd,
-                    storageLocation: item.locationName,
-                    quantity: item.quantity,
-                    safetyStock: item.safetyStock,
-                    location: item.locationName
-                }));
+        // Call the function to fetch data and initialize the stock grid
+        handleStockDataResponse('/stock/api', '#jqxgrid', stockColumns);
 
-                // Sumber data untuk jqxGrid
-                const source = {
-                    localdata: stockData,
-                    datatype: "array",
-                    datafields: [
-                        { name: "id", type: "number" },            // No
-                        { name: "material", type: "string" },       // Material
-                        { name: "materialName", type: "string" },       // Material
-                        { name: "description", type: "string" },    // Description
-                        { name: "partNumber", type: "number" },     // Part Number
-                        { name: "baseUnit", type: "string" },       // Base Unit
-                        { name: "storageLocation", type: "string" }, // Storage Location
-                        { name: "quantity", type: "string" }, // Quantity
-                        { name: "safetyStock", type: "string" } // Safety Stock
-                    ]
-                };
-
-                const dataAdapter = new $.jqx.dataAdapter(source);
-
-                // Inisialisasi jqxGrid dengan data dari API
-                $("#jqxgrid").jqxGrid({
-                    width: '100%',
-                    height: 430,
-                    source: dataAdapter,
-                    autoheight: false,
-                    pageable: true,
-                    sortable: true,
-                    pagesize: 10, // Show 10 rows per page
-                    columnsresize: true,
-                    showcolumnlines: true,
-                    showcolumnheaderlines: true,
-                    showtoolbar: true,
-                    pagerMode: 'default',
-                    columns: [
-                        { 
-                            text: "No", 
-                            datafield: "id", 
-                            width: 60, 
-                            cellsrenderer: function (row, column, value, rowData, columnData) {
-                                // Menggunakan row index untuk menghasilkan nomor urut
-                                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
-                            } 
-                        },           // Lebar untuk No
-                        { text: "Material", datafield: "material", width: 150 },  // Lebar untuk Material
-                        { text: "Material Name", datafield: "materialName", width: 150 },  // Lebar untuk Material
-                        { text: "Description", datafield: "description", width: 180 },  // Lebar untuk Description
-                        { text: "Part Number", datafield: "partNumber", width: 100, cellsalign: 'center', align: 'center' }, // Lebar untuk Part Number
-                        { text: "Base Unit", datafield: "baseUnit", width: 120 },    // Lebar untuk Base Unit
-                        { text: "Storage Location", datafield: "storageLocation", width: 150 }, // Lebar untuk Storage Location
-                        { text: "Quantity", datafield: "quantity", width: 150 }, // Lebar untuk Storage Location
-                        { text: "Safety Stock", datafield: "safetyStock", width: 150 } // Lebar untuk Storage Location
-                    ]
-                });
-            },
-            error: function(err) {
-                console.log('Error fetching data from API', err);
-            }
-        });
 
         $("#addBtn").on("click", function () {
             $("#addModal").modal("show");
@@ -388,6 +385,41 @@
                 console.error("Error fetching rack locations:", err);
             }
         });
+    });
+
+    $('#materialCode').on('change', function () {
+        var selectedItemCode = $(this).val();
+        console.log('selectedItemCode', selectedItemCode);
+        if (selectedItemCode) {
+            // Ambil data dari server berdasarkan itemCode
+            $.ajax({
+                url: '${pageContext.request.contextPath}/master/api/get-item-details', // Ganti dengan endpoint yang sesuai
+                type: 'GET',
+                contentType: 'application/json', // Tell the server we're sending JSON
+                accept: 'application/json', 
+                data: { itemCode: selectedItemCode },
+                success: function (response) {
+                    console.log('hasil response', response);
+                    if (response) {
+                        // Isi field Description dan Part Number
+                        $('#description').val(response.description);
+                        $('#partNumber').val(response.partNumber);
+                    } else {
+                        // Jika data tidak ditemukan
+                        $('#description').val('');
+                        $('#partNumber').val('');
+                        Swal.fire('Error', 'Material code not found', 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Error', 'Failed to fetch data from server', 'error');
+                }
+            });
+        } else {
+            // Kosongkan field jika tidak ada itemCode yang dipilih
+            $('#description').val('');
+            $('#partNumber').val('');
+        }
     });
 
     $("#searchBtn").on("click", function() {

@@ -41,7 +41,7 @@
             <button type="button" id="AddItemCode" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Add
             </button>
-            <button type="button" id="editItemCode" class="btn btn-success btn-sm" disabled>
+            <button type="button" id="jqxGrid2Edit" class="btn btn-success btn-sm" disabled>
               <i class="fas fa-edit"></i> Edit
             </button>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -66,7 +66,7 @@
             <button type="button" id="addLoc" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Add
             </button>
-            <button type="button" id="editLoc" class="btn btn-success btn-sm" disabled>
+            <button type="button" id="jqxGrid1Edit" class="btn btn-success btn-sm" disabled>
               <i class="fas fa-edit"></i> Edit
             </button>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -89,7 +89,7 @@
             <button type="button" id="addUnit" class="btn btn-primary btn-sm">
               <i class="fas fa-plus"></i> Add
             </button>
-            <button type="button" id="editUnit" class="btn btn-success btn-sm" disabled>
+            <button type="button" id="jqxGrid3Edit" class="btn btn-success btn-sm" disabled>
               <i class="fas fa-edit"></i> Edit
             </button>
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -317,7 +317,7 @@
     });
 
     // Open Edit Modal
-    $('#editItemCode').click(function () {
+    $('#jqxGrid2Edit').click(function () {
       var selectedRowIndex = $("#jqxGrid2").jqxGrid('getselectedrowindex');
       if (selectedRowIndex === -1) {
         alert('Please select a row to edit.');
@@ -341,7 +341,7 @@
     });
 
     // Open Edit Location Modal
-    $('#editLoc').click(function () {
+    $('#jqxGrid1Edit').click(function () {
       var selectedRowIndex = $("#jqxGrid1").jqxGrid('getselectedrowindex');
       if (selectedRowIndex === -1) {
         alert('Please select a row to edit.');
@@ -362,7 +362,7 @@
     });
 
     // Open Edit Location Modal
-    $('#editUnit').click(function () {
+    $('#jqxGrid3Edit').click(function () {
       var selectedRowIndex = $("#jqxGrid3").jqxGrid('getselectedrowindex');
       if (selectedRowIndex === -1) {
         alert('Please select a row to edit.');

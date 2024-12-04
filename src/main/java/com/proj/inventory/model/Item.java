@@ -50,6 +50,14 @@ public class Item {
         this.description = description;
     }
 
+    public String getPartNumber() {
+        return partNum;
+    }
+
+    public void setPartNumber(String partNum) {
+        this.partNum = partNum;
+    }
+
     public String getPartNum() {
         return partNum;
     }

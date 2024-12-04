@@ -36,6 +36,10 @@ public class MasterDataService {
         itemRepository.deleteById(itemCode);
     }
 
+    public Item findItemByCode(String itemCode) {
+        return itemRepository.findByItemCode(itemCode); 
+    }
+
     // CRUD untuk Location
     public List<Location> getAllLocations() {
         return locationRepository.findAll();

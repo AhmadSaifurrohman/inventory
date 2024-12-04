@@ -23,8 +23,14 @@
                 </li>
                 <li class="nav-item">
                     <a href="/transactions" class="nav-link ${currentUrl == '/transactions' ? 'active' : ''}">
-                        <i class="nav-icon fas fa-plus"></i>
+                        <i class="nav-icon fas fa-history"></i>
                         <p>Stock Transaksi</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/adjustment" class="nav-link ${currentUrl == '/adjustment' ? 'active' : ''}">
+                        <i class="nav-icon fas fa-edit"></i>
+                        <p>Stock Adjusment</p>
                     </a>
                 </li>
                 <li class="nav-item">

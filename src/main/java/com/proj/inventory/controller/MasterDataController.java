@@ -3,6 +3,8 @@ package com.proj.inventory.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proj.inventory.model.Item;
@@ -41,6 +44,45 @@ public class MasterDataController {
     @ResponseBody
     public List<Item> getAllItems() {
         return masterDataService.getAllItems();
+    }
+
+    @GetMapping(value = "/api/get-item-details", produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<?> getItemDetails(@RequestParam String itemCode) {
+        Item item = masterDataService.findItemByCode(itemCode);
+        if (item != null) {
+            return ResponseEntity.ok(new ResponseData(item.getDescription(), item.getPartNumber()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
+        }
+    }
+
+    // Response Data
+    public class ResponseData {
+        private String description;
+        private String partNumber;
+
+        public ResponseData(String description, String partNumber) {
+            this.description = description;
+            this.partNumber = partNumber;
+        }
+
+        // Getters and Setters
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getPartNumber() {
+            return partNumber;
+        }
+
+        public void setPartNumber(String partNumber) {
+            this.partNumber = partNumber;
+        }
     }
 
     @PostMapping("/api/items")
