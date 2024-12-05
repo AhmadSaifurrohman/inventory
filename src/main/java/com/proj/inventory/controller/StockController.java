@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -15,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,9 +36,6 @@ import com.proj.inventory.service.StockService;
 import com.proj.inventory.service.TransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 @Controller
@@ -151,52 +150,99 @@ public class StockController {
         return ResponseEntity.ok(summary);
     }
 
-    @GetMapping("/api/export-excel")
+    // @GetMapping("/api/export-excel")
+    // public ResponseEntity<byte[]> exportToExcel(
+    //         @RequestParam(required = false) String filterItemCode,
+    //         @RequestParam(required = false) String filterLocation) throws IOException {
+
+    //     List<Stock> stocks = (filterItemCode != null || filterLocation != null)
+    //             ? stockService.getFilteredStocks(filterItemCode, filterLocation)
+    //             : stockService.getAllStocks();
+
+    //     try (Workbook workbook = new XSSFWorkbook()) {
+    //         Sheet sheet = workbook.createSheet("Stocks");
+
+    //         int rowCount = 0;
+    //         Row headerRow = sheet.createRow(rowCount++);
+    //         headerRow.createCell(0).setCellValue("Item Code");
+    //         // headerRow.createCell(1).setCellValue("Description");
+    //         headerRow.createCell(2).setCellValue("Part Number");
+    //         headerRow.createCell(3).setCellValue("Quantity");
+    //         headerRow.createCell(4).setCellValue("Unit");
+    //         // headerRow.createCell(5).setCellValue("Location");
+
+    //         for (Stock stock : stocks) {
+    //             Row row = sheet.createRow(rowCount++);
+    //             row.createCell(0).setCellValue(stock.getItemCode());
+    //             // row.createCell(1).setCellValue(stock.getDescription());
+    //             row.createCell(2).setCellValue(stock.getPartNum());
+    //             row.createCell(3).setCellValue(stock.getQuantity());
+    //             row.createCell(4).setCellValue(stock.getUnitCd());
+    //             // row.createCell(5).setCellValue(stock.getLocation());
+    //         }
+
+    //         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    //         workbook.write(bos);
+    //         byte[] bytes = bos.toByteArray();
+
+    //         HttpHeaders headers = new HttpHeaders();
+    //         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+    //         headers.setContentDisposition(ContentDisposition.attachment()
+    //                 .filename("stocks_" + System.currentTimeMillis() + ".xlsx")
+    //                 .build());
+
+    //         return ResponseEntity.ok()
+    //                 .headers(headers)
+    //                 .body(bytes);
+    //     }
+    // }
+
+    // Endpoint untuk mengunduh Excel dengan filter
+    @GetMapping("/export-excel")
     public ResponseEntity<byte[]> exportToExcel(
-            @RequestParam(required = false) String filterItemCode,
-            @RequestParam(required = false) String filterLocation) throws IOException {
+            @RequestParam(value = "itemCode", required = false) String itemCode,
+            @RequestParam(value = "location", required = false) String locationCode) throws IOException {
 
-        List<Stock> stocks = (filterItemCode != null || filterLocation != null)
-                ? stockService.getFilteredStocks(filterItemCode, filterLocation)
-                : stockService.getAllStocks();
+        // Mengambil data stok berdasarkan filter
+        List<Stock> stocks = stockService.getFilteredStocks(itemCode, locationCode);
 
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Stocks");
+        byte[] excelData;
+        try ( // Membuat workbook baru
+                Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Stock Data");
 
-            int rowCount = 0;
-            Row headerRow = sheet.createRow(rowCount++);
-            headerRow.createCell(0).setCellValue("Item Code");
-            // headerRow.createCell(1).setCellValue("Description");
-            headerRow.createCell(2).setCellValue("Part Number");
-            headerRow.createCell(3).setCellValue("Quantity");
-            headerRow.createCell(4).setCellValue("Unit");
-            // headerRow.createCell(5).setCellValue("Location");
-
-            for (Stock stock : stocks) {
-                Row row = sheet.createRow(rowCount++);
-                row.createCell(0).setCellValue(stock.getItemCode());
-                // row.createCell(1).setCellValue(stock.getDescription());
-                row.createCell(2).setCellValue(stock.getPartNum());
-                row.createCell(3).setCellValue(stock.getQuantity());
-                row.createCell(4).setCellValue(stock.getUnitCd());
-                // row.createCell(5).setCellValue(stock.getLocation());
+            // Membuat header row
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Item Code", "Part Number", "Description", "Quantity", "Unit", "Location"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
             }
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            workbook.write(bos);
-            byte[] bytes = bos.toByteArray();
+            // Mengisi data stok ke dalam sheet
+            int rowNum = 1;
+            for (Stock stock : stocks) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(stock.getItemCode());
+                row.createCell(1).setCellValue(stock.getPartNum());
+                row.createCell(2).setCellValue(stock.getDescription());
+                row.createCell(3).setCellValue(stock.getQuantity());
+                row.createCell(4).setCellValue(stock.getUnitCd());
+                row.createCell(5).setCellValue(stock.getLocation().getLocation());
+            }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDisposition(ContentDisposition.attachment()
-                    .filename("stocks_" + System.currentTimeMillis() + ".xlsx")
-                    .build());
+            // Mengubah data Excel ke byte array
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            workbook.write(byteArrayOutputStream);
+            excelData = byteArrayOutputStream.toByteArray();
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(bytes);
         }
+
+        // Membuat header untuk file Excel
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("stock_data.xlsx").build());
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
-
-
 }
