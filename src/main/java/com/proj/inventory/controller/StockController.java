@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -142,6 +143,12 @@ public class StockController {
     public ResponseEntity<Stock> getStockByItemCode(@PathVariable String itemCode) {
         Optional<Stock> stock = stockService.getStockByItemCode(itemCode);
         return stock.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<Map<String, Object>>> getStockSummary() {
+        List<Map<String, Object>> summary = stockService.getStockSummary();
+        return ResponseEntity.ok(summary);
     }
 
     @GetMapping("/api/export-excel")

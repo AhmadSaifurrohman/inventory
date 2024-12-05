@@ -1,6 +1,7 @@
 package com.proj.inventory.repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,32 @@ public interface StockRepository extends JpaRepository<Stock, String> {
 
     List<Stock> findByItemCode(Item item); // Mengambil berdasarkan itemCode
     List<Stock> findByLocation(Location location); // Mengambil berdasarkan location
+    
+    @Query(value = """
+        SELECT 
+            inv.itemcode AS itemCode,
+            mas.partnum AS partNum,
+            inv.quantity AS stock,
+            mas.safetystock AS safetyStock,
+            inv.location AS location,
+            CASE
+                WHEN inv.quantity > mas.safetystock THEN 'Aman'
+                WHEN inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock THEN 'Mendekati Tidak Aman'
+                WHEN inv.quantity < mas.safetystock THEN 'Tidak Aman'
+            END AS stockStatus
+        FROM 
+            tb_invstock inv
+        JOIN 
+            tb_mas_itemcd mas ON inv.itemcode = mas.itemcode
+        ORDER BY 
+            CASE 
+                WHEN inv.quantity < mas.safetystock THEN 1
+                WHEN inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock THEN 2
+                ELSE 3
+            END,
+            inv.itemcode ASC
+        """, nativeQuery = true)
+    List<Map<String, Object>> findStockSummary();
+
     
 }

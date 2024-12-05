@@ -1,6 +1,7 @@
 package com.proj.inventory.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,6 @@ public class StockService {
             return stockRepository.findAll();
         }
     }
-    
-    
-
-    
 
     public Optional<Stock> getStockByItemCode(String itemCode) {
         return stockRepository.findById(itemCode);
@@ -73,5 +70,9 @@ public class StockService {
 
     public void deleteStock(String itemCode) {
         stockRepository.deleteById(itemCode);
+    }
+
+    public List<Map<String, Object>> getStockSummary() {
+        return stockRepository.findStockSummary();
     }
 }
