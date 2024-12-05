@@ -28,7 +28,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/adjustment" class="nav-link ${currentUrl == '/adjustment' ? 'active' : ''}">
+                    <a href="/stock/adjustment" class="nav-link ${currentUrl == '/stock/adjustment' ? 'active' : ''}">
                         <i class="nav-icon fas fa-edit"></i>
                         <p>Stock Adjusment</p>
                     </a>

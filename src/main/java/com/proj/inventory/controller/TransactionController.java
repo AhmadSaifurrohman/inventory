@@ -44,6 +44,7 @@ public class TransactionController {
 
     // Endpoint untuk mencatat transaksi inbound
     @PostMapping("/inbound")
+    @ResponseBody
     public ResponseEntity<Transaction> recordInboundTransaction(@RequestBody Transaction transaction) {
         Transaction savedTransaction = transactionService.recordInboundTransaction(transaction);
         System.out.println("Data JSON yang diterima: " + transaction.toString());  // Debug semua properti
@@ -52,6 +53,7 @@ public class TransactionController {
     }
 
     @PostMapping("/outbound")
+    @ResponseBody
     public Transaction recordOutboundTransaction(@RequestBody Transaction transaction) {
         return transactionService.recordOutboundTransaction(transaction);
     }
