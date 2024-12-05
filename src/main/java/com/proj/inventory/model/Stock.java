@@ -38,6 +38,9 @@ public class Stock {
     @Column(name = "UNITCD")
     private String unitCd;
 
+    @Column(name = "DESCRIPTION")
+    private String description;
+
     // Relasi ManyToOne dengan Location
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "LOCATION", referencedColumnName = "LOCCD")
@@ -126,5 +129,13 @@ public class Stock {
 
     public void setUserUpdate(String userUpdate) {
         this.userUpdate = userUpdate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

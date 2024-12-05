@@ -1,11 +1,20 @@
 package com.proj.inventory.controller;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +33,10 @@ import com.proj.inventory.service.StockService;
 import com.proj.inventory.service.TransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 
 @Controller
 @RequestMapping("/stock")
@@ -130,4 +143,53 @@ public class StockController {
         Optional<Stock> stock = stockService.getStockByItemCode(itemCode);
         return stock.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/api/export-excel")
+    public ResponseEntity<byte[]> exportToExcel(
+            @RequestParam(required = false) String filterItemCode,
+            @RequestParam(required = false) String filterLocation) throws IOException {
+
+        List<Stock> stocks = (filterItemCode != null || filterLocation != null)
+                ? stockService.getFilteredStocks(filterItemCode, filterLocation)
+                : stockService.getAllStocks();
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Stocks");
+
+            int rowCount = 0;
+            Row headerRow = sheet.createRow(rowCount++);
+            headerRow.createCell(0).setCellValue("Item Code");
+            // headerRow.createCell(1).setCellValue("Description");
+            headerRow.createCell(2).setCellValue("Part Number");
+            headerRow.createCell(3).setCellValue("Quantity");
+            headerRow.createCell(4).setCellValue("Unit");
+            // headerRow.createCell(5).setCellValue("Location");
+
+            for (Stock stock : stocks) {
+                Row row = sheet.createRow(rowCount++);
+                row.createCell(0).setCellValue(stock.getItemCode());
+                // row.createCell(1).setCellValue(stock.getDescription());
+                row.createCell(2).setCellValue(stock.getPartNum());
+                row.createCell(3).setCellValue(stock.getQuantity());
+                row.createCell(4).setCellValue(stock.getUnitCd());
+                // row.createCell(5).setCellValue(stock.getLocation());
+            }
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            workbook.write(bos);
+            byte[] bytes = bos.toByteArray();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.attachment()
+                    .filename("stocks_" + System.currentTimeMillis() + ".xlsx")
+                    .build());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(bytes);
+        }
+    }
+
+
 }

@@ -25,6 +25,9 @@ public class Item {
     @Column(name = "SAFETYSTOCK")
     private String safetyStock;
 
+    @Column(name = "UNITCD")
+    private String unitCd;
+
     // Getters and Setters
     public String getItemCode() {
         return itemCode;
@@ -72,5 +75,13 @@ public class Item {
 
     public void setSafetyStock(String safetyStock) {
         this.safetyStock = safetyStock;
+    }
+
+    public String getUnitCd() {
+        return unitCd;
+    }
+
+    public void setUnitCd(String unitCd) {
+        this.unitCd = unitCd;
     }
 }

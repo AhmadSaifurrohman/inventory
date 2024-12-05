@@ -96,6 +96,7 @@ public class TransactionService {
         stock.setLocation(location);
         stock.setUpdateDate(new Date());  // Set tanggal update stok
         stock.setUserUpdate(transaction.getUserId());  // Set user update stok
+        stock.setDescription(stock.getDescription());
     
         // Simpan stok yang sudah diperbarui atau baru
         stockRepository.save(stock);

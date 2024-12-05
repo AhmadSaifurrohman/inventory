@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Excel -->
-                        <button class="btn btn-info" id="excelhBtn">Excel</button>
+                        <button class="btn btn-info" id="excelBtn" onclick="downloadExcel()">Download Excel</button>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label for="unit">Unit</label>
-                        <select class="form-control select2" id="unit" style="width: 100%;" name="unit" required>
+                        <select class="form-control select2" id="unit" style="width: 100%;" name="unit" disabled required>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -130,15 +130,15 @@
                     </div>
                     <div class="form-group">
                         <label for="editDescription">Description</label>
-                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
+                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="editPartNumber">Part Number</label>
-                        <input type="text" class="form-control" id="editPartNumber" name="editPartNumber" placeholder="Enter Part Number" required>
+                        <input type="text" class="form-control" id="editPartNumber" name="editPartNumber" placeholder="Enter Part Number" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="editUnit">Unit</label>
-                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" required>
+                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" disabled required>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -149,7 +149,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editQuantity">Quantity</label>
+                        <label for="editQuantity">Out Quantity</label>
                         <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
                     </div>
                     <div class="form-group">
@@ -200,8 +200,8 @@
 
     // Function to save stock via AJAX
     function saveStock() {
-        const quantity = $('#quantity').val();
-        console.log("Type of quantity: " + typeof quantity);
+        // const quantity = $('#quantity').val();
+        // console.log("Type of quantity: " + typeof quantity);
         const stockData = {
             itemCode: $('#materialCode').val(),
             description: $('#description').val(),
@@ -340,7 +340,10 @@
                 columnsresize: true,
                 pagerMode: 'default',
                 // selectionmode: 'checkbox',
-                columns: columns
+                columns: columns,
+                sortable: true,
+                showfilterrow: true,
+                filterable: true
             });
         }
 
@@ -466,7 +469,7 @@
 
     $(document).ready(function () {
         // Event listener untuk materialCode di modal Add dan Edit
-        $('#materialCode, #editMaterialCode').on('change', function () {
+        $('#materialCode, #editMaterialCode').on('change', function () { 
             var selectedItemCode = $(this).val();
             console.log('selectedItemCode', selectedItemCode);
             
@@ -488,18 +491,22 @@
                             if (targetModal === 'addModal') {
                                 $('#description').val(response.description);
                                 $('#partNumber').val(response.partNumber);
+                                updateUnitDropdown('#unit', response.unitCd);
                             } else if (targetModal === 'editModal') {
                                 $('#editDescription').val(response.description);
                                 $('#editPartNumber').val(response.partNumber);
+                                updateUnitDropdown('#editUnit', response.unitCd);
                             }
                         } else {
                             // Jika data tidak ditemukan
                             if (targetModal === 'addModal') {
                                 $('#description').val('');
                                 $('#partNumber').val('');
+                                resetUnitDropdown('#unit');
                             } else if (targetModal === 'editModal') {
                                 $('#editDescription').val('');
                                 $('#editPartNumber').val('');
+                                resetUnitDropdown('#editUnit');
                             }
                             Swal.fire('Error', 'Material code not found', 'error');
                         }
@@ -513,12 +520,38 @@
                 if (targetModal === 'addModal') {
                     $('#description').val('');
                     $('#partNumber').val('');
+                    resetUnitDropdown('#unit');
                 } else if (targetModal === 'editModal') {
                     $('#editDescription').val('');
                     $('#editPartNumber').val('');
+                    resetUnitDropdown('#editUnit');
                 }
             }
         });
+
+        // Fungsi untuk mengupdate dropdown unit
+        function updateUnitDropdown(selector, selectedUnit) {
+            var dropdown = $(selector);
+            
+            // Jika unit yang dipilih ada dalam opsi, set sebagai selected
+            dropdown.val(selectedUnit);
+            
+            // Jika unit yang dipilih tidak ada dalam opsi, kita bisa menambahkannya
+            if (!dropdown.find('option[value="' + selectedUnit + '"]').length) {
+                dropdown.append('<option value="' + selectedUnit + '" selected>' + selectedUnit + '</option>');
+            }
+            
+            // Memastikan dropdown diperbarui (untuk select2)
+            dropdown.trigger('change');
+        }
+
+        // Fungsi untuk reset dropdown unit kembali ke default
+        function resetUnitDropdown(selector) {
+            var dropdown = $(selector);
+            // Set nilai default dan pastikan dropdown direset
+            dropdown.val('');
+            dropdown.trigger('change');
+        }
     });
 
     $("#searchBtn").on("click", function () {
@@ -568,6 +601,67 @@
             }
         });
     });
+
+    function downloadExcel() {
+        const itemCodeInput = document.getElementById('itemCodeFilter');
+        const locationInput = document.getElementById('locationFilter');
+
+        if (!itemCodeInput || !locationInput) {
+            console.error('Filter elements not found.');
+            alert('Filter elements are missing. Please check your page.');
+            return;
+        }
+
+        const itemCode = itemCodeInput.value || '';
+        const location = locationInput.value || '';
+
+        let encodedItemCode, encodedLocation;
+        try {
+            encodedItemCode = encodeURIComponent(itemCode);
+            encodedLocation = encodeURIComponent(location);
+        } catch (error) {
+            console.error('Encoding error:', error);
+            alert('Invalid input detected. Please check your filters.');
+            return;
+        }
+
+        // URL endpoint export Excel
+        const url = `/api/export-excel?filterItemCode=${encodedItemCode}&filterLocation=${encodedLocation}`;
+
+        // Gunakan Fetch API untuk mengunduh file Excel
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/octet-stream'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to download Excel file.');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Buat link untuk unduhan
+            const downloadLink = document.createElement('a');
+            const fileURL = window.URL.createObjectURL(blob);
+            downloadLink.href = fileURL;
+            downloadLink.download = `stocks_${Date.now()}.xlsx`;
+
+            // Trigger download
+            downloadLink.click();
+
+            // Hapus URL blob setelah selesai
+            window.URL.revokeObjectURL(fileURL);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to download Excel. Please try again.');
+        });
+    }
+
+
+
 
 
 </script>
