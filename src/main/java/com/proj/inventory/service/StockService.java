@@ -72,7 +72,11 @@ public class StockService {
         stockRepository.deleteById(itemCode);
     }
 
-    public List<Map<String, Object>> getStockSummary() {
-        return stockRepository.findStockSummary();
+    public List<Map<String, Object>> findStockApproachSafetyQty() {
+        return stockRepository.findStockApproachSafetyQty();
+    }
+
+    public List<Map<String, Object>> findStockUnderSafetyQty() {
+        return stockRepository.findStockUnderSafetyQty();
     }
 }

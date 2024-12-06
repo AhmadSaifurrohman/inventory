@@ -31,21 +31,41 @@ public interface StockRepository extends JpaRepository<Stock, String> {
             CASE
                 WHEN inv.quantity > mas.safetystock THEN 'Aman'
                 WHEN inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock THEN 'Mendekati Tidak Aman'
-                WHEN inv.quantity < mas.safetystock THEN 'Tidak Aman'
+                WHEN inv.quantity < mas.safetystock THEN 'Perlu Re-Stock'
             END AS stockStatus
         FROM 
             tb_invstock inv
         JOIN 
             tb_mas_itemcd mas ON inv.itemcode = mas.itemcode
+        WHERE inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock
         ORDER BY 
-            CASE 
-                WHEN inv.quantity < mas.safetystock THEN 1
-                WHEN inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock THEN 2
-                ELSE 3
-            END,
-            inv.itemcode ASC
+            mas.safetystock ASC,
+            inv.quantity ASC,
+            inv.location ASC;
         """, nativeQuery = true)
-    List<Map<String, Object>> findStockSummary();
+    List<Map<String, Object>> findStockApproachSafetyQty();
 
-    
-}
+    @Query(value = """
+        SELECT 
+             inv.itemcode AS itemCode,
+            mas.partnum AS partNum,
+            inv.quantity AS stock,
+            mas.safetystock AS safetyStock,
+            inv.location AS location,
+            CASE
+                WHEN inv.quantity > mas.safetystock THEN 'Aman'
+                WHEN inv.quantity BETWEEN (mas.safetystock * 0.8) AND mas.safetystock THEN 'Mendekati Tidak Aman'
+                WHEN inv.quantity < mas.safetystock THEN 'Perlu Re-Stock'
+            END AS stockStatus
+        FROM 
+            tb_invstock inv
+        JOIN 
+            tb_mas_itemcd mas ON inv.itemcode = mas.itemcode
+        WHERE inv.quantity < mas.safetystock
+        ORDER BY 
+            mas.safetystock ASC,
+            inv.quantity ASC,
+            inv.location ASC;
+                """, nativeQuery = true)
+            List<Map<String, Object>> findStockUnderSafetyQty();
+    }

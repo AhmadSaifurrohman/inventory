@@ -66,7 +66,7 @@
             <div class="card-header p-0 pt-1">
                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                   <li class="nav-item">
-                    <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Stock diatas Safety</a>
+                    <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Stock mendekati Safety</a>
                   </li>
                   <li class="nav-item">
                     <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Stock dibawah Safety </a>
@@ -77,7 +77,7 @@
                 <div class="tab-content" id="custom-tabs-one-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
                         <div class="table-responsive">
-                            <table class="table table-striped table-valign-middle" id="stock-summary-table">
+                            <table class="table table-striped table-valign-middle" id="findStockApproachSafetyQty">
                                 <thead>
                                     <tr>
                                         <th>Item Code</th>
@@ -95,7 +95,23 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
-                       Mauris tincidunt mi at erat gravida, eget tristique urna bibendum. Mauris pharetra purus ut ligula tempor, et vulputate metus facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas sollicitudin, nisi a luctus interdum, nisl ligula placerat mi, quis posuere purus ligula eu lectus. Donec nunc tellus, elementum sit amet ultricies at, posuere nec nunc. Nunc euismod pellentesque diam.
+                        <div class="table-responsive">
+                            <table class="table table-striped table-valign-middle" id="findStockUnderSafetyQty">
+                                <thead>
+                                    <tr>
+                                        <th>Item Code</th>
+                                        <th>Part Number</th>
+                                        <th>Stock</th>
+                                        <th>Safety Stock</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data akan diisi oleh Ajax -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,11 +124,37 @@
     $(document).ready(function() {
         // Panggil API untuk mendapatkan data summary stok
         $.ajax({
-            url: 'api/summary', // URL API yang sesuai dengan endpoint di controller
+            url: 'api/findStockApproachSafetyQty', // URL API yang sesuai dengan endpoint di controller
             method: 'GET',
             success: function(data) {
                 console.log('Hasil data', data);
-                var tbody = $('#stock-summary-table tbody');
+                var tbody = $('#findStockApproachSafetyQty tbody');
+                tbody.empty(); // Hapus data sebelumnya (jika ada)
+    
+                // Loop melalui data dan tampilkan ke dalam tabel
+                data.forEach(function(item) {
+                    var row = '<tr>' +
+                                '<td>' + item.itemCode + '</td>' +
+                                '<td>' + item.partNum + '</td>' +
+                                '<td>' + item.stock + '</td>' +
+                                '<td>' + item.safetyStock + '</td>' +
+                                '<td>' + item.location + '</td>' +
+                                '<td>' + item.stockStatus + '</td>' +
+                              '</tr>';
+                    tbody.append(row);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching data: ", error);
+            }
+        });
+
+        $.ajax({
+            url: 'api/findStockUnderSafetyQty', // URL API yang sesuai dengan endpoint di controller
+            method: 'GET',
+            success: function(data) {
+                console.log('Hasil data', data);
+                var tbody = $('#findStockUnderSafetyQty tbody');
                 tbody.empty(); // Hapus data sebelumnya (jika ada)
     
                 // Loop melalui data dan tampilkan ke dalam tabel

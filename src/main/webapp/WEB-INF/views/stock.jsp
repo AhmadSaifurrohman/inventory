@@ -332,7 +332,7 @@
     function initializeGrid(gridId, columns, dataAdapter) {
             $(gridId).jqxGrid({
                 width: '100%',
-                height: 350,  /* Mengatur tinggi grid */
+                height: 700,  /* Mengatur tinggi grid */
                 autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
@@ -345,7 +345,9 @@
                 showfilterrow: true,
                 filterable: true,
                 enablebrowserselection: true,
-		 		        keyboardnavigation: false,
+                keyboardnavigation: false,
+                pagesize: 20,
+		 		pagesizeoptions: ['20', '50', '100'],
             });
         }
 

@@ -50,9 +50,15 @@ public class DashboardController {
         return summary;
     }
 
-    @GetMapping("/api/summary")
-    public ResponseEntity<List<Map<String, Object>>> getStockSummary() {
-        List<Map<String, Object>> summary = stockService.getStockSummary();
+    @GetMapping("/api/findStockApproachSafetyQty")
+    public ResponseEntity<List<Map<String, Object>>> findStockApproachSafetyQty() {
+        List<Map<String, Object>> summary = stockService.findStockApproachSafetyQty();
+        return ResponseEntity.ok(summary);
+    }
+
+    @GetMapping("/api/findStockUnderSafetyQty")
+    public ResponseEntity<List<Map<String, Object>>> findStockUnderSafetyQty() {
+        List<Map<String, Object>> summary = stockService.findStockUnderSafetyQty();
         return ResponseEntity.ok(summary);
     }
 }

@@ -132,12 +132,17 @@
                 // Inisialisasi jqxGrid untuk Transaksi
                 $("#jqxgrid").jqxGrid({
                     width: '100%',
-                    height: 400,
+                    height: 700,
                     source: dataAdapter,
                     pageable: true,
                     sortable: true,
-                    filterable: true,
                     columnsresize: true,
+                    pagesize: 20,
+		 		    pagesizeoptions: ['20', '50', '100'],
+                    showfilterrow: true,
+                    filterable: true,
+                    enablebrowserselection: true,
+                    keyboardnavigation: false,
                     columns: [
                         { 
                             text: "No", 
