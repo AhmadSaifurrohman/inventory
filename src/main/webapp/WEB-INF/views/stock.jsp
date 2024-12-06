@@ -343,7 +343,9 @@
                 columns: columns,
                 sortable: true,
                 showfilterrow: true,
-                filterable: true
+                filterable: true,
+                enablebrowserselection: true,
+		 		        keyboardnavigation: false,
             });
         }
 
@@ -558,9 +560,6 @@
         const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
         const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
 
-        console.log('ItemCodeFilter:', itemCodeFilter);
-        console.log('LocationFilter:', locationFilter);
-
         $.ajax({
             url: '/stock/api/filter',
             type: 'GET',
@@ -602,83 +601,40 @@
         });
     });
 
-    // function downloadExcel() {
-    //     const itemCodeInput = document.getElementById('itemCodeFilter');
-    //     const locationInput = document.getElementById('locationFilter');
-
-    //     if (!itemCodeInput || !locationInput) {
-    //         console.error('Filter elements not found.');
-    //         alert('Filter elements are missing. Please check your page.');
-    //         return;
-    //     }
-
-    //     const itemCode = itemCodeInput.value || '';
-    //     const location = locationInput.value || '';
-
-    //     let encodedItemCode, encodedLocation;
-    //     try {
-    //         encodedItemCode = encodeURIComponent(itemCode);
-    //         encodedLocation = encodeURIComponent(location);
-    //     } catch (error) {
-    //         console.error('Encoding error:', error);
-    //         alert('Invalid input detected. Please check your filters.');
-    //         return;
-    //     }
-
-    //     // URL endpoint export Excel
-    //     const url = `/api/export-excel?filterItemCode=${encodedItemCode}&filterLocation=${encodedLocation}`;
-
-    //     // Gunakan Fetch API untuk mengunduh file Excel
-    //     fetch(url, {
-    //         method: 'GET',
-    //         headers: {
-    //             'Accept': 'application/octet-stream'
-    //         }
-    //     })
-    //     .then(response => {
-    //         if (!response.ok) {
-    //             throw new Error('Failed to download Excel file.');
-    //         }
-    //         return response.blob();
-    //     })
-    //     .then(blob => {
-    //         // Buat link untuk unduhan
-    //         const downloadLink = document.createElement('a');
-    //         const fileURL = window.URL.createObjectURL(blob);
-    //         downloadLink.href = fileURL;
-    //         downloadLink.download = `stocks_${Date.now()}.xlsx`;
-
-    //         // Trigger download
-    //         downloadLink.click();
-
-    //         // Hapus URL blob setelah selesai
-    //         window.URL.revokeObjectURL(fileURL);
-    //     })
-    //     .catch(error => {
-    //         console.error('Error:', error);
-    //         alert('Failed to download Excel. Please try again.');
-    //     });
-    // }
-
     function downloadExcel() {
-        // Melakukan permintaan ke server untuk mendapatkan file Excel
-        fetch('/stock/export-excel', {
+        // Mendapatkan nilai filter
+        const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
+        const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
+
+        console.log('ItemCodeFilter:', itemCodeFilter);
+        console.log('LocationFilter:', locationFilter);
+
+        // Menggunakan AJAX untuk permintaan GET
+        $.ajax({
+            url: `/stock/export-excel`,
             method: 'GET',
-            headers: {
-                'Accept': 'application/octet-stream',
+            xhrFields: {
+                responseType: 'blob' // Mengatur response sebagai file blob
+            },
+            data: {
+                itemCode: itemCodeFilter,
+                location: locationFilter
+            },
+            success: function(blob) {
+                // Membuat URL untuk blob dan memulai download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'stock_summary.xlsx'; // Nama file yang akan diunduh
+                a.click();
+                window.URL.revokeObjectURL(url); // Hapus URL setelah download
+            },
+            error: function(xhr, status, error) {
+                console.error('Error downloading Excel:', error);
             }
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            // Membuat URL untuk blob dan memulai download
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'stock_summary.xlsx'; // Nama file yang akan diunduh
-            a.click();
-            window.URL.revokeObjectURL(url); // Hapus URL setelah download
-        })
-        .catch(error => console.error('Error downloading Excel:', error));
+        });
     }
+
+
 
 </script>

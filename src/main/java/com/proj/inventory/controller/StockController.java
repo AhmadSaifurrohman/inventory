@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -144,58 +147,6 @@ public class StockController {
         return stock.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/summary")
-    public ResponseEntity<List<Map<String, Object>>> getStockSummary() {
-        List<Map<String, Object>> summary = stockService.getStockSummary();
-        return ResponseEntity.ok(summary);
-    }
-
-    // @GetMapping("/api/export-excel")
-    // public ResponseEntity<byte[]> exportToExcel(
-    //         @RequestParam(required = false) String filterItemCode,
-    //         @RequestParam(required = false) String filterLocation) throws IOException {
-
-    //     List<Stock> stocks = (filterItemCode != null || filterLocation != null)
-    //             ? stockService.getFilteredStocks(filterItemCode, filterLocation)
-    //             : stockService.getAllStocks();
-
-    //     try (Workbook workbook = new XSSFWorkbook()) {
-    //         Sheet sheet = workbook.createSheet("Stocks");
-
-    //         int rowCount = 0;
-    //         Row headerRow = sheet.createRow(rowCount++);
-    //         headerRow.createCell(0).setCellValue("Item Code");
-    //         // headerRow.createCell(1).setCellValue("Description");
-    //         headerRow.createCell(2).setCellValue("Part Number");
-    //         headerRow.createCell(3).setCellValue("Quantity");
-    //         headerRow.createCell(4).setCellValue("Unit");
-    //         // headerRow.createCell(5).setCellValue("Location");
-
-    //         for (Stock stock : stocks) {
-    //             Row row = sheet.createRow(rowCount++);
-    //             row.createCell(0).setCellValue(stock.getItemCode());
-    //             // row.createCell(1).setCellValue(stock.getDescription());
-    //             row.createCell(2).setCellValue(stock.getPartNum());
-    //             row.createCell(3).setCellValue(stock.getQuantity());
-    //             row.createCell(4).setCellValue(stock.getUnitCd());
-    //             // row.createCell(5).setCellValue(stock.getLocation());
-    //         }
-
-    //         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    //         workbook.write(bos);
-    //         byte[] bytes = bos.toByteArray();
-
-    //         HttpHeaders headers = new HttpHeaders();
-    //         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-    //         headers.setContentDisposition(ContentDisposition.attachment()
-    //                 .filename("stocks_" + System.currentTimeMillis() + ".xlsx")
-    //                 .build());
-
-    //         return ResponseEntity.ok()
-    //                 .headers(headers)
-    //                 .body(bytes);
-    //     }
-    // }
 
     // Endpoint untuk mengunduh Excel dengan filter
     @GetMapping("/export-excel")
@@ -206,36 +157,75 @@ public class StockController {
         // Mengambil data stok berdasarkan filter
         List<Stock> stocks = stockService.getFilteredStocks(itemCode, locationCode);
 
+        // Mapping ke StockDTO
+        List<StockDTO> stockDTOs = stocks.stream()
+                .map(this::mapToDTO) // Memanggil method mapToDTO untuk konversi
+                .toList();
+
         byte[] excelData;
-        try ( // Membuat workbook baru
-                Workbook workbook = new XSSFWorkbook()) {
+        try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Stock Data");
+
+            // Header Kolom
+            String[] columns = {
+                "Item Code", "Item Name", "Part Number", "Description",
+                "Quantity", "Unit", "Location", "Safety Stock"
+            };
+
+            // Membuat font untuk header
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+
+            // Membuat style untuk header
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
 
             // Membuat header row
             Row headerRow = sheet.createRow(0);
-            String[] columns = {"Item Code", "Part Number", "Description", "Quantity", "Unit", "Location"};
             for (int i = 0; i < columns.length; i++) {
                 Cell cell = headerRow.createCell(i);
                 cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+
+                // Mengatur lebar kolom secara otomatis
+                sheet.setColumnWidth(i, columns[i].length() * 500); // Panjang kolom
             }
 
-            // Mengisi data stok ke dalam sheet
+            // Membuat style untuk data
+            CellStyle dataStyle = workbook.createCellStyle();
+            dataStyle.setBorderTop(BorderStyle.THIN);
+            dataStyle.setBorderBottom(BorderStyle.THIN);
+            dataStyle.setBorderLeft(BorderStyle.THIN);
+            dataStyle.setBorderRight(BorderStyle.THIN);
+
+            // Mengisi data dari StockDTO ke dalam sheet
             int rowNum = 1;
-            for (Stock stock : stocks) {
+            for (StockDTO stockDTO : stockDTOs) {
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(stock.getItemCode());
-                row.createCell(1).setCellValue(stock.getPartNum());
-                row.createCell(2).setCellValue(stock.getDescription());
-                row.createCell(3).setCellValue(stock.getQuantity());
-                row.createCell(4).setCellValue(stock.getUnitCd());
-                row.createCell(5).setCellValue(stock.getLocation().getLocation());
+                row.createCell(0).setCellValue(stockDTO.getItemCode());
+                row.createCell(1).setCellValue(stockDTO.getItemName());
+                row.createCell(2).setCellValue(stockDTO.getPartNum());
+                row.createCell(3).setCellValue(stockDTO.getItemDescription());
+                row.createCell(4).setCellValue(stockDTO.getQuantity());
+                row.createCell(5).setCellValue(stockDTO.getUnitCd());
+                row.createCell(6).setCellValue(stockDTO.getLocationName());
+                row.createCell(7).setCellValue(stockDTO.getSafetyStock());
+
+                // Terapkan style ke semua sel data
+                for (int i = 0; i < columns.length; i++) {
+                    row.getCell(i).setCellStyle(dataStyle);
+                }
             }
 
             // Mengubah data Excel ke byte array
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             workbook.write(byteArrayOutputStream);
             excelData = byteArrayOutputStream.toByteArray();
-
         }
 
         // Membuat header untuk file Excel
@@ -245,4 +235,6 @@ public class StockController {
 
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
+
+
 }

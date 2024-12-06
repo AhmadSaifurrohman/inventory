@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.proj.inventory.repository.StockRepository;
 import com.proj.inventory.repository.TransactionRepository;
+import com.proj.inventory.repository.ItemRepository;
 
 @Service
 public class DashboardService {
@@ -14,8 +15,15 @@ public class DashboardService {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     public long getTotalStock() {
         return stockRepository.count();
+    }
+
+    public long getTotalItem() {
+        return itemRepository.count();
     }
 
     public long getTotalInboundTransactions() {
