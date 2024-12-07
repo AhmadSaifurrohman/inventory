@@ -12,13 +12,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     // Tambahkan query untuk menghitung jumlah transaksi berdasarkan tipe transaksi
     long countByTransactionType(String transactionType);
-
-    // Menemukan transaksi berdasarkan itemCode dan transDate
     List<Transaction> findByItemCodeAndTransDate(String itemCode, Date transDate);
-
-    // Menemukan transaksi berdasarkan itemCode
     List<Transaction> findByItemCode(String itemCode);
-
-    // Menemukan transaksi berdasarkan transDate
     List<Transaction> findByTransDate(Date transDate);
+    List<Transaction> findByTransDateBetween(Date startDate, Date endDate);
+    List<Transaction> findByTransDateBetweenAndItemCode(Date startDate, Date endDate, String itemCode);
 }

@@ -1,8 +1,10 @@
 package com.proj.inventory.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proj.inventory.model.Transaction;
@@ -35,10 +38,39 @@ public class TransactionController {
     }
 
     // Endpoint untuk mendapatkan semua transaksi
+    // @GetMapping("/all")
+    // @ResponseBody
+    // public ResponseEntity<List<Transaction>> getAllTransactions() {
+    //     List<Transaction> transactions = transactionService.getAllTransactions();
+    //     return ResponseEntity.ok(transactions);
+    // }
+
     @GetMapping("/all")
     @ResponseBody
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
-        List<Transaction> transactions = transactionService.getAllTransactions();
+    public ResponseEntity<List<Transaction>> getTransactions(
+    @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+    @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+    @RequestParam(value = "itemCode", required = false) String itemCode
+    ) {
+        List<Transaction> transactions;
+
+        // Jika semua parameter diberikan
+        if (startDate != null && endDate != null && itemCode != null) {
+            transactions = transactionService.findTransactionsByDateAndItemCode(startDate, endDate, itemCode);
+        } 
+        // Jika hanya startDate dan endDate diberikan
+        else if (startDate != null && endDate != null) {
+            transactions = transactionService.findTransactionsByDate(startDate, endDate);
+        } 
+        // Jika hanya itemCode diberikan
+        else if (itemCode != null) {
+            transactions = transactionService.findTransactionsByItemCode(itemCode);
+        } 
+        // Jika tidak ada parameter
+        else {
+            transactions = transactionService.getAllTransactions();
+        }
+
         return ResponseEntity.ok(transactions);
     }
 
@@ -65,10 +97,4 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    // Endpoint untuk mendapatkan transaksi berdasarkan tanggal
-    @GetMapping("/api/date/{transDate}")
-    public ResponseEntity<List<Transaction>> getTransactionsByDate(@PathVariable String transDate) {
-        List<Transaction> transactions = transactionService.findTransactionsByDate(transDate);
-        return ResponseEntity.ok(transactions);
-    }
 }

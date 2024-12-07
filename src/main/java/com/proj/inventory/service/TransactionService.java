@@ -43,15 +43,13 @@ public class TransactionService {
         return transactionRepository.findByItemCode(itemCode);
     }
 
-    // Menemukan transaksi berdasarkan transDate
-    public List<Transaction> findTransactionsByDate(String transDate) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Format tanggal
-            Date date = dateFormat.parse(transDate);
-            return transactionRepository.findByTransDate(date);
-        } catch (ParseException e) {
-            return List.of(); // Mengembalikan list kosong jika ada kesalahan parsing
-        }
+    // Metode untuk mencari transaksi berdasarkan rentang tanggal
+    public List<Transaction> findTransactionsByDate(Date startDate, Date endDate) {
+        return transactionRepository.findByTransDateBetween(startDate, endDate);
+    }
+
+    public List<Transaction> findTransactionsByDateAndItemCode(Date startDate, Date endDate, String itemCode) {
+        return transactionRepository.findByTransDateBetweenAndItemCode(startDate, endDate, itemCode);
     }
 	
     // Fungsi untuk record inbound transaction
