@@ -21,4 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     // Menemukan transaksi berdasarkan transDate
     List<Transaction> findByTransDate(Date transDate);
+
+    // Menemukan transaksi dengan tipe transaksi
+    List<Transaction> findByTransactionType(String transactionType);
 }

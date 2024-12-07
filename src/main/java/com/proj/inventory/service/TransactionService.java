@@ -53,13 +53,18 @@ public class TransactionService {
             return List.of(); // Mengembalikan list kosong jika ada kesalahan parsing
         }
     }
+
+    // Fungsi untuk mendapatkan transaksi dengan tipe tertentu
+    public List<Transaction> getTransactionsByType(String transactionType) {
+        return transactionRepository.findByTransactionType(transactionType);
+    }
 	
     // Fungsi untuk record inbound transaction
     public Transaction recordInboundTransaction(Transaction transaction) {
         // Set transaksi dengan tipe inbound dan tanggal transaksi
         transaction.setTransactionType("inbound");
         transaction.setTransDate(new Date());  // Set tanggal transaksi
-        transaction.setUserId("USER123");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
+        transaction.setUserId("admin");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
     
         System.out.println("Transaksi Quantity: " + transaction.getTransQty());
 
@@ -110,7 +115,7 @@ public class TransactionService {
         // Set transaksi dengan tipe outbound dan tanggal transaksi
         transaction.setTransactionType("outbound");
         transaction.setTransDate(new Date());  // Set tanggal transaksi
-        transaction.setUserId("USER123");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
+        transaction.setUserId("admin");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
     
         // Mengambil lokasi dari transaksi dan mencari objek Location berdasarkan locCd
         Location location = transaction.getLocation();
@@ -149,33 +154,35 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }    
 
-    // Memperbaiki metode updateStock agar menerima objek Location dan Date
-    // private void updateStock(String itemCode, int quantity, Location location, boolean isInbound, Date transactionDate) {
-    //     // Mencari stok berdasarkan itemCode dan location
-    //     Optional<Stock> stockOpt = stockRepository.findByItemCodeAndLocation(itemCode, location.getLocCd());
-    //     Stock stock;
-    
-    //     if (stockOpt.isEmpty()) {
-    //         stock = new Stock();
-    //         stock.setItemCode(itemCode);
-    //         stock.setQuantity(0);  // Set quantity menjadi 0 jika stok belum ada
-    //     } else {
-    //         stock = stockOpt.get();
-    //     }
-    
-    //     // Logika untuk memperbarui stok berdasarkan inbound atau outbound
-    //     if (isInbound) {
-    //         stock.setQuantity(stock.getQuantity() + quantity);  // Tambah quantity untuk inbound
-    //     } else {
-    //         stock.setQuantity(stock.getQuantity() - quantity);  // Kurangi quantity untuk outbound
-    //     }
-    
-    //     // Set lokasi dan tanggal update
-    //     stock.setLocation(location);
-    //     stock.setUpdateDate(transactionDate);  // Gunakan tanggal transaksi
-    //     stock.setUserUpdate("USER123");  // Default user update (sesuaikan dengan pengguna yang sedang login)
-    
-    //     // Simpan stok yang telah diperbarui
-    //     stockRepository.save(stock);
-    // }    
+    // Metode untuk menangani transaksi adjustment
+    public Transaction recordAdjustmentTransaction(Transaction transaction) {
+        transaction.setTransactionType("adjustment");
+        transaction.setTransDate(new Date());
+        transaction.setUserId("admin");
+
+        // Logika untuk transaksi adjustment (misalnya, mengubah stok tanpa mengurangi jumlahnya)
+        Location location = transaction.getLocation();
+        if (location == null) {
+            throw new RuntimeException("Location tidak ditemukan!");
+        }
+
+        Optional<Stock> existingStockOpt = stockRepository.findByItemCodeAndLocation(transaction.getItemCode(), location.getLocCd());
+        if (!existingStockOpt.isPresent()) {
+            throw new RuntimeException("Stok tidak tersedia!");
+        }
+
+        Stock stock = existingStockOpt.get();
+        int qtyBefore = stock.getQuantity();
+        int qtyAfter = qtyBefore - transaction.getTransQty(); // Misalnya, penyesuaian dapat menambah atau mengurangi stok
+
+        // Update stok
+        stock.setQuantity(qtyAfter);
+        stock.setUpdateDate(new Date());
+        stockRepository.save(stock);
+
+        // Simpan transaksi
+        transaction.setQtyBefore(qtyBefore);
+        transaction.setQtyAfter(qtyAfter);
+        return transactionRepository.save(transaction);
+    }    
 }
