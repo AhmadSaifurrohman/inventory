@@ -74,6 +74,15 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
+    // Endpoint untuk mendapatkan transaksi dengan tipe 'adjustment'
+    @GetMapping("/adjust")
+    @ResponseBody
+    public ResponseEntity<List<Transaction>> getAdjustmentTransactions() {
+        // Mengambil transaksi yang bertipe 'adjustment'
+        List<Transaction> adjustmentTransactions = transactionService.getTransactionsByType("adjustment");
+        return ResponseEntity.ok(adjustmentTransactions);
+    }
+
     // Endpoint untuk mencatat transaksi inbound
     @PostMapping("/inbound")
     @ResponseBody
@@ -86,8 +95,23 @@ public class TransactionController {
 
     @PostMapping("/outbound")
     @ResponseBody
-    public Transaction recordOutboundTransaction(@RequestBody Transaction transaction) {
-        return transactionService.recordOutboundTransaction(transaction);
+    public ResponseEntity<Transaction> recordTransaction(@RequestBody Transaction transaction) {
+        // Mencetak transaksi yang diterima dari frontend
+        System.out.println("Received Transaction: " + transaction);
+        System.out.println("Transaction Type: " + transaction.getTransactionType());
+
+        // Menambahkan pengecekan berdasarkan transactionType
+        if ("outbound".equalsIgnoreCase(transaction.getTransactionType())) {
+            System.out.println("Processing Outbound Transaction...");
+            return ResponseEntity.ok(transactionService.recordOutboundTransaction(transaction));
+        } else if ("adjustment".equalsIgnoreCase(transaction.getTransactionType())) {
+            System.out.println("Processing Adjustment Transaction...");
+            return ResponseEntity.ok(transactionService.recordAdjustmentTransaction(transaction));
+        } else {
+            // Jika transactionType tidak valid
+            System.out.println("Invalid Transaction Type: " + transaction.getTransactionType());
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
     // Endpoint untuk mendapatkan transaksi berdasarkan itemCode

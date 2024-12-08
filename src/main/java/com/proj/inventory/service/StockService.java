@@ -79,4 +79,12 @@ public class StockService {
     public List<Map<String, Object>> findStockUnderSafetyQty() {
         return stockRepository.findStockUnderSafetyQty();
     }
+
+    public int getCurrentStock(String itemCode, String location) {
+        // Query untuk mendapatkan stok berdasarkan itemCode dan location
+        Integer currentQty = stockRepository.findStockByItemCodeAndLocation(itemCode, location);
+        
+        // Jika tidak ada stok, kembalikan 0
+        return currentQty != null ? currentQty : 0;
+    }
 }

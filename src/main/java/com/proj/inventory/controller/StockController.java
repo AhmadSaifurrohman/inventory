@@ -3,6 +3,7 @@ package com.proj.inventory.controller;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -94,9 +95,7 @@ public class StockController {
 
         // System.out.println("Stock DTO List : " + stockDTOs);
         return ResponseEntity.ok(stockDTOs);
-    }
-
-    
+    } 
 
     @GetMapping("/api/filter")
     public ResponseEntity<List<StockDTO>> getFilteredStocks(
@@ -130,6 +129,21 @@ public class StockController {
         }
         
         return stockDTO;
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<Map<String, Object>> getCurrentStock(
+            @RequestParam("itemCode") String itemCode,
+            @RequestParam("location") String location) {
+        
+        // Mendapatkan stok berdasarkan itemCode dan location
+        int currentQty = stockService.getCurrentStock(itemCode, location);
+        
+        // Menyiapkan response untuk mengembalikan stok saat ini
+        Map<String, Object> response = new HashMap<>();
+        response.put("currentQty", currentQty);
+        
+        return ResponseEntity.ok(response);
     }
     
 

@@ -15,6 +15,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByItemCodeAndTransDate(String itemCode, Date transDate);
     List<Transaction> findByItemCode(String itemCode);
     List<Transaction> findByTransDate(Date transDate);
+
+    // Menemukan transaksi dengan tipe transaksi
+    List<Transaction> findByTransactionType(String transactionType);
     List<Transaction> findByTransDateBetween(Date startDate, Date endDate);
     List<Transaction> findByTransDateBetweenAndItemCode(Date startDate, Date endDate, String itemCode);
 }

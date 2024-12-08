@@ -21,6 +21,10 @@ public interface StockRepository extends JpaRepository<Stock, String> {
     List<Stock> findByItemCode(Item item); // Mengambil berdasarkan itemCode
     List<Stock> findByLocation(Location location); // Mengambil berdasarkan location
     
+    @Query("SELECT s.quantity FROM Stock s WHERE s.itemCode = :itemCode AND s.location.locCd = :location")
+    Integer findStockByItemCodeAndLocation(@Param("itemCode") String itemCode, @Param("location") String location);
+
+    
     @Query(value = """
         SELECT 
             inv.itemcode AS itemCode,
