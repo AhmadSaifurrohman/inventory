@@ -117,6 +117,17 @@
             </div>
         </div>
     </div>
+    <!-- Chart Bar Horizontal -->
+    <div class="col-md-6">
+      <div class="card">
+          <div class="card-header">
+              <h3 class="card-title">Stok Barang Teratas</h3>
+          </div>
+          <div class="card-body">
+              <canvas id="stockChart" width="400" height="300"></canvas>
+          </div>
+      </div>
+  </div>
 </div>
 
 
@@ -189,5 +200,48 @@
                 console.error("Error fetching data: ", error);
             }
         });
+        
+        // Data dummy untuk chart
+        var chartData = {
+            labels: ['Item A', 'Item B', 'Item C', 'Item D', 'Item E'], // Nama item
+            datasets: [{
+                label: 'Jumlah Stok',
+                data: [200, 150, 300, 120, 500], // Jumlah stok
+                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Warna background bar
+                borderColor: 'rgba(54, 162, 235, 1)', // Warna border bar
+                borderWidth: 1
+            }]
+        };
+
+        // Konfigurasi Chart.js
+        var ctx = document.getElementById('stockChart').getContext('2d');
+        var stockChart = new Chart(ctx, {
+            type: 'bar', // Tipe chart: bar
+            data: chartData,
+            options: {
+                responsive: true,
+                indexAxis: 'y', // Menjadikan chart horizontal
+                scales: {
+                    x: {
+                        beginAtZero: true, // Mulai dari nol pada sumbu X
+                    },
+                    y: {
+                        beginAtZero: true // Mulai dari nol pada sumbu Y
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Tidak menampilkan legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.raw + ' unit'; // Menampilkan jumlah stok di tooltip
+                            }
+                        }
+                    }
+                }
+            }
+        });
     });
-    </script>
+</script>
