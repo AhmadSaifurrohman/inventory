@@ -2,9 +2,10 @@ package com.proj.inventory.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.proj.inventory.repository.ItemRepository;
 import com.proj.inventory.repository.StockRepository;
 import com.proj.inventory.repository.TransactionRepository;
-import com.proj.inventory.repository.ItemRepository;
 
 @Service
 public class DashboardService {
@@ -33,6 +34,4 @@ public class DashboardService {
     public long getTotalOutboundTransactions() {
         return transactionRepository.countByTransactionType("outbound");
     }
-
-    // Anda bisa menambahkan metode ringkasan lainnya sesuai kebutuhan dashboard
 }

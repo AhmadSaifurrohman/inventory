@@ -117,17 +117,43 @@
             </div>
         </div>
     </div>
+
     <!-- Chart Bar Horizontal -->
     <div class="col-md-6">
-      <div class="card">
-          <div class="card-header">
-              <h3 class="card-title">Stok Barang Teratas</h3>
-          </div>
-          <div class="card-body">
-              <canvas id="stockChart" width="400" height="300"></canvas>
-          </div>
-      </div>
-  </div>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Top 10 Barang Paling Banyak Dikeluarkan</h3>
+                <!-- Filter Tahun dan Bulan di dalam Card Header -->
+                <div class="card-tools">
+                    <div class="form-inline">
+                        <label for="yearFilter" class="mr-2">Tahun</label>
+                        <select id="yearFilter" class="form-control mr-3">
+                            <!-- Tahun akan diisi secara dinamis dengan JavaScript -->
+                        </select>
+    
+                        <label for="monthFilter" class="mr-2">Bulan</label>
+                        <select id="monthFilter" class="form-control">
+                            <option value="1">Januari</option>
+                            <option value="2">Februari</option>
+                            <option value="3">Maret</option>
+                            <option value="4">April</option>
+                            <option value="5">Mei</option>
+                            <option value="6">Juni</option>
+                            <option value="7">Juli</option>
+                            <option value="8">Agustus</option>
+                            <option value="9">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="stockChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>    
 </div>
 
 
@@ -201,47 +227,159 @@
             }
         });
         
-        // Data dummy untuk chart
-        var chartData = {
-            labels: ['Item A', 'Item B', 'Item C', 'Item D', 'Item E'], // Nama item
-            datasets: [{
-                label: 'Jumlah Stok',
-                data: [200, 150, 300, 120, 500], // Jumlah stok
-                backgroundColor: 'rgba(54, 162, 235, 0.2)', // Warna background bar
-                borderColor: 'rgba(54, 162, 235, 1)', // Warna border bar
-                borderWidth: 1
-            }]
-        };
+        // Panggil API untuk mendapatkan data Top 10 Barang yang paling banyak dikeluarkan
+        // $.ajax({
+        //     url: '/api/top10MostRequested',
+        //     method: 'GET',
+        //     success: function(data) {
+        //         console.log('Top 10 Barang Data: ', data);
+                
+        //         // Persiapkan data untuk Chart.js
+        //         var labels = [];
+        //         var quantities = [];
 
-        // Konfigurasi Chart.js
-        var ctx = document.getElementById('stockChart').getContext('2d');
-        var stockChart = new Chart(ctx, {
-            type: 'bar', // Tipe chart: bar
-            data: chartData,
-            options: {
-                responsive: true,
-                indexAxis: 'y', // Menjadikan chart horizontal
-                scales: {
-                    x: {
-                        beginAtZero: true, // Mulai dari nol pada sumbu X
-                    },
-                    y: {
-                        beginAtZero: true // Mulai dari nol pada sumbu Y
-                    }
+        //         data.forEach(function(item) {
+        //             labels.push(item.itemCode);  // ItemCode sebagai label
+        //             quantities.push(item.totalQty);  // Total Quantity yang dikeluarkan
+        //         });
+
+        //         // Data untuk chart
+        //         var chartData = {
+        //             labels: labels,
+        //             datasets: [{
+        //                 label: 'Total Quantity',
+        //                 data: quantities,
+        //                 backgroundColor: 'rgba(54, 162, 235, 0.2)', // Warna bar chart
+        //                 borderColor: 'rgba(54, 162, 235, 1)', // Warna border
+        //                 borderWidth: 1
+        //             }]
+        //         };
+
+        //         // Konfigurasi Chart.js
+        //         var ctx = document.getElementById('stockChart').getContext('2d');
+        //         var topItemsChart = new Chart(ctx, {
+        //             type: 'bar', // Bar chart horizontal
+        //             data: chartData,
+        //             options: {
+        //                 responsive: true,
+        //                 indexAxis: 'y', // Sumbu Y untuk item, X untuk quantity
+        //                 scales: {
+        //                     x: {
+        //                         beginAtZero: true, // Mulai dari nol
+        //                     },
+        //                     y: {
+        //                         beginAtZero: true // Mulai dari nol
+        //                     }
+        //                 },
+        //                 plugins: {
+        //                     legend: {
+        //                         display: false // Tidak menampilkan legend
+        //                     },
+        //                     tooltip: {
+        //                         callbacks: {
+        //                             label: function(tooltipItem) {
+        //                                 return tooltipItem.raw + ' unit'; // Menampilkan jumlah stok di tooltip
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         });
+        //     },
+        //     error: function(xhr, status, error) {
+        //         console.error("Error fetching data: ", error);
+        //     }
+        // });
+
+        // Set default tahun dan bulan (misalnya, tahun ini dan bulan ini)
+        var currentYear = new Date().getFullYear();
+        var currentMonth = new Date().getMonth() + 1; // Bulan dimulai dari 0, jadi kita tambahkan 1
+
+        // Mengisi dropdown tahun
+        for (var year = currentYear - 5; year <= currentYear + 5; year++) {
+            $('#yearFilter').append('<option value="' + year + '">' + year + '</option>');
+        }
+        $('#yearFilter').val(currentYear); // Set default tahun ke tahun ini
+
+        // Mengatur event ketika dropdown tahun atau bulan berubah
+        $('#yearFilter, #monthFilter').change(function() {
+            var selectedYear = $('#yearFilter').val();
+            var selectedMonth = $('#monthFilter').val();
+            fetchTop10Items(selectedYear, selectedMonth); // Memanggil fungsi untuk fetch data baru
+        });
+
+        // Memanggil API untuk mendapatkan data Top 10 Barang yang paling banyak dikeluarkan
+        function fetchTop10Items(year, month){
+            $.ajax({
+                url: '/api/top10MostRequested', // Endpoint API untuk Top 10 Items
+                method: 'GET',
+                data: {
+                    year: year,
+                    month: month
                 },
-                plugins: {
-                    legend: {
-                        display: false // Tidak menampilkan legend
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.raw + ' unit'; // Menampilkan jumlah stok di tooltip
+                success:function(data){
+                    console.log('Top 10 Barang Data: ', data);
+                
+                    // Persiapkan data untuk Chart.js
+                    var labels = [];
+                    var quantities = [];
+
+                    data.forEach(function(item) {
+                        labels.push(item.itemCode);  // ItemCode sebagai label
+                        quantities.push(item.totalQty);  // Total Quantity yang dikeluarkan
+                    });
+
+                    // Data untuk chart
+                    var chartData = {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Quantity',
+                            data: quantities,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)', // Warna bar chart
+                            borderColor: 'rgba(54, 162, 235, 1)', // Warna border
+                            borderWidth: 1
+                        }]
+                    };
+
+                    // Konfigurasi Chart.js
+                    var ctx = document.getElementById('stockChart').getContext('2d');
+                    var stockChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            responsive: true,
+                            indexAxis: 'y', // Sumbu Y untuk item, X untuk quantity
+                            scales: {
+                                x: {
+                                    beginAtZero: true,
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(tooltipItem) {
+                                            return tooltipItem.raw + ' unit';
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
+                    })
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data: ", error);
                 }
-            }
-        });
+            })
+        }
+
+        // Fetch default data ketika halaman pertama kali dimuat
+        fetchTop10Items(currentYear, currentMonth);
+        
     });
 </script>

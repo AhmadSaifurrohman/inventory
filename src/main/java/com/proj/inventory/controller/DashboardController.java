@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.proj.inventory.service.DashboardService;
 import com.proj.inventory.service.StockService;
+import com.proj.inventory.service.TransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -24,7 +26,9 @@ public class DashboardController {
 
     @Autowired
     private StockService stockService;
-    
+
+     @Autowired
+    private TransactionService transactionService;    
 
     // Endpoint untuk menampilkan halaman dashboard
     @GetMapping("/")
@@ -60,5 +64,14 @@ public class DashboardController {
     public ResponseEntity<List<Map<String, Object>>> findStockUnderSafetyQty() {
         List<Map<String, Object>> summary = stockService.findStockUnderSafetyQty();
         return ResponseEntity.ok(summary);
+    }
+
+    @GetMapping("/api/top10MostRequested")
+    @ResponseBody    
+    public ResponseEntity<List<Map<String, Object>>> getTop10MostRequested(
+            @RequestParam int year, 
+            @RequestParam int month) {
+        List<Map<String, Object>> top10Items = transactionService.findTop10ItemsByMonthAndYear(year, month);
+        return ResponseEntity.ok(top10Items);
     }
 }

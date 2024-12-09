@@ -1,9 +1,13 @@
 package com.proj.inventory.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,5 +186,45 @@ public class TransactionService {
         transaction.setQtyBefore(qtyBefore);
         transaction.setQtyAfter(qtyAfter);
         return transactionRepository.save(transaction);
-    }    
+    }
+    
+    public List<Map<String, Object>> getTop10MostRequestedItems() {
+        return transactionRepository.findTop10MostRequestedItems();
+    }
+
+    public List<Map<String, Object>> findTop10ItemsByMonthAndYear(int year, int month) {
+        // Format tanggal untuk mencocokkan transaksi pada bulan dan tahun yang dipilih
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String startDateStr = year + "-" + String.format("%02d", month) + "-01"; // Tanggal awal bulan
+        String endDateStr = year + "-" + String.format("%02d", month) + "-31"; // Tanggal akhir bulan
+
+        try {
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+            
+            // Ambil semua transaksi antara startDate dan endDate
+            List<Transaction> transactions = transactionRepository.findByTransDateBetween(startDate, endDate);
+            
+            // Menghitung total quantity per item
+            Map<String, Long> itemRequestCount = new HashMap<>();
+            for (Transaction transaction : transactions) {
+                itemRequestCount.put(transaction.getItemCode(), 
+                    itemRequestCount.getOrDefault(transaction.getItemCode(), 0L) + transaction.getTransQty());
+            }
+            
+            // Mengambil Top 10 item berdasarkan jumlah request
+            return itemRequestCount.entrySet().stream()
+                    .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
+                    .limit(10)
+                    .map(entry -> {
+                        Map<String, Object> itemData = new HashMap<>();
+                        itemData.put("itemCode", entry.getKey());
+                        itemData.put("totalQty", entry.getValue());
+                        return itemData;
+                    })
+                    .collect(Collectors.toList());
+        } catch (ParseException e) {
+            return Collections.emptyList(); // Return empty list if there's an error
+        }
+    }
 }
