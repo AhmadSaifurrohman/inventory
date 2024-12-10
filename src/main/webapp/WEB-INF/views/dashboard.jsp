@@ -119,6 +119,7 @@
     </div>
 
     <!-- Chart Bar Horizontal -->
+    <!-- Chart Bar Horizontal -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
@@ -226,70 +227,6 @@
                 console.error("Error fetching data: ", error);
             }
         });
-        
-        // Panggil API untuk mendapatkan data Top 10 Barang yang paling banyak dikeluarkan
-        // $.ajax({
-        //     url: '/api/top10MostRequested',
-        //     method: 'GET',
-        //     success: function(data) {
-        //         console.log('Top 10 Barang Data: ', data);
-                
-        //         // Persiapkan data untuk Chart.js
-        //         var labels = [];
-        //         var quantities = [];
-
-        //         data.forEach(function(item) {
-        //             labels.push(item.itemCode);  // ItemCode sebagai label
-        //             quantities.push(item.totalQty);  // Total Quantity yang dikeluarkan
-        //         });
-
-        //         // Data untuk chart
-        //         var chartData = {
-        //             labels: labels,
-        //             datasets: [{
-        //                 label: 'Total Quantity',
-        //                 data: quantities,
-        //                 backgroundColor: 'rgba(54, 162, 235, 0.2)', // Warna bar chart
-        //                 borderColor: 'rgba(54, 162, 235, 1)', // Warna border
-        //                 borderWidth: 1
-        //             }]
-        //         };
-
-        //         // Konfigurasi Chart.js
-        //         var ctx = document.getElementById('stockChart').getContext('2d');
-        //         var topItemsChart = new Chart(ctx, {
-        //             type: 'bar', // Bar chart horizontal
-        //             data: chartData,
-        //             options: {
-        //                 responsive: true,
-        //                 indexAxis: 'y', // Sumbu Y untuk item, X untuk quantity
-        //                 scales: {
-        //                     x: {
-        //                         beginAtZero: true, // Mulai dari nol
-        //                     },
-        //                     y: {
-        //                         beginAtZero: true // Mulai dari nol
-        //                     }
-        //                 },
-        //                 plugins: {
-        //                     legend: {
-        //                         display: false // Tidak menampilkan legend
-        //                     },
-        //                     tooltip: {
-        //                         callbacks: {
-        //                             label: function(tooltipItem) {
-        //                                 return tooltipItem.raw + ' unit'; // Menampilkan jumlah stok di tooltip
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //     },
-        //     error: function(xhr, status, error) {
-        //         console.error("Error fetching data: ", error);
-        //     }
-        // });
 
         // Set default tahun dan bulan (misalnya, tahun ini dan bulan ini)
         var currentYear = new Date().getFullYear();
@@ -301,14 +238,19 @@
         }
         $('#yearFilter').val(currentYear); // Set default tahun ke tahun ini
 
+        // Mengisi dropdown bulan
+        $('#monthFilter').val(currentMonth); // Set default bulan ke bulan ini
+
         // Mengatur event ketika dropdown tahun atau bulan berubah
         $('#yearFilter, #monthFilter').change(function() {
             var selectedYear = $('#yearFilter').val();
             var selectedMonth = $('#monthFilter').val();
+            console.log('Fetching data for:', selectedYear, selectedMonth); // Debugging
             fetchTop10Items(selectedYear, selectedMonth); // Memanggil fungsi untuk fetch data baru
         });
 
         // Memanggil API untuk mendapatkan data Top 10 Barang yang paling banyak dikeluarkan
+        var stockChart = null; // Instance chart global
         function fetchTop10Items(year, month){
             $.ajax({
                 url: '/api/top10MostRequested', // Endpoint API untuk Top 10 Items
@@ -329,6 +271,11 @@
                         quantities.push(item.totalQty);  // Total Quantity yang dikeluarkan
                     });
 
+                    // Jika chart sudah ada, hancurkan chart lama
+                    if (stockChart != null) {
+                        stockChart.destroy();
+                    }
+
                     // Data untuk chart
                     var chartData = {
                         labels: labels,
@@ -343,7 +290,7 @@
 
                     // Konfigurasi Chart.js
                     var ctx = document.getElementById('stockChart').getContext('2d');
-                    var stockChart = new Chart(ctx, {
+                    stockChart = new Chart(ctx, {
                         type: 'bar',
                         data: chartData,
                         options: {

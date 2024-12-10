@@ -23,6 +23,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByTransDateBetween(Date startDate, Date endDate);
     List<Transaction> findByTransDateBetweenAndItemCode(Date startDate, Date endDate, String itemCode);
 
+    List<Transaction> findByTransDateBetweenAndTransactionType(Date startDate, Date endDate, String transactionType);
+
     // Query untuk mengambil Top 10 barang yang paling banyak dikeluarkan (outbound)
     @Query("SELECT t.itemCode AS itemCode, SUM(t.transQty) AS totalQty FROM Transaction t WHERE t.transactionType = 'outbound' GROUP BY t.itemCode ORDER BY totalQty DESC")
     List<Map<String, Object>> findTop10MostRequestedItems();

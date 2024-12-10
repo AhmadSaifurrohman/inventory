@@ -188,9 +188,9 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
     
-    public List<Map<String, Object>> getTop10MostRequestedItems() {
-        return transactionRepository.findTop10MostRequestedItems();
-    }
+    // public List<Map<String, Object>> getTop10MostRequestedItems() {
+    //     return transactionRepository.findTop10MostRequestedItems();
+    // }
 
     public List<Map<String, Object>> findTop10ItemsByMonthAndYear(int year, int month) {
         // Format tanggal untuk mencocokkan transaksi pada bulan dan tahun yang dipilih
@@ -203,7 +203,7 @@ public class TransactionService {
             Date endDate = dateFormat.parse(endDateStr);
             
             // Ambil semua transaksi antara startDate dan endDate
-            List<Transaction> transactions = transactionRepository.findByTransDateBetween(startDate, endDate);
+            List<Transaction> transactions = transactionRepository.findByTransDateBetweenAndTransactionType(startDate, endDate, "outbound");
             
             // Menghitung total quantity per item
             Map<String, Long> itemRequestCount = new HashMap<>();
