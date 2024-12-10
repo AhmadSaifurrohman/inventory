@@ -267,7 +267,16 @@
             pic: $('#editPic').val()
         };
 
+        // Menentukan transactionType berdasarkan halaman aktif
+        if (window.location.pathname.includes('/stock')) {
+            stockData.transactionType = 'outbound'; // Jika di stock.jsp
+        } else if (window.location.pathname.includes('/stock/adjustment')) {
+            stockData.transactionType = 'adjustment'; // Jika di stock-adjustment.jsp
+        }
+
         console.log("Data JSON yang dikirim:", stockData);
+        console.log("Transaction Type:", stockData.transactionType);
+        console.log("Current Page Path:", window.location.pathname);
 
         // Menampilkan setiap variabel di console
         console.log("Material Code:", stockData.itemCode);
@@ -278,6 +287,7 @@
         console.log("Quantity:", stockData.transQty);
         console.log("Department Pickup:", stockData.department);
         console.log("PIC Pickup:", stockData.pic);
+
 
         $.ajax({
             url: '/transactions/outbound', // Ganti dengan endpoint yang sesuai untuk Outbound Stock
