@@ -115,7 +115,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addLocationModalLabel">Add Location</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addLocationForm" data-mode="add">
@@ -130,7 +132,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveLocation">Save changes</button>
       </div>
     </div>
@@ -143,7 +145,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addItemCodeModalLabel">Add Item Code</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addItemCodeForm" data-mode="add">
@@ -176,7 +180,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveItemCode">Save changes</button>
       </div>
     </div>
@@ -189,7 +193,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addUnitModalLabel">Add Unit</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addUnitForm" data-mode="add">
@@ -204,7 +210,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveUnit">Save changes</button>
       </div>
     </div>

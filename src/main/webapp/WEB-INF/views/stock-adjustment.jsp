@@ -240,6 +240,9 @@
             source: dataAdapter,
             columnsresize: true,
             pagerMode: 'default',
+            showfilterrow: true,
+            filterable: true,
+            sortable: true,
             // selectionmode: 'checkbox',
             columns: columns
         });
