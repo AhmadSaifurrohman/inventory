@@ -51,6 +51,7 @@ public class DashboardController {
         summary.put("totalItem", dashboardService.getTotalItem());
         summary.put("totalInboundTransactions", dashboardService.getTotalInboundTransactions());
         summary.put("totalOutboundTransactions", dashboardService.getTotalOutboundTransactions());
+        summary.put("totalStock", dashboardService.getTotalStockQuantity()); // Menambahkan Total Stock
         return summary;
     }
 

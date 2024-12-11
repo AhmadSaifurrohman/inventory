@@ -1,11 +1,7 @@
-<!-- <h1 class="m-0">Welcome to Inventory Management System</h1> -->
-<!-- <p class="lead">Manage your products, stocks, and more with ease.</p> -->
-
 <div class="row">
     <div class="col-12 col-sm-6 col-md-3">
       <div class="info-box">
-        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-tools"></i></span>
-  
+        <span class="info-box-icon bg-info elevation-1"><i class="fas fa-cubes"></i></span>
         <div class="info-box-content">
           <span class="info-box-text">Total Item</span>
           <span class="info-box-number" id="totalItem"></span>
@@ -15,10 +11,10 @@
       <!-- /.info-box -->
     </div>
     <!-- /.col -->
+   
     <div class="col-12 col-sm-6 col-md-3">
       <div class="info-box mb-3">
-        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-thumbs-up"></i></span>
-  
+        <span class="info-box-icon bg-success elevation-1"><i class="fas fa-shopping-cart"></i></span>
         <div class="info-box-content">
           <span class="info-box-text">Total Inbound</span>
           <span class="info-box-number" id="totalInbound"></span>
@@ -50,8 +46,8 @@
         <span class="info-box-icon bg-warning elevation-1"><i class="fas fa-users"></i></span>
   
         <div class="info-box-content">
-          <span class="info-box-text">New Members</span>
-          <span class="info-box-number">2,000</span>
+          <span class="info-box-text">Total Stock</span>
+          <span class="info-box-number" id="totalStock"></span>
         </div>
         <!-- /.info-box-content -->
       </div>
@@ -76,7 +72,7 @@
               <div class="card-body">
                 <div class="tab-content" id="custom-tabs-one-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
-                        <div class="table-responsive">
+                        <div class="table-responsive" style="height: 500px; overflow-y: auto;">
                             <table class="table table-striped table-valign-middle" id="findStockApproachSafetyQty">
                                 <thead>
                                     <tr>
@@ -119,7 +115,6 @@
     </div>
 
     <!-- Chart Bar Horizontal -->
-    <!-- Chart Bar Horizontal -->
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
@@ -150,7 +145,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body" style="height: 500px; overflow-y: auto;">
                 <canvas id="stockChart" width="400" height="300"></canvas>
             </div>
         </div>
@@ -222,6 +217,7 @@
                 $('#totalInbound').text(data.totalInboundTransactions.toLocaleString());
                 $('#totalOutbound').text(data.totalOutboundTransactions.toLocaleString());
                 $('#totalItem').text(data.totalItem.toLocaleString());
+                $('#totalStock').text(data.totalStock.toLocaleString());
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching data: ", error);

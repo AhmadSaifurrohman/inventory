@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.proj.inventory.model.Item;
 import com.proj.inventory.model.Location;
 import com.proj.inventory.model.Stock;
 import com.proj.inventory.repository.StockRepository;
@@ -25,7 +24,7 @@ public class StockService {
     public List<Stock> getFilteredStocks(String itemCode, String locationCode) {
         System.out.println("Filter LocationCode : " + locationCode);
         System.out.println("Filter itemCode : " + itemCode);
-    
+        
         // Jika kedua filter (itemCode dan locationCode) diberikan
         if (itemCode != null && !itemCode.isEmpty() && locationCode != null && !locationCode.isEmpty()) {
             System.out.println("Masuk Filter Keduanya");
@@ -35,15 +34,11 @@ public class StockService {
         // Jika hanya itemCode diberikan
         else if (itemCode != null && !itemCode.isEmpty()) {
             System.out.println("Masuk Filter itemCode");
-            // Konversi String itemCode ke Item jika diperlukan
-            Item item = new Item(); 
-            item.setItemCode(itemCode); // Pastikan ada setter itemCode di model Item
-            return stockRepository.findByItemCode(item);
+            return stockRepository.findByItemCode(itemCode); // Panggil findByItemCode dengan parameter String
         } 
-        // Jika hanya locationCode diberikan
+        // Jika hanya locationCode yang diberikan
         else if (locationCode != null && !locationCode.isEmpty()) {
             System.out.println("Masuk Filter Location");
-            // Konversi String locationCode ke Location jika diperlukan
             Location location = new Location(); 
             location.setLocCd(locationCode); // Pastikan ada setter locCd di model Location
             return stockRepository.findByLocation(location);
@@ -53,9 +48,9 @@ public class StockService {
             System.out.println("Masuk Else");
             return stockRepository.findAll();
         }
-    }
+    }    
 
-    public Optional<Stock> getStockByItemCode(String itemCode) {
+    public Optional<Stock> getStockByItemCode(Long itemCode) {
         return stockRepository.findById(itemCode);
     }
 
@@ -68,7 +63,7 @@ public class StockService {
         return stockRepository.save(stock);
     }
 
-    public void deleteStock(String itemCode) {
+    public void deleteStock(Long itemCode) {
         stockRepository.deleteById(itemCode);
     }
 

@@ -149,14 +149,14 @@ public class StockController {
 
     // Endpoint untuk menghapus stok
     @DeleteMapping("/api/{itemCode}")
-    public ResponseEntity<Void> deleteStock(@PathVariable String itemCode) {
+    public ResponseEntity<Void> deleteStock(@PathVariable Long itemCode) {
         stockService.deleteStock(itemCode);
         return ResponseEntity.noContent().build();
     }
 
     // Endpoint untuk mendapatkan stok berdasarkan itemCode
     @GetMapping("/api/{itemCode}")
-    public ResponseEntity<Stock> getStockByItemCode(@PathVariable String itemCode) {
+    public ResponseEntity<Stock> getStockByItemCode(@PathVariable Long itemCode) {
         Optional<Stock> stock = stockService.getStockByItemCode(itemCode);
         return stock.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }

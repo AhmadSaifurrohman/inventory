@@ -27,6 +27,11 @@ public class DashboardService {
         return itemRepository.count();
     }
 
+    public long getTotalStockQuantity() {
+        Long totalStock = stockRepository.findTotalStockQuantity();
+        return totalStock != null ? totalStock : 0L; // Menggunakan Long dan memastikan nilainya 0 jika null
+    }        
+
     public long getTotalInboundTransactions() {
         return transactionRepository.countByTransactionType("inbound");
     }

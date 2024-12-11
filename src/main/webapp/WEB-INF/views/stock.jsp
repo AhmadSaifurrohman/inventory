@@ -329,13 +329,13 @@
                     return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
                 }
             },
-            { text: "Material", datafield: "material", width: '7%', cellsalign: 'center', align: 'center' },
+            { text: "Material Code", datafield: "material", width: '10%', cellsalign: 'center', align: 'center' },
             { text: "Material Name", datafield: "materialName", width: '15%', cellsalign: 'left', align: 'center' },
             { text: "Description", datafield: "description", width: '30%', cellsalign: 'left', align: 'center' },
             { text: "Part Number", datafield: "partNumber", width: '15%', cellsalign: 'center', align: 'center' },
-            { text: "Base Unit", datafield: "baseUnit", width: '10%', cellsalign: 'center', align: 'center' },
-            { text: "Storage Location", datafield: "storageLocation", width: '10%', cellsalign: 'center', align: 'center' },
-            { text: "Quantity", datafield: "quantity", width: '5%', cellsalign: 'center', align: 'center' },
+            { text: "Base Unit", datafield: "baseUnit", width: '7%', cellsalign: 'center', align: 'center' },
+            { text: "Location", datafield: "storageLocation", width: '10%', cellsalign: 'center', align: 'center' },
+            { text: "Qty", datafield: "quantity", width: '5%', cellsalign: 'center', align: 'center' },
             { text: "Safety Stock", datafield: "safetyStock", width: '5%' , cellsalign: 'center', align: 'center'}
     ];
 
