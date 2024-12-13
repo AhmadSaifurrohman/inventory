@@ -85,11 +85,26 @@
 			</dependency>
 
 			<!-- Hibernate -->
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
+			<!-- <dependency> -->
+				<!-- <groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-hibernate5</artifactId>
-				<version>2.15.0</version> <!-- Gunakan versi yang sesuai -->
+				<version>2.15.0</version> -->
+			<!-- </dependency> -->
+
+			<!-- Apache POI for Excel -->
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>5.2.3</version> <!-- Gunakan versi terbaru -->
 			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>5.2.3</version> <!-- Gunakan versi terbaru -->
+			</dependency>
+
+			
+
 		</dependencies>
 
 		<build>

@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <style>
+  .select2-container .select2-selection--single {
+      height: 38px;
+  }
+
   .card-body {
     max-height: 400px;  /* Atur tinggi maksimum untuk card body */
     overflow-y: auto;   /* Menambahkan scroll jika konten melebihi tinggi */
@@ -111,7 +115,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addLocationModalLabel">Add Location</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addLocationForm" data-mode="add">
@@ -126,7 +132,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveLocation">Save changes</button>
       </div>
     </div>
@@ -139,7 +145,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addItemCodeModalLabel">Add Item Code</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addItemCodeForm" data-mode="add">
@@ -159,6 +167,12 @@
             <label for="partNum" class="form-label">Part Number</label>
             <input type="text" class="form-control" id="partNum" required>
           </div>
+          <div class="form-group">
+            <label for="unit">Unit</label>
+            <select class="form-control select2" id="unit" style="width: 100%;" name="unit" required>
+                <option value="" selected>Select Unit</option>
+            </select>
+          </div>
           <div class="mb-3">
             <label for="safetyStock" class="form-label">Safety Stock</label>
             <input type="text" class="form-control" id="safetyStock" required>
@@ -166,7 +180,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveItemCode">Save changes</button>
       </div>
     </div>
@@ -179,7 +193,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="addUnitModalLabel">Add Unit</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
       <div class="modal-body">
         <form id="addUnitForm" data-mode="add">
@@ -194,7 +210,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" id="saveUnit">Save changes</button>
       </div>
     </div>
@@ -204,6 +220,24 @@
 
 <script>
   $(document).ready(function () {
+    $('.select2').select2();
+
+    // Mengambil data Unit
+    $.ajax({
+        url: '${pageContext.request.contextPath}/master/api/units',
+        type: 'GET',
+        success: function (data) {
+            let unitDropdownAdd = $('#unit');  // Untuk modal Add
+
+            data.forEach(function (unit) {
+                unitDropdownAdd.append('<option value="' + unit.unitCd + '">' + unit.unitCd + ' - ' + unit.description + '</option>');
+            });
+        },
+        error: function (err) {
+            console.error("Error fetching units:", err);
+        }
+    });
+
     // Initialize jqxGrid for Location, Item, and Unit
     function initializeGrid(gridId, columns, dataAdapter) {
         $(gridId).jqxGrid({
@@ -216,7 +250,10 @@
             columnsresize: true,
             pagerMode: 'default',
             selectionmode: 'checkbox',
-            columns: columns
+            columns: columns,
+            sortable: true,
+            showfilterrow: true,
+            filterable: true,
         });
     }
 
@@ -228,12 +265,13 @@
     ];
 
     var itemColumns = [
-        { text: 'No', datafield: 'no', width: '8%' },
+        { text: 'No', datafield: 'no', width: '3%' },
         { text: 'Item Code', datafield: 'itemCode', width: '20%' },
         { text: 'Name', datafield: 'itemName', width: '20%' },
         { text: 'Description', datafield: 'description', width: '20%' },
         { text: 'Part Number', datafield: 'partNum', width: '20%' },
-        { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' }
+        { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' },
+        { text: 'Unit', datafield: 'unitCd', width: '5%' }
     ];
 
     var unitColumns = [
@@ -422,6 +460,7 @@
       var itemName = $('#itemName').val();
       var description = $('#descriptionItem').val();
       var partNum = $('#partNum').val();
+      var unitCd = $('#unit').val();
       var safetyStock = $('#safetyStock').val();
 
       if (itemCode && itemName) {
@@ -438,6 +477,7 @@
             itemName: itemName,
             description: description,
             partNum: partNum,
+            unitCd: unitCd,
             safetyStock: safetyStock
           }),
           success: function (response) {

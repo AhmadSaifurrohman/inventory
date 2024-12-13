@@ -51,7 +51,7 @@ public class MasterDataController {
     public ResponseEntity<?> getItemDetails(@RequestParam String itemCode) {
         Item item = masterDataService.findItemByCode(itemCode);
         if (item != null) {
-            return ResponseEntity.ok(new ResponseData(item.getDescription(), item.getPartNumber()));
+            return ResponseEntity.ok(new ResponseData(item.getDescription(), item.getPartNumber(), item.getUnitCd()));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item not found");
         }
@@ -61,10 +61,12 @@ public class MasterDataController {
     public class ResponseData {
         private String description;
         private String partNumber;
+        private String unitCd;
 
-        public ResponseData(String description, String partNumber) {
+        public ResponseData(String description, String partNumber, String unitCd) {
             this.description = description;
             this.partNumber = partNumber;
+            this.unitCd = unitCd;
         }
 
         // Getters and Setters
@@ -82,6 +84,14 @@ public class MasterDataController {
 
         public void setPartNumber(String partNumber) {
             this.partNumber = partNumber;
+        }
+
+        public String getUnitCd() {
+            return unitCd;
+        }
+
+        public void setUnitCd(String unitCd) {
+            this.unitCd = unitCd;
         }
     }
 

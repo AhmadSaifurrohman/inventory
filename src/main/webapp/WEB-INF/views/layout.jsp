@@ -100,6 +100,9 @@
     <!-- Date Range Picker -->
     <script src="${pageContext.request.contextPath}/static/plugins/daterangepicker/daterangepicker.js"></script>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- JQWidgets JS -->
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxcore.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jqwidgets/jqxdata.js"></script>

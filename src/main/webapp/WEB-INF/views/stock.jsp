@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Excel -->
-                        <button class="btn btn-info" id="excelhBtn">Excel</button>
+                        <button class="btn btn-info" id="excelBtn" onclick="downloadExcel()">Download Excel</button>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="form-group">
                         <label for="unit">Unit</label>
-                        <select class="form-control select2" id="unit" style="width: 100%;" name="unit" required>
+                        <select class="form-control select2" id="unit" style="width: 100%;" name="unit" disabled required>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -130,15 +130,15 @@
                     </div>
                     <div class="form-group">
                         <label for="editDescription">Description</label>
-                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" required>
+                        <input type="text" class="form-control" id="editDescription" name="editDescription" placeholder="Enter Description" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="editPartNumber">Part Number</label>
-                        <input type="text" class="form-control" id="editPartNumber" name="editPartNumber" placeholder="Enter Part Number" required>
+                        <input type="text" class="form-control" id="editPartNumber" name="editPartNumber" placeholder="Enter Part Number" disabled required>
                     </div>
                     <div class="form-group">
                         <label for="editUnit">Unit</label>
-                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" required>
+                        <select class="form-control select2" id="editUnit" style="width: 100%;" name="editUnit" disabled required>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -149,7 +149,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editQuantity">Quantity</label>
+                        <label for="editQuantity">Out Quantity</label>
                         <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
                     </div>
                     <div class="form-group">
@@ -200,8 +200,8 @@
 
     // Function to save stock via AJAX
     function saveStock() {
-        const quantity = $('#quantity').val();
-        console.log("Type of quantity: " + typeof quantity);
+        // const quantity = $('#quantity').val();
+        // console.log("Type of quantity: " + typeof quantity);
         const stockData = {
             itemCode: $('#materialCode').val(),
             description: $('#description').val(),
@@ -263,11 +263,20 @@
                 locCd: $('#editRackLocation').val() // Gunakan locCd yang sesuai
             },
             transQty: $('#editQuantity').val(),
-            department: $('#editDepartment').val(),
-            pic: $('#editPic').val()
+            deptPickup: $('#editDepartment').val(),
+            picPickup: $('#editPic').val()
         };
 
+        // Menentukan transactionType berdasarkan halaman aktif
+        if (window.location.pathname.includes('/stock')) {
+            stockData.transactionType = 'outbound'; // Jika di stock.jsp
+        } else if (window.location.pathname.includes('/stock/adjustment')) {
+            stockData.transactionType = 'adjustment'; // Jika di stock-adjustment.jsp
+        }
+
         console.log("Data JSON yang dikirim:", stockData);
+        console.log("Transaction Type:", stockData.transactionType);
+        console.log("Current Page Path:", window.location.pathname);
 
         // Menampilkan setiap variabel di console
         console.log("Material Code:", stockData.itemCode);
@@ -276,8 +285,9 @@
         console.log("Unit:", stockData.unitCd);
         console.log("Rack Location:", stockData.location);
         console.log("Quantity:", stockData.transQty);
-        console.log("Department Pickup:", stockData.department);
-        console.log("PIC Pickup:", stockData.pic);
+        console.log("Department Pickup:", stockData.deptPickup);
+        console.log("PIC Pickup:", stockData.picPickup);
+
 
         $.ajax({
             url: '/transactions/outbound', // Ganti dengan endpoint yang sesuai untuk Outbound Stock
@@ -319,20 +329,20 @@
                     return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
                 }
             },
-            { text: "Material", datafield: "material", width: '7%', cellsalign: 'center', align: 'center' },
+            { text: "Material Code", datafield: "material", width: '10%', cellsalign: 'center', align: 'center' },
             { text: "Material Name", datafield: "materialName", width: '15%', cellsalign: 'left', align: 'center' },
             { text: "Description", datafield: "description", width: '30%', cellsalign: 'left', align: 'center' },
             { text: "Part Number", datafield: "partNumber", width: '15%', cellsalign: 'center', align: 'center' },
-            { text: "Base Unit", datafield: "baseUnit", width: '10%', cellsalign: 'center', align: 'center' },
-            { text: "Storage Location", datafield: "storageLocation", width: '10%', cellsalign: 'center', align: 'center' },
-            { text: "Quantity", datafield: "quantity", width: '5%', cellsalign: 'center', align: 'center' },
+            { text: "Base Unit", datafield: "baseUnit", width: '7%', cellsalign: 'center', align: 'center' },
+            { text: "Location", datafield: "storageLocation", width: '10%', cellsalign: 'center', align: 'center' },
+            { text: "Qty", datafield: "quantity", width: '5%', cellsalign: 'center', align: 'center' },
             { text: "Safety Stock", datafield: "safetyStock", width: '5%' , cellsalign: 'center', align: 'center'}
-        ];
+    ];
 
     function initializeGrid(gridId, columns, dataAdapter) {
             $(gridId).jqxGrid({
                 width: '100%',
-                height: 350,  /* Mengatur tinggi grid */
+                height: 700,  /* Mengatur tinggi grid */
                 autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
@@ -340,7 +350,14 @@
                 columnsresize: true,
                 pagerMode: 'default',
                 // selectionmode: 'checkbox',
-                columns: columns
+                columns: columns,
+                sortable: true,
+                showfilterrow: true,
+                filterable: true,
+                enablebrowserselection: true,
+                keyboardnavigation: false,
+                pagesize: 20,
+		 		pagesizeoptions: ['20', '50', '100'],
             });
         }
 
@@ -466,7 +483,7 @@
 
     $(document).ready(function () {
         // Event listener untuk materialCode di modal Add dan Edit
-        $('#materialCode, #editMaterialCode').on('change', function () {
+        $('#materialCode, #editMaterialCode').on('change', function () { 
             var selectedItemCode = $(this).val();
             console.log('selectedItemCode', selectedItemCode);
             
@@ -488,18 +505,22 @@
                             if (targetModal === 'addModal') {
                                 $('#description').val(response.description);
                                 $('#partNumber').val(response.partNumber);
+                                updateUnitDropdown('#unit', response.unitCd);
                             } else if (targetModal === 'editModal') {
                                 $('#editDescription').val(response.description);
                                 $('#editPartNumber').val(response.partNumber);
+                                updateUnitDropdown('#editUnit', response.unitCd);
                             }
                         } else {
                             // Jika data tidak ditemukan
                             if (targetModal === 'addModal') {
                                 $('#description').val('');
                                 $('#partNumber').val('');
+                                resetUnitDropdown('#unit');
                             } else if (targetModal === 'editModal') {
                                 $('#editDescription').val('');
                                 $('#editPartNumber').val('');
+                                resetUnitDropdown('#editUnit');
                             }
                             Swal.fire('Error', 'Material code not found', 'error');
                         }
@@ -513,20 +534,43 @@
                 if (targetModal === 'addModal') {
                     $('#description').val('');
                     $('#partNumber').val('');
+                    resetUnitDropdown('#unit');
                 } else if (targetModal === 'editModal') {
                     $('#editDescription').val('');
                     $('#editPartNumber').val('');
+                    resetUnitDropdown('#editUnit');
                 }
             }
         });
+
+        // Fungsi untuk mengupdate dropdown unit
+        function updateUnitDropdown(selector, selectedUnit) {
+            var dropdown = $(selector);
+            
+            // Jika unit yang dipilih ada dalam opsi, set sebagai selected
+            dropdown.val(selectedUnit);
+            
+            // Jika unit yang dipilih tidak ada dalam opsi, kita bisa menambahkannya
+            if (!dropdown.find('option[value="' + selectedUnit + '"]').length) {
+                dropdown.append('<option value="' + selectedUnit + '" selected>' + selectedUnit + '</option>');
+            }
+            
+            // Memastikan dropdown diperbarui (untuk select2)
+            dropdown.trigger('change');
+        }
+
+        // Fungsi untuk reset dropdown unit kembali ke default
+        function resetUnitDropdown(selector) {
+            var dropdown = $(selector);
+            // Set nilai default dan pastikan dropdown direset
+            dropdown.val('');
+            dropdown.trigger('change');
+        }
     });
 
     $("#searchBtn").on("click", function () {
         const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
         const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
-
-        console.log('ItemCodeFilter:', itemCodeFilter);
-        console.log('LocationFilter:', locationFilter);
 
         $.ajax({
             url: '/stock/api/filter',
@@ -568,6 +612,41 @@
             }
         });
     });
+
+    function downloadExcel() {
+        // Mendapatkan nilai filter
+        const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
+        const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
+
+        console.log('ItemCodeFilter:', itemCodeFilter);
+        console.log('LocationFilter:', locationFilter);
+
+        // Menggunakan AJAX untuk permintaan GET
+        $.ajax({
+            url: `/stock/export-excel`,
+            method: 'GET',
+            xhrFields: {
+                responseType: 'blob' // Mengatur response sebagai file blob
+            },
+            data: {
+                itemCode: itemCodeFilter,
+                location: locationFilter
+            },
+            success: function(blob) {
+                // Membuat URL untuk blob dan memulai download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'stock_summary.xlsx'; // Nama file yang akan diunduh
+                a.click();
+                window.URL.revokeObjectURL(url); // Hapus URL setelah download
+            },
+            error: function(xhr, status, error) {
+                console.error('Error downloading Excel:', error);
+            }
+        });
+    }
+
 
 
 </script>

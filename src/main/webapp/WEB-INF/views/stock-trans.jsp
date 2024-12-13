@@ -28,7 +28,7 @@
                                         <i class="far fa-calendar-alt"></i>
                                     </span>
                                     </div>
-                                    <input type="text" class="form-control float-right" id="reservation">
+                                    <input type="text" class="form-control float-right" id="daterangeForm">
                                 </div>
                                 <!-- /.input group -->
                             </div>
@@ -76,153 +76,131 @@
             });
     }
 
+    var stockColumns = [
+        { 
+            text: "No", 
+            datafield: "id", 
+            width: 60, 
+            cellsrenderer: function (row, column, value, rowData, columnData) {
+                // Menggunakan row index untuk menghasilkan nomor urut
+                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
+            } 
+        },           // Lebar untuk No
+        { text: 'Transaction No', datafield: 'transNo', width: '15%' },
+        { text: 'Item Code', datafield: 'itemCode', width: '15%' },
+        { text: 'Transaction Type', datafield: 'transactionType', width: '15%' },
+        { text: 'Quantity', datafield: 'transQty', width: '12%', cellsalign: 'right', align: 'center' },
+        { text: 'Qty Before', datafield: 'qtyBefore', width: '12%', cellsalign: 'right', align: 'center' },
+        { text: 'Qty After', datafield: 'qtyAfter', width: '12%', cellsalign: 'right', align: 'center' },
+        { text: 'Transaction Date', datafield: 'transDate', width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
+        { text: 'User', datafield: 'userId', width: '12%' },
+        { text: 'PIC Pickup', datafield: 'picPickup', width: '12%' },
+        { text: 'Dept Pickup', datafield: 'deptPickup', width: '12%' },
+    ];
+
+    function initializeGrid(gridId, columns, dataAdapter) {
+            $(gridId).jqxGrid({
+                width: '100%',
+                height: 700,  /* Mengatur tinggi grid */
+                autoheight: false,  /* Nonaktifkan autoheight */
+                pageable: true,
+                pagesize: 10, // Show 10 rows per page
+                source: dataAdapter,
+                columnsresize: true,
+                pagerMode: 'default',
+                // selectionmode: 'checkbox',
+                columns: columns,
+                sortable: true,
+                showfilterrow: true,
+                filterable: true,
+                enablebrowserselection: true,
+                keyboardnavigation: false,
+                pagesize: 20,
+		 		pagesizeoptions: ['20', '50', '100'],
+            });
+        }
+
+    // Function to handle data response and initialize grid
+    function handleStockDataResponse(url, gridId, columns, startDate, endDate, itemCode) {
+        console.log(startDate, endDate, itemCode);
+        let params = {};
+        if (startDate && endDate) {
+            params = { ...params, startDate: startDate, endDate: endDate };
+        }
+        if (itemCode) {
+            params = { ...params, itemCode: itemCode };
+        }
+
+        // Lakukan AJAX request
+        $.ajax({
+            url: url,
+            method: 'GET',
+            data: params, // Hanya mengirim parameter jika ada
+            success: function (data) {
+                // console.log('Hasil data:', data);
+
+                // Proses data untuk grid
+                const stockData = data.map((item, index) => ({
+                    id: index + 1, // Nomor urut berdasarkan index
+                    transNo: item.transNo,
+                    itemCode: item.itemCode,
+                    transactionType: item.transactionType,
+                    transQty: item.transQty,
+                    qtyBefore: item.qtyBefore,
+                    qtyAfter: item.qtyAfter,
+                    transDate: item.transDate,
+                    userId: item.userId,
+                    picPickup: item.picPickup,
+                    deptPickup: item.deptPickup
+                }));
+
+                // Siapkan data adapter untuk grid
+                const source = {
+                    localdata: stockData,
+                    datatype: "array",
+                    datafields: columns.map(col => ({ name: col.datafield, type: 'string' }))
+                };
+
+                const dataAdapter = new $.jqx.dataAdapter(source);
+
+                // Reinitialize jqxGrid dengan data yang diperbarui
+                initializeGrid(gridId, columns, dataAdapter);
+            },
+            error: function (err) {
+                console.log('Error fetching data from API:', err);
+            }
+        });
+    }
+
+    // Fungsi untuk menangani klik tombol search
+    $("#searchBtn").on("click", function() {
+        var dateRange = $('#daterangeForm').val();
+        var itemCode = $('#itemCodeFilter').val();
+        var dates = dateRange.split(" - "); // Memisahkan rentang tanggal menjadi start dan end date
+
+        var startDate = dates[0]; // Tanggal awal
+        var endDate = dates[1]; // Tanggal akhir
+      
+        handleStockDataResponse('/transactions/all', '#jqxgrid', stockColumns, startDate, endDate, itemCode);
+    });
+
     $(document).ready(function () {
         loadLocations();
 
-        // $('#dateFilter').daterangepicker({
-        //     autoUpdateInput: false, // Menonaktifkan update otomatis input
-        //     locale: {
-        //         cancelLabel: 'Clear', // Menambahkan tombol untuk membersihkan input
-        //         format: 'YYYY-MM-DD'  // Format tanggal yang diinginkan
-        //     }
-        // });
-
-        // // Menangani event saat tanggal dipilih
-        // $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
-        //     $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-        // });
-
-        // $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
-        //     $(this).val(''); // Membersihkan input saat tombol "Clear" diklik
-        // });
-
-        $('#reservation').daterangepicker();
-
-        // Ambil data transaksi menggunakan AJAX
-        $.ajax({
-            url: '/transactions/all', // Ganti dengan endpoint transaksi Anda
-            method: 'GET',
-            success: function(data) {
-                // Modifikasi response jika perlu (misalnya mengganti 'transNo' menjadi 'no' atau menambah informasi lainnya)
-                data = data.map(function(item, index) {
-                    item.no = index + 1; // Menambahkan 'no' berdasarkan index
-                    return item;
-                });
-
-                // Data Adapter untuk Transaksi
-                var source = {
-                    localdata: data,
-                    datatype: "array",
-                    datafields: [
-                        { name: 'transNo', type: 'number' },
-                        { name: 'itemCode', type: 'string' },
-                        { name: 'transactionType', type: 'string' },
-                        { name: 'transQty', type: 'number' },
-                        { name: 'qtyBefore', type: 'number' },
-                        { name: 'qtyAfter', type: 'number' },
-                        { name: 'transDate', type: 'date' },
-                        { name: 'userId', type: 'string' },
-                        { name: 'picPickup', type: 'string' },
-                        { name: 'deptPickup', type: 'string' }
-                    ]
-                };
-
-                var dataAdapter = new $.jqx.dataAdapter(source);
-
-                // Inisialisasi jqxGrid untuk Transaksi
-                $("#jqxgrid").jqxGrid({
-                    width: '100%',
-                    height: 400,
-                    source: dataAdapter,
-                    pageable: true,
-                    sortable: true,
-                    filterable: true,
-                    columnsresize: true,
-                    columns: [
-                        { 
-                            text: "No", 
-                            datafield: "id", 
-                            width: 60, 
-                            cellsrenderer: function (row, column, value, rowData, columnData) {
-                                // Menggunakan row index untuk menghasilkan nomor urut
-                                return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
-                            } 
-                        },           // Lebar untuk No
-                        { text: 'Transaction No', datafield: 'transNo', width: '15%' },
-                        { text: 'Item Code', datafield: 'itemCode', width: '15%' },
-                        { text: 'Transaction Type', datafield: 'transactionType', width: '15%' },
-                        { text: 'Quantity', datafield: 'transQty', width: '12%', cellsalign: 'right', align: 'center' },
-                        { text: 'Qty Before', datafield: 'qtyBefore', width: '12%', cellsalign: 'right', align: 'center' },
-                        { text: 'Qty After', datafield: 'qtyAfter', width: '12%', cellsalign: 'right', align: 'center' },
-                        { text: 'Transaction Date', datafield: 'transDate', width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
-                        { text: 'User', datafield: 'userId', width: '12%' },
-                        { text: 'PIC Pickup', datafield: 'picPickup', width: '12%' },
-                        { text: 'Dept Pickup', datafield: 'deptPickup', width: '12%' },
-                    ]
-                });
-
-                // Event listener untuk pemilihan baris
-                $('#jqxgrid').on('rowselect', function (event) {
-                    var rowsSelected = $("#jqxgrid").jqxGrid('getselectedrowindexes');
-                    if (rowsSelected.length > 1) {
-                        // Batalkan seleksi sebelumnya jika lebih dari satu baris dipilih
-                        $("#jqxgrid").jqxGrid('unselectrow', rowsSelected[0]);
-                    }
-
-                    // Enable tombol edit jika satu baris terpilih
-                    $('#editTransaction').prop('disabled', rowsSelected.length === 0);
-                });
-            },
-            error: function() {
-                alert('Failed to load transaction data.');
+        $('#daterangeForm').daterangepicker({
+            locale: {
+                format: 'YYYY-MM-DD' // Format tanggal yang dikirim ke server
             }
         });
 
-        // Event listener untuk tombol search
-        $("#searchBtn").on("click", function() {
-            const itemCode = $("#itemCodeFilter").val();
-            const dateRange = $("#dateFilter").val();
-            const queryParams = {};
-
-            if (itemCode) queryParams.itemCode = itemCode;
-            if (transDate) queryParams.transDate = transDate;
-
-            // Mengambil data dengan filter menggunakan queryParams
-            $.ajax({
-                url: '/transactions/all', // Ganti dengan endpoint transaksi Anda
-                type: 'GET',
-                data: queryParams,
-                success: function(data) {
-                    // Update jqxGrid dengan data baru
-                    const source = {
-                        localdata: data,
-                        datatype: "array",
-                        datafields: [
-                            { name: 'transNo', type: 'number' },
-                            { name: 'itemCode', type: 'string' },
-                            { name: 'transactionType', type: 'string' },
-                            { name: 'transQty', type: 'number' },
-                            { name: 'qtyBefore', type: 'number' },
-                            { name: 'qtyAfter', type: 'number' },
-                            { name: 'transDate', type: 'date' },
-                            { name: 'userId', type: 'string' },
-                            { name: 'picPickup', type: 'string' },
-                            { name: 'deptPickup', type: 'string' }
-                        ]
-                    };
-
-                    const dataAdapter = new $.jqx.dataAdapter(source);
-                    $("#jqxgrid").jqxGrid({ source: dataAdapter });
-                },
-                error: function(err) {
-                    console.error('Error fetching filtered transactions:', err);
-                }
-            });
-        });
+        // Ambil data transaksi menggunakan AJAX
+        handleStockDataResponse('/transactions/all', '#jqxgrid', stockColumns);
 
         // Event listener untuk tombol Export to Excel
         $("#excelBtn").on("click", function() {
             $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Transactions_Report');
         });
     });
+
+     
 </script>

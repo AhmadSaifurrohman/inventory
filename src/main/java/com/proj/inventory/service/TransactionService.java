@@ -1,9 +1,13 @@
 package com.proj.inventory.service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,15 +47,18 @@ public class TransactionService {
         return transactionRepository.findByItemCode(itemCode);
     }
 
-    // Menemukan transaksi berdasarkan transDate
-    public List<Transaction> findTransactionsByDate(String transDate) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // Format tanggal
-            Date date = dateFormat.parse(transDate);
-            return transactionRepository.findByTransDate(date);
-        } catch (ParseException e) {
-            return List.of(); // Mengembalikan list kosong jika ada kesalahan parsing
-        }
+    // Metode untuk mencari transaksi berdasarkan rentang tanggal
+    public List<Transaction> findTransactionsByDate(Date startDate, Date endDate) {
+        return transactionRepository.findByTransDateBetween(startDate, endDate);
+    }
+
+    public List<Transaction> findTransactionsByDateAndItemCode(Date startDate, Date endDate, String itemCode) {
+        return transactionRepository.findByTransDateBetweenAndItemCode(startDate, endDate, itemCode);
+    }
+
+    // Fungsi untuk mendapatkan transaksi dengan tipe tertentu
+    public List<Transaction> getTransactionsByType(String transactionType) {
+        return transactionRepository.findByTransactionType(transactionType);
     }
 	
     // Fungsi untuk record inbound transaction
@@ -59,7 +66,7 @@ public class TransactionService {
         // Set transaksi dengan tipe inbound dan tanggal transaksi
         transaction.setTransactionType("inbound");
         transaction.setTransDate(new Date());  // Set tanggal transaksi
-        transaction.setUserId("USER123");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
+        transaction.setUserId("admin");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
     
         System.out.println("Transaksi Quantity: " + transaction.getTransQty());
 
@@ -96,6 +103,7 @@ public class TransactionService {
         stock.setLocation(location);
         stock.setUpdateDate(new Date());  // Set tanggal update stok
         stock.setUserUpdate(transaction.getUserId());  // Set user update stok
+        stock.setDescription(stock.getDescription());
     
         // Simpan stok yang sudah diperbarui atau baru
         stockRepository.save(stock);
@@ -109,8 +117,10 @@ public class TransactionService {
         // Set transaksi dengan tipe outbound dan tanggal transaksi
         transaction.setTransactionType("outbound");
         transaction.setTransDate(new Date());  // Set tanggal transaksi
-        transaction.setUserId("USER123");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
-    
+        transaction.setUserId("admin");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
+        transaction.setDeptPickup(transaction.getDeptPickup());
+        transaction.setPicPickup(transaction.getPicPickup());
+        
         // Mengambil lokasi dari transaksi dan mencari objek Location berdasarkan locCd
         Location location = transaction.getLocation();
         if (location == null) {
@@ -148,33 +158,75 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }    
 
-    // Memperbaiki metode updateStock agar menerima objek Location dan Date
-    // private void updateStock(String itemCode, int quantity, Location location, boolean isInbound, Date transactionDate) {
-    //     // Mencari stok berdasarkan itemCode dan location
-    //     Optional<Stock> stockOpt = stockRepository.findByItemCodeAndLocation(itemCode, location.getLocCd());
-    //     Stock stock;
+    // Metode untuk menangani transaksi adjustment
+    public Transaction recordAdjustmentTransaction(Transaction transaction) {
+        transaction.setTransactionType("adjustment");
+        transaction.setTransDate(new Date());
+        transaction.setUserId("admin");
+
+        // Logika untuk transaksi adjustment (misalnya, mengubah stok tanpa mengurangi jumlahnya)
+        Location location = transaction.getLocation();
+        if (location == null) {
+            throw new RuntimeException("Location tidak ditemukan!");
+        }
+
+        Optional<Stock> existingStockOpt = stockRepository.findByItemCodeAndLocation(transaction.getItemCode(), location.getLocCd());
+        if (!existingStockOpt.isPresent()) {
+            throw new RuntimeException("Stok tidak tersedia!");
+        }
+
+        Stock stock = existingStockOpt.get();
+        int qtyBefore = stock.getQuantity();
+        int qtyAfter = qtyBefore - transaction.getTransQty(); // Misalnya, penyesuaian dapat menambah atau mengurangi stok
+
+        // Update stok
+        stock.setQuantity(qtyAfter);
+        stock.setUpdateDate(new Date());
+        stockRepository.save(stock);
+
+        // Simpan transaksi
+        transaction.setQtyBefore(qtyBefore);
+        transaction.setQtyAfter(qtyAfter);
+        return transactionRepository.save(transaction);
+    }
     
-    //     if (stockOpt.isEmpty()) {
-    //         stock = new Stock();
-    //         stock.setItemCode(itemCode);
-    //         stock.setQuantity(0);  // Set quantity menjadi 0 jika stok belum ada
-    //     } else {
-    //         stock = stockOpt.get();
-    //     }
-    
-    //     // Logika untuk memperbarui stok berdasarkan inbound atau outbound
-    //     if (isInbound) {
-    //         stock.setQuantity(stock.getQuantity() + quantity);  // Tambah quantity untuk inbound
-    //     } else {
-    //         stock.setQuantity(stock.getQuantity() - quantity);  // Kurangi quantity untuk outbound
-    //     }
-    
-    //     // Set lokasi dan tanggal update
-    //     stock.setLocation(location);
-    //     stock.setUpdateDate(transactionDate);  // Gunakan tanggal transaksi
-    //     stock.setUserUpdate("USER123");  // Default user update (sesuaikan dengan pengguna yang sedang login)
-    
-    //     // Simpan stok yang telah diperbarui
-    //     stockRepository.save(stock);
-    // }    
+    // public List<Map<String, Object>> getTop10MostRequestedItems() {
+    //     return transactionRepository.findTop10MostRequestedItems();
+    // }
+
+    public List<Map<String, Object>> findTop10ItemsByMonthAndYear(int year, int month) {
+        // Format tanggal untuk mencocokkan transaksi pada bulan dan tahun yang dipilih
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String startDateStr = year + "-" + String.format("%02d", month) + "-01"; // Tanggal awal bulan
+        String endDateStr = year + "-" + String.format("%02d", month) + "-31"; // Tanggal akhir bulan
+
+        try {
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+            
+            // Ambil semua transaksi antara startDate dan endDate
+            List<Transaction> transactions = transactionRepository.findByTransDateBetweenAndTransactionType(startDate, endDate, "outbound");
+            
+            // Menghitung total quantity per item
+            Map<String, Long> itemRequestCount = new HashMap<>();
+            for (Transaction transaction : transactions) {
+                itemRequestCount.put(transaction.getItemCode(), 
+                    itemRequestCount.getOrDefault(transaction.getItemCode(), 0L) + transaction.getTransQty());
+            }
+            
+            // Mengambil Top 10 item berdasarkan jumlah request
+            return itemRequestCount.entrySet().stream()
+                    .sorted((entry1, entry2) -> Long.compare(entry2.getValue(), entry1.getValue()))
+                    .limit(10)
+                    .map(entry -> {
+                        Map<String, Object> itemData = new HashMap<>();
+                        itemData.put("itemCode", entry.getKey());
+                        itemData.put("totalQty", entry.getValue());
+                        return itemData;
+                    })
+                    .collect(Collectors.toList());
+        } catch (ParseException e) {
+            return Collections.emptyList(); // Return empty list if there's an error
+        }
+    }
 }

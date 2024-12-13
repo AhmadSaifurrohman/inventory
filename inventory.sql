@@ -29,24 +29,22 @@ CREATE TABLE IF NOT EXISTS `tb_invstock` (
   `updatedate` datetime(6) DEFAULT NULL,
   `userupdate` varchar(255) DEFAULT NULL,
   `location` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKc1u6q7lvtahb9x71w32hw2smd` (`location`),
   KEY `FK_tb_invstock_tb_mas_itemcd` (`itemcode`),
   CONSTRAINT `FK_tb_invstock_tb_mas_itemcd` FOREIGN KEY (`itemcode`) REFERENCES `tb_mas_itemcd` (`itemcode`) ON UPDATE CASCADE,
   CONSTRAINT `FKc1u6q7lvtahb9x71w32hw2smd` FOREIGN KEY (`location`) REFERENCES `tb_mas_loc` (`loccd`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table inventory.tb_invstock: ~9 rows (approximately)
-INSERT INTO `tb_invstock` (`id`, `itemcode`, `partnum`, `quantity`, `unitcd`, `updatedate`, `userupdate`, `location`) VALUES
-	(1, 'CCTV01', 'CCTV01', 20, '', '2024-12-04 12:59:54.000000', 'USER123', 'WH'),
-	(2, 'CCTV01', 'CTVWH', 10, '', '2024-12-04 13:21:46.000000', 'USER123', 'OFC1'),
-	(3, 'CCTV01', 'CTAS', 4, NULL, '2024-12-04 13:23:46.000000', 'USER123', 'KLINIC'),
-	(4, 'KL01', 'KL01', 2, 'PCS', '2024-12-04 13:56:15.000000', 'USER123', 'WH'),
-	(9, 'KL01', 'KL01', 10, 'CTN', '2024-12-04 14:05:10.000000', 'USER123', 'KLINIC'),
-	(10, 'MTR01', 'MTR01', 20, 'YD', '2024-12-04 15:03:23.000000', 'USER123', 'WH'),
-	(11, 'PC01', 'PC01', 2, 'PCS', '2024-12-04 15:08:12.000000', 'USER123', 'KLINIC'),
-	(13, 'LMP012', 'LMP012', 2, 'PCS', '2024-12-04 15:11:29.000000', 'USER123', 'OFC1'),
-	(14, 'SPT01', 'SPT01', 2, 'CTN', '2024-12-04 15:23:03.000000', 'USER123', 'KLINIC');
+-- Dumping data for table inventory.tb_invstock: ~4 rows (approximately)
+INSERT INTO `tb_invstock` (`id`, `itemcode`, `partnum`, `quantity`, `unitcd`, `updatedate`, `userupdate`, `location`, `description`) VALUES
+	(1, 'CCTV01', 'CCTV01', 10, '', '2024-12-05 13:58:16.000000', 'USER123', 'WH', NULL),
+	(2, 'CCTV01', 'CTVWH', 5, '', '2024-12-05 08:41:53.000000', 'USER123', 'OFC1', NULL),
+	(3, 'CCTV01', 'CTAS', 4, NULL, '2024-12-04 13:23:46.000000', 'USER123', 'KLINIC', NULL),
+	(4, 'KL01', 'KL01', 1, 'PCS', '2024-12-05 08:18:44.000000', 'USER123', 'WH', NULL),
+	(15, 'SPT01', 'SPT01', 10, 'PCS', '2024-12-05 13:34:42.000000', 'USER123', 'KLINIC', NULL),
+	(16, 'LMP01', 'LMP01', 20, 'PCS', '2024-12-05 13:56:35.000000', 'USER123', 'WH', NULL);
 
 -- Dumping structure for table inventory.tb_invstock_trans
 CREATE TABLE IF NOT EXISTS `tb_invstock_trans` (
@@ -65,47 +63,17 @@ CREATE TABLE IF NOT EXISTS `tb_invstock_trans` (
   PRIMARY KEY (`transno`),
   KEY `FKpmyjhudqmkmfym9mho7eonyek` (`location`),
   CONSTRAINT `FKpmyjhudqmkmfym9mho7eonyek` FOREIGN KEY (`location`) REFERENCES `tb_mas_loc` (`loccd`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table inventory.tb_invstock_trans: ~31 rows (approximately)
+-- Dumping data for table inventory.tb_invstock_trans: ~7 rows (approximately)
 INSERT INTO `tb_invstock_trans` (`transno`, `transaction_type`, `itemcode`, `unitcd`, `qty_before`, `qty_after`, `trans_date`, `trans_qty`, `userid`, `dept_pickup`, `pic_pickup`, `location`) VALUES
-	(1, NULL, 'KB01', 'PCS', 0, 0, '2024-12-01 11:23:07.000000', 0, NULL, NULL, NULL, NULL),
-	(2, NULL, 'KB01', 'PCS', 0, 0, '2024-12-01 11:24:05.000000', 0, NULL, NULL, NULL, NULL),
-	(3, NULL, 'MS01', 'PCS', 0, 0, '2024-12-01 13:41:32.000000', 0, NULL, NULL, NULL, NULL),
-	(4, NULL, 'LMP01', 'PCS', 0, 0, '2024-12-01 20:22:51.000000', 0, NULL, NULL, NULL, NULL),
-	(5, 'inbound', 'PC01', 'PCS', 0, 0, '2024-12-02 21:22:56.000000', 0, NULL, NULL, NULL, 'OFC1'),
-	(6, 'inbound', 'PC01', 'PCS', 0, 0, '2024-12-02 22:12:20.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(7, 'inbound', 'KL01', 'PCS', 0, 0, '2024-12-02 22:27:58.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(8, 'inbound', 'LMP012', 'PCS', 0, 0, '2024-12-02 22:38:51.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(9, 'inbound', 'TS01', 'CTN', 0, 0, '2024-12-02 22:50:06.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(10, 'inbound', 'TS01', 'CTN', 0, 0, '2024-12-02 22:55:17.000000', 0, 'USER123', NULL, NULL, 'WH'),
-	(11, 'inbound', 'CH01', 'PCS', 0, 0, '2024-12-02 22:59:30.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(12, 'inbound', 'CH01', 'PCS', 0, 0, '2024-12-02 23:04:27.000000', 0, 'USER123', NULL, NULL, 'WH'),
-	(13, 'inbound', 'SPT01', 'YD', 0, 0, '2024-12-02 23:08:20.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(14, 'inbound', 'TS01', 'YD', 0, 0, '2024-12-02 23:13:28.000000', 0, 'USER123', NULL, NULL, 'OFC1'),
-	(15, 'inbound', 'MTR01', 'PCS', 0, 11, '2024-12-02 23:17:30.000000', 11, 'USER123', NULL, NULL, 'OFC1'),
-	(16, 'inbound', 'MTR01', 'PCS', 11, 23, '2024-12-02 23:19:09.000000', 12, 'USER123', NULL, NULL, 'OFC1'),
-	(18, 'inbound', 'MTR01', 'PCS', 0, 3, '2024-12-02 23:20:56.000000', 3, 'USER123', NULL, NULL, 'WH'),
-	(19, 'inbound', 'CH01', 'CTN', 0, 4, '2024-12-03 09:32:17.000000', 4, 'USER123', NULL, NULL, 'OFC1'),
-	(20, 'inbound', 'CH01', 'PCS', 0, 10, '2024-12-03 09:33:31.000000', 10, 'USER123', NULL, NULL, 'WH'),
-	(21, 'inbound', 'CH01', 'CTN', 10, 12, '2024-12-03 10:04:35.000000', 2, 'USER123', NULL, NULL, 'WH'),
-	(22, 'inbound', 'CH01', 'CTN', 0, 11, '2024-12-03 10:05:06.000000', 11, 'USER123', NULL, NULL, 'OFC1'),
-	(23, 'inbound', 'CH01', 'CTN', 11, 12, '2024-12-03 10:51:05.000000', 1, 'USER123', NULL, NULL, 'OFC1'),
-	(24, 'inbound', 'CCTV01', 'CTN', 0, 100, '2024-12-03 13:18:12.000000', 100, 'USER123', NULL, NULL, 'OFC1'),
-	(25, 'inbound', 'KB01', 'PCS', 0, 10, '2024-12-04 12:28:17.000000', 10, 'USER123', NULL, NULL, 'OFC1'),
-	(26, 'inbound', 'KB01', 'PCS', 0, 20, '2024-12-04 12:29:34.000000', 20, 'USER123', NULL, NULL, 'WH'),
-	(27, 'inbound', 'CCTV01', 'PCS', 0, 5, '2024-12-04 12:29:56.000000', 5, 'USER123', NULL, NULL, 'KLINIC'),
-	(28, 'inbound', 'KB01', 'PCS', 20, 20, '2024-12-04 12:30:44.000000', 0, 'USER123', NULL, NULL, 'WH'),
-	(29, 'inbound', 'KB01', 'PCS', 0, 10, '2024-12-04 12:31:36.000000', 10, 'USER123', NULL, NULL, 'KLINIC'),
-	(30, 'inbound', 'CCTV01', 'PCS', 0, 5, '2024-12-04 12:59:25.000000', 5, 'USER123', NULL, NULL, 'OFC1'),
-	(31, 'inbound', 'CCTV01', '', 0, 20, '2024-12-04 12:59:54.000000', 20, 'USER123', NULL, NULL, 'WH'),
-	(32, 'inbound', 'CCTV01', 'PCS', 0, 52, '2024-12-04 13:20:59.000000', 52, 'USER123', NULL, NULL, 'KLINIC'),
-	(33, 'inbound', 'KL01', 'PCS', 0, 2, '2024-12-04 13:56:15.000000', 2, 'USER123', NULL, NULL, 'WH'),
-	(34, 'inbound', 'KL01', 'CTN', 0, 10, '2024-12-04 14:05:10.000000', 10, 'USER123', NULL, NULL, 'KLINIC'),
-	(35, 'inbound', 'MTR01', 'YD', 0, 20, '2024-12-04 15:03:23.000000', 20, 'USER123', NULL, NULL, 'WH'),
-	(36, 'inbound', 'PC01', 'PCS', 0, 2, '2024-12-04 15:08:12.000000', 2, 'USER123', NULL, NULL, 'KLINIC'),
-	(37, 'inbound', 'LMP012', 'PCS', 0, 2, '2024-12-04 15:11:29.000000', 2, 'USER123', NULL, NULL, 'OFC1'),
-	(38, 'inbound', 'SPT01', 'CTN', 0, 2, '2024-12-04 15:23:03.000000', 2, 'USER123', NULL, NULL, 'KLINIC');
+	(39, 'outbound', 'KL01', 'PCS', 2, 1, '2024-12-05 08:18:44.000000', 1, 'USER123', NULL, NULL, 'WH'),
+	(40, 'outbound', 'CCTV01', 'PCS', 20, 15, '2024-12-05 08:20:15.000000', 5, 'USER123', NULL, NULL, 'WH'),
+	(41, 'outbound', 'CCTV01', '', 15, 13, '2024-12-05 08:33:36.000000', 2, 'USER123', NULL, NULL, 'WH'),
+	(42, 'outbound', 'CCTV01', '', 10, 5, '2024-12-05 08:41:53.000000', 5, 'USER123', NULL, NULL, 'OFC1'),
+	(43, 'inbound', 'SPT01', 'PCS', 0, 10, '2024-12-05 13:34:42.000000', 10, 'USER123', NULL, NULL, 'KLINIC'),
+	(44, 'inbound', 'LMP01', 'PCS', 0, 20, '2024-12-05 13:56:35.000000', 20, 'USER123', NULL, NULL, 'WH'),
+	(45, 'outbound', 'CCTV01', 'PCS', 13, 10, '2024-12-05 13:58:16.000000', 3, 'USER123', NULL, NULL, 'WH');
 
 -- Dumping structure for table inventory.tb_mas_itemcd
 CREATE TABLE IF NOT EXISTS `tb_mas_itemcd` (
@@ -114,25 +82,28 @@ CREATE TABLE IF NOT EXISTS `tb_mas_itemcd` (
   `itemname` varchar(255) DEFAULT NULL,
   `partnum` varchar(255) DEFAULT NULL,
   `safetystock` varchar(255) DEFAULT NULL,
-  `partnumber` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`itemcode`)
+  `unitcd` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`itemcode`),
+  KEY `FK_tb_mas_itemcd_tb_mas_unit` (`unitcd`),
+  CONSTRAINT `FK_tb_mas_itemcd_tb_mas_unit` FOREIGN KEY (`unitcd`) REFERENCES `tb_mas_unit` (`unitcd`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table inventory.tb_mas_itemcd: ~13 rows (approximately)
-INSERT INTO `tb_mas_itemcd` (`itemcode`, `description`, `itemname`, `partnum`, `safetystock`, `partnumber`) VALUES
-	('CCTV01', 'CCTV', 'CCTV', '25ASF3112', '20', NULL),
-	('CH01', 'Danendra Yasar Adirajasa', 'Danendra Yasar Adirajasa', 'HFK23Hf', '1', NULL),
-	('HP01', 'Denisatya Wiratama', 'Denisatya Wiratama', 'GMN21', '1', NULL),
-	('KL01', 'Kulkas', 'M Dawud', '21FSWC224', '', NULL),
-	('LMP01', '', 'Lampu', '12F2VGW', '2', NULL),
-	('LMP012', 'Lampu', 'Lampu', '12F2VGW', '2', NULL),
-	('MBL01', NULL, 'Mobil', NULL, '2', NULL),
-	('MN01', NULL, 'Monitor', NULL, '2', NULL),
-	('MS01', NULL, 'Mouse', NULL, NULL, NULL),
-	('MTR01', NULL, 'Motor', NULL, NULL, NULL),
-	('PC01', NULL, 'Komputer', NULL, NULL, NULL),
-	('SPT01', '', 'SEPATU', 'ADD01', '10', NULL),
-	('TS01', '', 'Test 01', '', '2', NULL);
+-- Dumping data for table inventory.tb_mas_itemcd: ~14 rows (approximately)
+INSERT INTO `tb_mas_itemcd` (`itemcode`, `description`, `itemname`, `partnum`, `safetystock`, `unitcd`) VALUES
+	('CCTV01', 'CCTV', 'CCTV', '25ASF3112', '20', 'PCS'),
+	('CH01', 'Danendra Yasar Adirajasa', 'Danendra Yasar Adirajasa', 'HFK23Hf', '10', 'PCS'),
+	('GLU4448', 'Lem alat kerja', 'Lem', 'GLUE281341', '20', 'PCS'),
+	('HP01', 'Denisatya Wiratama', 'Denisatya Wiratama', 'GMN21', '10', 'PCS'),
+	('KL01', 'Kulkas', 'M Dawud', '21FSWC224', '10', 'PCS'),
+	('LMP01', 'Lampu LED', 'Lampu', '12F2VGW', '10', 'PCS'),
+	('LMP012', 'Lampu', 'Lampu', '12F2VGW', '10', 'PCS'),
+	('MBL01', NULL, 'Mobil', NULL, '10', 'PCS'),
+	('MN01', NULL, 'Monitor', NULL, '10', 'PCS'),
+	('MS01', NULL, 'Mouse', NULL, '10', 'PCS'),
+	('MTR01', NULL, 'Motor', NULL, '10', 'PCS'),
+	('PC01', NULL, 'Komputer', NULL, '10', 'PCS'),
+	('SPT01', '', 'SEPATU', 'ADD01', '10', 'PCS'),
+	('TS01', '', 'Test 01', '', '2', 'PCS');
 
 -- Dumping structure for table inventory.tb_mas_loc
 CREATE TABLE IF NOT EXISTS `tb_mas_loc` (
@@ -141,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `tb_mas_loc` (
   PRIMARY KEY (`loccd`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table inventory.tb_mas_loc: ~2 rows (approximately)
+-- Dumping data for table inventory.tb_mas_loc: ~3 rows (approximately)
 INSERT INTO `tb_mas_loc` (`loccd`, `location`) VALUES
 	('KLINIC', 'Klinic Pegawai'),
 	('OFC1', 'Main Office'),
