@@ -242,7 +242,7 @@
     function initializeGrid(gridId, columns, dataAdapter) {
         $(gridId).jqxGrid({
             width: '100%',
-            height: 350,  /* Mengatur tinggi grid */
+            height: 300,  /* Mengatur tinggi grid */
             autoheight: false,  /* Nonaktifkan autoheight */
             pageable: true,
             pagesize: 10, // Show 10 rows per page

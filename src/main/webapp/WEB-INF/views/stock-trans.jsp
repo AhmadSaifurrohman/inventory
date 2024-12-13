@@ -39,7 +39,7 @@
                         </div>
                         <div class="col-md-3">
                             <!-- Tombol Excel -->
-                            <button class="btn btn-info" id="excelBtn">Export Excel</button>
+                            <button class="btn btn-info" id="excelBtn" onclick="downloadExcel()">Download Excel</button>
                         </div>
                     </div>  
             </div>
@@ -101,7 +101,7 @@
     function initializeGrid(gridId, columns, dataAdapter) {
             $(gridId).jqxGrid({
                 width: '100%',
-                height: 700,  /* Mengatur tinggi grid */
+                height: 600,  /* Mengatur tinggi grid */
                 autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
@@ -190,6 +190,25 @@
         $('#daterangeForm').daterangepicker({
             locale: {
                 format: 'YYYY-MM-DD' // Format tanggal yang dikirim ke server
+            },
+            autoUpdateInput: false,
+        });
+
+         // Mengupdate nilai input hanya saat rentang tanggal dipilih
+        $('#daterangeForm').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        // Menghapus nilai input saat tombol Cancel diklik
+        $('#daterangeForm').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        // Mengosongkan input jika pengguna menghapus nilai secara manual
+        $('#daterangeForm').on('input', function () {
+            if (!$(this).val()) {
+                $(this).data('daterangepicker').setStartDate(moment()); // Reset ke default
+                $(this).data('daterangepicker').setEndDate(moment());
             }
         });
 
@@ -197,10 +216,55 @@
         handleStockDataResponse('/transactions/all', '#jqxgrid', stockColumns);
 
         // Event listener untuk tombol Export to Excel
-        $("#excelBtn").on("click", function() {
-            $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Transactions_Report');
-        });
+        // $("#excelBtn").on("click", function() {
+        //     $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Transactions_Report');
+        // });
     });
+
+    function downloadExcel() {
+        // Mendapatkan nilai filter
+        var dateRange = $('#daterangeForm').val();
+        var itemCode = $('#itemCodeFilter').val();
+        var dates = dateRange.split(" - "); 
+        if (dateRange) {
+            var dates = dateRange.split(" - "); 
+            var startDate = dates[0];
+            var endDate = dates[1];
+        } else {
+            var startDate = ''; 
+            var endDate = '';   
+        }
+
+        console.log(itemCode);
+        console.log(startDate);
+        console.log(endDate);
+
+        // Menggunakan AJAX untuk permintaan GET
+        $.ajax({
+            url: `/transactions/api/export-excel`,
+            method: 'GET',
+            xhrFields: {
+                responseType: 'blob' // Mengatur response sebagai file blob
+            },
+            data: {
+                itemCode: itemCode,
+                startDate: startDate,
+                endDate: endDate
+            },
+            success: function(blob) {
+                // Membuat URL untuk blob dan memulai download
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'stock_transaction.xlsx'; // Nama file yang akan diunduh
+                a.click();
+                window.URL.revokeObjectURL(url); // Hapus URL setelah download
+            },
+            error: function(xhr, status, error) {
+                console.error('Error downloading Excel:', error);
+            }
+        });
+    }
 
      
 </script>
