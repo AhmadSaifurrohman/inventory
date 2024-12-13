@@ -95,7 +95,12 @@
                     </div>
                     <div class="form-group">
                         <label for="adjustQuantity">Quantity</label>
-                        <input type="text" class="form-control" id="adjustQuantity" name="adjustQuantity" required>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="adjustQuantity" name="adjustQuantity" required>
+                            <div class="input-group-append">
+                              <span class="input-group-text" id="currentStockDisplay">Current Stock : 0</span>
+                            </div>
+                        </div>
                     </div>
                     <!-- <div class="form-group">
                         <label for="adjustDepartment">Department Pickup</label>
@@ -286,6 +291,41 @@
     }
 
     $(document).ready(function () {
+
+        $('#adjustMaterialCode, #adjustRackLocation').change(function() {
+            // Ambil nilai dari dropdown
+            let itemCode = $('#adjustMaterialCode').val();
+            let location = $('#adjustRackLocation').val();
+
+            // Cek apakah kedua dropdown sudah terisi
+            if (itemCode && location) {
+                // Lakukan AJAX request jika kedua dropdown terisi
+                $.ajax({
+                    url: '/stock/current', // URL controller untuk mendapatkan data
+                    type: 'GET',
+                    data: {
+                        itemCode: itemCode,
+                        location: location
+                    },
+                    success: function(response) {
+                        console.log('hasil respone current', response);
+                        console.log(response.currentQty);
+                        if (response && response.currentQty !== undefined) {
+                            $('#currentStockDisplay').text('Current Stock: ' + response.currentQty);
+                        } else {
+                            $('#currentStockDisplay').text('No stock data available');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching stock:', error);
+                        $('#currentStockDisplay').text('Failed to fetch stock');
+                    }
+                });
+            } else {
+                console.log('Please select both Material Code and Rack Location.');
+            }
+        });
+
         // Inisialisasi select2
         $('.select2').select2();
 
