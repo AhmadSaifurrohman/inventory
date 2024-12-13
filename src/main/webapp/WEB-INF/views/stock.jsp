@@ -263,8 +263,8 @@
                 locCd: $('#editRackLocation').val() // Gunakan locCd yang sesuai
             },
             transQty: $('#editQuantity').val(),
-            department: $('#editDepartment').val(),
-            pic: $('#editPic').val()
+            deptPickup: $('#editDepartment').val(),
+            picPickup: $('#editPic').val()
         };
 
         // Menentukan transactionType berdasarkan halaman aktif
@@ -285,8 +285,8 @@
         console.log("Unit:", stockData.unitCd);
         console.log("Rack Location:", stockData.location);
         console.log("Quantity:", stockData.transQty);
-        console.log("Department Pickup:", stockData.department);
-        console.log("PIC Pickup:", stockData.pic);
+        console.log("Department Pickup:", stockData.deptPickup);
+        console.log("PIC Pickup:", stockData.picPickup);
 
 
         $.ajax({

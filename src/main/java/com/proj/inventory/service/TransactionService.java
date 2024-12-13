@@ -118,7 +118,9 @@ public class TransactionService {
         transaction.setTransactionType("outbound");
         transaction.setTransDate(new Date());  // Set tanggal transaksi
         transaction.setUserId("admin");  // UserID (misal hardcoded, sesuaikan dengan sistem login)
-    
+        transaction.setDeptPickup(transaction.getDeptPickup());
+        transaction.setPicPickup(transaction.getPicPickup());
+        
         // Mengambil lokasi dari transaksi dan mencari objek Location berdasarkan locCd
         Location location = transaction.getLocation();
         if (location == null) {
