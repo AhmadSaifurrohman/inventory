@@ -2,7 +2,6 @@ package com.proj.inventory.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.proj.inventory.model.Transaction;
 import com.proj.inventory.service.TransactionService;
 import com.proj.inventory.util.DateUtils;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
@@ -51,14 +51,6 @@ public class TransactionController {
         model.addAttribute("content", "stock-trans.jsp");
         return "layout";
     }
-
-    // Endpoint untuk mendapatkan semua transaksi
-    // @GetMapping("/all")
-    // @ResponseBody
-    // public ResponseEntity<List<Transaction>> getAllTransactions() {
-    //     List<Transaction> transactions = transactionService.getAllTransactions();
-    //     return ResponseEntity.ok(transactions);
-    // }
 
     @GetMapping("/all")
     @ResponseBody
@@ -95,14 +87,38 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-    // Endpoint untuk mendapatkan transaksi dengan tipe 'adjustment'
+    // Endpoint untuk mengambil transaksi dengan transactionType 'adjustment'
     @GetMapping("/adjust")
     @ResponseBody
-    public ResponseEntity<List<Transaction>> getAdjustmentTransactions() {
-        // Mengambil transaksi yang bertipe 'adjustment'
-        List<Transaction> adjustmentTransactions = transactionService.getTransactionsByType("adjustment");
-        return ResponseEntity.ok(adjustmentTransactions);
+    public ResponseEntity<List<Transaction>> getAdjustmentTransactions(
+        @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+        @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+        @RequestParam(value = "itemCode", required = false) String itemCode
+    ) {
+        List<Transaction> transactions;
+        
+        // Pastikan startDate dan endDate diatur waktu ke awal dan akhir hari
+        if (startDate != null) {
+            startDate = DateUtils.setTimeToStartOfDay(startDate);  // Mengatur start date ke 00:00:00
+        }
+        if (endDate != null) {
+            endDate = DateUtils.setTimeToEndOfDay(endDate);  // Mengatur end date ke 23:59:59
+        }
+
+        // Filter transaksi hanya dengan transactionType 'adjustment'
+        if (startDate != null && endDate != null && itemCode != null) {
+            transactions = transactionService.findTransactionsByDateAndItemCodeAndType(startDate, endDate, itemCode, "adjustment");
+        } else if (startDate != null && endDate != null) {
+            transactions = transactionService.findTransactionsByDateAndType(startDate, endDate, "adjustment");
+        } else if (itemCode != null) {
+            transactions = transactionService.findTransactionsByItemCodeAndType(itemCode, "adjustment");
+        } else {
+            transactions = transactionService.findTransactionsByType("adjustment");
+        }
+
+        return ResponseEntity.ok(transactions);
     }
+
 
     // Endpoint untuk mencatat transaksi inbound
     @PostMapping("/inbound")
@@ -233,6 +249,98 @@ public class TransactionController {
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/api/export-excel-adjust")
+    @ResponseBody
+    public ResponseEntity<byte[]> exportAdjustmentToExcel(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
+            @RequestParam(value = "itemCode", required = false) String itemCode) throws IOException {
 
+        // Pastikan startDate dan endDate diatur waktu ke awal dan akhir hari
+        if (startDate != null) {
+            startDate = DateUtils.setTimeToStartOfDay(startDate);  // Mengatur start date ke 00:00:00
+        }
+        if (endDate != null) {
+            endDate = DateUtils.setTimeToEndOfDay(endDate);  // Mengatur end date ke 23:59:59
+        }
+
+        List<Transaction> transactions;
+
+        // Filter transaksi berdasarkan itemCode dan rentang tanggal
+        if (startDate != null && endDate != null && itemCode != null) {
+            transactions = transactionService.findTransactionsByDateAndItemCodeAndType(startDate, endDate, itemCode, "adjustment");
+        } else if (startDate != null && endDate != null) {
+            transactions = transactionService.findTransactionsByDateAndType(startDate, endDate, "adjustment");
+        } else if (itemCode != null && !itemCode.isEmpty()) {
+            transactions = transactionService.findTransactionsByItemCodeAndType(itemCode, "adjustment");
+        } else {
+            transactions = transactionService.findTransactionsByType("adjustment");
+        }
+
+        byte[] excelData;
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Adjustment Transaction Data");
+
+            String[] columns = {
+                "Transaction No", "Item Code", "Transaction Type", "Quality", "Qty Before", "Qty After", "Transaction Date",
+                "User", "PIC Pickup", "Dept Pickup"
+            };
+
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFont(headerFont);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+                sheet.setColumnWidth(i, columns[i].length() * 500);
+            }
+
+            CellStyle dataStyle = workbook.createCellStyle();
+            dataStyle.setBorderTop(BorderStyle.THIN);
+            dataStyle.setBorderBottom(BorderStyle.THIN);
+            dataStyle.setBorderLeft(BorderStyle.THIN);
+            dataStyle.setBorderRight(BorderStyle.THIN);
+
+            int rowNum = 1;
+            for (Transaction transaction : transactions) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(transaction.getTransNo());
+                row.createCell(1).setCellValue(transaction.getItemCode());
+                row.createCell(2).setCellValue(transaction.getTransactionType());
+                row.createCell(3).setCellValue(transaction.getTransQty());
+                row.createCell(4).setCellValue(transaction.getQtyBefore());
+                row.createCell(5).setCellValue(transaction.getQtyAfter());
+                row.createCell(6).setCellValue(transaction.getTransDate());
+                row.createCell(7).setCellValue(transaction.getUserId());
+                row.createCell(8).setCellValue(transaction.getPicPickup());
+                row.createCell(9).setCellValue(transaction.getDeptPickup());
+
+                // Apply data style
+                for (int i = 0; i < columns.length; i++) {
+                    row.getCell(i).setCellStyle(dataStyle);
+                }
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            workbook.write(byteArrayOutputStream);
+            excelData = byteArrayOutputStream.toByteArray();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("adjustment_transaction_data.xlsx").build());
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
+    }
 
 }

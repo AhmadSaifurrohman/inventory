@@ -15,7 +15,7 @@ public class AdjustmentController {
     @GetMapping
     public String showStockPage(Model model, HttpServletRequest request) {
         // Setel judul halaman
-        model.addAttribute("title", "Stock");
+        model.addAttribute("title", "Stock Adjustment");
         model.addAttribute("currentUrl", request.getRequestURI());
         // Tentukan konten untuk halaman stok
         model.addAttribute("content", "stock-adjustment.jsp");

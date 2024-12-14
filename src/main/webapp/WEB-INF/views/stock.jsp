@@ -334,6 +334,7 @@
                 text: "No",
                 datafield: "id",
                 width: '3%',
+                align: 'center',
                 cellsrenderer: function (row, column, value) {
                     // Menggunakan row index untuk menghasilkan nomor urut
                     return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';

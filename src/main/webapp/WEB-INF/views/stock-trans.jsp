@@ -80,22 +80,23 @@
         { 
             text: "No", 
             datafield: "id", 
-            width: 60, 
+            width: 60,
+            align: 'center',
             cellsrenderer: function (row, column, value, rowData, columnData) {
                 // Menggunakan row index untuk menghasilkan nomor urut
                 return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
             } 
         },           // Lebar untuk No
-        { text: 'Transaction No', datafield: 'transNo', width: '15%' },
-        { text: 'Item Code', datafield: 'itemCode', width: '15%' },
-        { text: 'Transaction Type', datafield: 'transactionType', width: '15%' },
-        { text: 'Quantity', datafield: 'transQty', width: '12%', cellsalign: 'right', align: 'center' },
-        { text: 'Qty Before', datafield: 'qtyBefore', width: '12%', cellsalign: 'right', align: 'center' },
-        { text: 'Qty After', datafield: 'qtyAfter', width: '12%', cellsalign: 'right', align: 'center' },
-        { text: 'Transaction Date', datafield: 'transDate', width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
-        { text: 'User', datafield: 'userId', width: '12%' },
-        { text: 'PIC Pickup', datafield: 'picPickup', width: '12%' },
-        { text: 'Dept Pickup', datafield: 'deptPickup', width: '12%' },
+        { text: 'Transaction No', datafield: 'transNo', width: '11%', align: 'center' },
+        { text: 'Item Code', datafield: 'itemCode', width: '17%', align: 'center' },
+        { text: 'Transaction Type', datafield: 'transactionType', width: '11%', align: 'center' },
+        { text: 'Quantity', datafield: 'transQty', width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: 'Qty Before', datafield: 'qtyBefore', width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: 'Qty After', datafield: 'qtyAfter', width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: 'Transaction Date', datafield: 'transDate', width: '12%', cellsformat: 'dd-MM-yyyy HH:mm', align: 'center' },
+        { text: 'User', datafield: 'userId', width: '10%', hidden:true, align: 'center' },
+        { text: 'PIC Pickup', datafield: 'picPickup', width: '12%', align: 'center' },
+        { text: 'Dept Pickup', datafield: 'deptPickup', width: '12%', align: 'center' },
     ];
 
     function initializeGrid(gridId, columns, dataAdapter) {
@@ -214,11 +215,6 @@
 
         // Ambil data transaksi menggunakan AJAX
         handleStockDataResponse('/transactions/all', '#jqxgrid', stockColumns);
-
-        // Event listener untuk tombol Export to Excel
-        // $("#excelBtn").on("click", function() {
-        //     $("#jqxgrid").jqxGrid('exportdata', 'xls', 'Transactions_Report');
-        // });
     });
 
     function downloadExcel() {
@@ -265,6 +261,5 @@
             }
         });
     }
-
      
 </script>

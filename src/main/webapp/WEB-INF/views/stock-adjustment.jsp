@@ -28,10 +28,16 @@
                         <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
                     </div>
                     <div class="col-md-3">
-                        <!-- Dropdown Location -->
-                        <select id="locationFilter" class="form-control">
-                            <option value="">Select Location</option>
-                        </select>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                                </div>
+                                <!-- Input Rentang Tanggal -->
+                                <input type="text" class="form-control float-right" id="daterangeForm" placeholder="Select Date Range">
+                            </div>
+                            <!-- /.input group -->
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Search -->
@@ -39,7 +45,7 @@
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Excel -->
-                        <button class="btn btn-info" id="excelhBtn">Excel</button>
+                        <button class="btn btn-info" id="excelhBtnAdjust">Excel</button>
                     </div>
                 </div>
             </div>
@@ -102,14 +108,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="adjustDepartment">Department Pickup</label>
-                        <input type="text" class="form-control" id="adjustDepartment" name="adjustDepartment" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adjustPic">PIC Pickup</label>
-                        <input type="text" class="form-control" id="adjustPic" name="adjustPic" required>
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -218,21 +216,22 @@
             text: "No",
             datafield: "id",
             width: '3%',
+            align: 'center',
             cellsrenderer: function (row, column, value) {
                 // Menggunakan row index untuk menghasilkan nomor urut
                 return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
             }
         },
-        { text: "Transaction No", datafield: "transNo", width: '15%' },
-        { text: "Item Code", datafield: "itemCode", width: '15%' },
-        { text: "Transaction Type", datafield: "transactionType", width: '15%' },
-        { text: "Quantity", datafield: "transQty", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Qty Before", datafield: "qtyBefore", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Qty After", datafield: "qtyAfter", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Transaction Date", datafield: "transDate", width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
-        { text: "User", datafield: "userId", width: '12%' },
-        { text: "PIC Pickup", datafield: "picPickup", width: '12%' },
-        { text: "Dept Pickup", datafield: "deptPickup", width: '12%' },
+        { text: "Transaction No", datafield: "transNo", width: '11%', align: 'center' },
+        { text: "Item Code", datafield: "itemCode", width: '17%', align: 'center' },
+        { text: "Transaction Type", datafield: "transactionType", width: '11%', align: 'center' },
+        { text: "Quantity", datafield: "transQty", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Qty Before", datafield: "qtyBefore", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Qty After", datafield: "qtyAfter", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Transaction Date", datafield: "transDate", width: '12%', cellsformat: 'dd-MM-yyyy HH:mm', align: 'center' },
+        { text: "User", datafield: "userId", width: '10%', hidden:true, align: 'center'  },
+        { text: "PIC Pickup", datafield: "picPickup", width: '12%', align: 'center' },
+        { text: "Dept Pickup", datafield: "deptPickup", width: '12%', align: 'center' },
     ];
 
     function initializeGrid(gridId, columns, dataAdapter) {
@@ -431,27 +430,58 @@
             }
         });
 
+        $('#daterangeForm').daterangepicker({
+            locale: {
+                format: 'YYYY-MM-DD' // Format tanggal yang dikirim ke server
+            },
+            autoUpdateInput: false,
+        });
+
+         // Mengupdate nilai input hanya saat rentang tanggal dipilih
+        $('#daterangeForm').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        // Menghapus nilai input saat tombol Cancel diklik
+        $('#daterangeForm').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        // Mengosongkan input jika pengguna menghapus nilai secara manual
+        $('#daterangeForm').on('input', function () {
+            if (!$(this).val()) {
+                $(this).data('daterangepicker').setStartDate(moment()); // Reset ke default
+                $(this).data('daterangepicker').setEndDate(moment());
+            }
+        });
+
         // Event listener untuk search button
         $("#searchBtn").on("click", function() {
             const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
-            const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
+            const dateRange = $('#daterangeForm').val(); // Ambil nilai filter Date Range
+            let startDate = null, endDate = null;
 
-            console.log('ItemCodeFilter : ', itemCodeFilter);
-            console.log('locationFilter : ', locationFilter);
+            if (dateRange) {
+                const dates = dateRange.split(" - "); // Memisahkan rentang tanggal menjadi start dan end date
+                startDate = dates[0]; // Tanggal awal
+                endDate = dates[1]; // Tanggal akhir
+            }
 
+            // Kirim request dengan parameter yang ada (filter yang dipilih)
             $.ajax({
-                url: '/stock/api/filter',
+                url: '/transactions/adjust',
                 type: 'GET',
                 data: {
-                    itemCode: itemCodeFilter,
-                    location: locationFilter
+                    itemCode: itemCodeFilter || undefined, // Kirim itemCode jika ada, jika tidak undefined
+                    startDate: startDate || undefined,     // Kirim startDate jika ada, jika tidak undefined
+                    endDate: endDate || undefined          // Kirim endDate jika ada, jika tidak undefined
                 },
                 success: function(data) {
                     console.log('Filtered Stock Data:', data);
 
                     const stockData = data.map((item, index) => ({
                         transNo: item.transNo,
-                        itemCode: item.itemCode, // Assuming itemCode is the 'Material'
+                        itemCode: item.itemCode,
                         transactionType: item.transactionType,
                         transQty: item.transQty,
                         qtyBefore: item.qtyBefore,
@@ -483,7 +513,7 @@
 
                     $("#jqxgrid").jqxGrid({
                         width: '100%',
-                        height: 430,
+                        height: 600,
                         source: dataAdapter,
                         autoheight: false,
                         pageable: true,
@@ -503,6 +533,59 @@
             });
         });
 
+        // Event listener untuk tombol Excel
+        $("#excelhBtnAdjust").on("click", function() {
+            // Mendapatkan nilai filter
+            var dateRange = $('#daterangeForm').val();
+            var itemCode = $('#itemCodeFilter').val();
+            var startDate = '';
+            var endDate = '';
+
+            if (dateRange) {
+                var dates = dateRange.split(" - ");
+                startDate = formatDate(dates[0]);  // Mengubah tanggal menjadi format yyyy-MM-dd
+                endDate = formatDate(dates[1]);    // Mengubah tanggal menjadi format yyyy-MM-dd
+            }
+
+            console.log(itemCode);
+            console.log(startDate);
+            console.log(endDate);
+
+            // Menggunakan AJAX untuk permintaan GET untuk export Excel
+            $.ajax({
+                url: `/transactions/api/export-excel-adjust`,  // URL endpoint baru
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob' // Mengatur response sebagai file blob
+                },
+                data: {
+                    itemCode: itemCode,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                success: function(blob) {
+                    // Membuat URL untuk blob dan memulai download
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'stock_adjustment_transactions.xlsx'; // Nama file yang akan diunduh
+                    a.click();
+                    window.URL.revokeObjectURL(url); // Hapus URL setelah download
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error downloading Excel:', error);
+                }
+            });
+        });
+
+        // Fungsi untuk mengubah tanggal ke format yyyy-MM-dd
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var day = ("0" + date.getDate()).slice(-2);  // Tambahkan leading zero jika tanggal hanya satu digit
+            var month = ("0" + (date.getMonth() + 1)).slice(-2); // Bulan dimulai dari 0, tambahkan 1
+            var year = date.getFullYear();
+            return year + '-' + month + '-' + day;
+        }
     });
 
 </script>

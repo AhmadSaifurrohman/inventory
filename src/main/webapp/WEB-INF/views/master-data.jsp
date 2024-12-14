@@ -259,25 +259,25 @@
 
     // Define columns for Location, Item, and Unit
     var locationColumns = [
-        { text: 'No', datafield: 'no', width: '6%' },
-        { text: 'Loc Code', datafield: 'locCd', width: '20%' },
-        { text: 'Location', datafield: 'location', width: '70%' }
+        { text: 'No', datafield: 'no', width: '6%', align: 'center' },
+        { text: 'Loc Code', datafield: 'locCd', width: '20%', align: 'center' },
+        { text: 'Location', datafield: 'location', width: '70%', align: 'center' }
     ];
 
     var itemColumns = [
-        { text: 'No', datafield: 'no', width: '3%' },
-        { text: 'Item Code', datafield: 'itemCode', width: '20%' },
-        { text: 'Name', datafield: 'itemName', width: '20%' },
-        { text: 'Description', datafield: 'description', width: '20%' },
-        { text: 'Part Number', datafield: 'partNum', width: '20%' },
-        { text: 'Safety Stock', datafield: 'safetyStock', width: '10%' },
-        { text: 'Unit', datafield: 'unitCd', width: '5%' }
+        { text: 'No', datafield: 'no', width: '3%', align: 'center' },
+        { text: 'Item Code', datafield: 'itemCode', width: '20%', align: 'center' },
+        { text: 'Name', datafield: 'itemName', width: '20%', align: 'center' },
+        { text: 'Description', datafield: 'description', width: '20%', align: 'center' },
+        { text: 'Part Number', datafield: 'partNum', width: '20%', align: 'center' },
+        { text: 'Safety Stock', datafield: 'safetyStock', width: '10%', align: 'center' },
+        { text: 'Unit', datafield: 'unitCd', width: '5%', align: 'center' }
     ];
 
     var unitColumns = [
-        { text: 'No', datafield: 'no', width: '6%' },
-        { text: 'Unit Code', datafield: 'unitCd', width: '20%' },
-        { text: 'Unit', datafield: 'description', width: '70%' }
+        { text: 'No', datafield: 'no', width: '6%', align: 'center' },
+        { text: 'Unit Code', datafield: 'unitCd', width: '20%', align: 'center' },
+        { text: 'Unit', datafield: 'description', width: '70%', align: 'center' }
     ];
 
     // Define functions to handle data AJAX response and update grid
