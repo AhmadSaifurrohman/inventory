@@ -248,6 +248,8 @@
             filterable: true,
             sortable: true,
             // selectionmode: 'checkbox',
+            enablebrowserselection: true,
+            keyboardnavigation: false,
             columns: columns
         });
     }
@@ -522,7 +524,7 @@
                         columnsresize: true,
                         showcolumnlines: true,
                         showcolumnheaderlines: true,
-                        showtoolbar: true,
+                        // showtoolbar: true,
                         pagerMode: 'default',
                         columns: stockColumns
                     });
