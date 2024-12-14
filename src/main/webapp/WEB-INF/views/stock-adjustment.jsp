@@ -81,15 +81,15 @@
                     </div>
                     <div class="form-group">
                         <label for="adjustDescription">Description</label>
-                        <input type="text" class="form-control" id="adjustDescription" name="adjustDescription" placeholder="Enter Description" required>
+                        <input type="text" class="form-control" id="adjustDescription" name="adjustDescription" placeholder="Enter Description" required disabled>
                     </div>
                     <div class="form-group">
                         <label for="adjustPartNumber">Part Number</label>
-                        <input type="text" class="form-control" id="adjustPartNumber" name="adjustPartNumber" placeholder="Enter Part Number" required>
+                        <input type="text" class="form-control" id="adjustPartNumber" name="adjustPartNumber" placeholder="Enter Part Number" required disabled >  
                     </div>
                     <div class="form-group">
                         <label for="adjustUnit">Unit</label>
-                        <select class="form-control select2" id="adjustUnit" style="width: 100%;" name="adjustUnit" required>
+                        <select class="form-control select2" id="adjustUnit" style="width: 100%;" name="adjustUnit" required disabled>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -327,6 +327,30 @@
             }
         });
 
+        // Fungsi untuk mengupdate dropdown unit
+        function updateUnitDropdown(selector, selectedUnit) {
+            var dropdown = $(selector);
+            
+            // Jika unit yang dipilih ada dalam opsi, set sebagai selected
+            dropdown.val(selectedUnit);
+            
+            // Jika unit yang dipilih tidak ada dalam opsi, kita bisa menambahkannya
+            if (!dropdown.find('option[value="' + selectedUnit + '"]').length) {
+                dropdown.append('<option value="' + selectedUnit + '" selected>' + selectedUnit + '</option>');
+            }
+            
+            // Memastikan dropdown diperbarui (untuk select2)
+            dropdown.trigger('change');
+        }
+
+        // Fungsi untuk reset dropdown unit kembali ke default
+        function resetUnitDropdown(selector) {
+            var dropdown = $(selector);
+            // Set nilai default dan pastikan dropdown direset
+            dropdown.val('');
+            dropdown.trigger('change');
+        }
+
         // Inisialisasi select2
         $('.select2').select2();
 
@@ -414,19 +438,23 @@
                             // Isi field Description dan Part Number untuk modal adjust
                             $('#adjustDescription').val(response.description);
                             $('#adjustPartNumber').val(response.partNumber);
+                            updateUnitDropdown('#adjustUnit', response.unitCd);
                         } else {
                             // Jika data tidak ditemukan
                             $('#adjustDescription').val('');
                             $('#adjustPartNumber').val('');
+                            updateUnitDropdown('#adjustUnit', response.unitCd);
                             Swal.fire('Error', 'Material code not found', 'error');
                         }
                     },
                     error: function () {
+                        // resetUnitDropdown('#adjustUnit');
                         Swal.fire('Error', 'Failed to fetch data from server', 'error');
                     }
                 });
             } else {
                 // Kosongkan field jika tidak ada itemCode yang dipilih
+                resetUnitDropdown('#adjustUnit');
                 $('#adjustDescription').val('');
                 $('#adjustPartNumber').val('');
             }
