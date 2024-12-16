@@ -60,6 +60,26 @@ public class TransactionService {
     public List<Transaction> getTransactionsByType(String transactionType) {
         return transactionRepository.findByTransactionType(transactionType);
     }
+
+    // Menemukan transaksi berdasarkan itemCode dan transactionType 'adjustment'
+    public List<Transaction> findTransactionsByItemCodeAndType(String itemCode, String type) {
+        return transactionRepository.findByItemCodeAndTransactionType(itemCode, type);
+    }
+
+    // Menemukan transaksi berdasarkan rentang tanggal dan transactionType 'adjustment'
+    public List<Transaction> findTransactionsByDateAndType(Date startDate, Date endDate, String type) {
+        return transactionRepository.findByTransDateBetweenAndTransactionType(startDate, endDate, type);
+    }
+
+    // Menemukan transaksi berdasarkan rentang tanggal, itemCode dan transactionType 'adjustment'
+    public List<Transaction> findTransactionsByDateAndItemCodeAndType(Date startDate, Date endDate, String itemCode, String type) {
+        return transactionRepository.findByTransDateBetweenAndItemCodeAndTransactionType(startDate, endDate, itemCode, type);
+    }
+
+    // Menemukan transaksi berdasarkan transactionType 'adjustment' saja
+    public List<Transaction> findTransactionsByType(String type) {
+        return transactionRepository.findByTransactionType(type);
+    }
 	
     // Fungsi untuk record inbound transaction
     public Transaction recordInboundTransaction(Transaction transaction) {

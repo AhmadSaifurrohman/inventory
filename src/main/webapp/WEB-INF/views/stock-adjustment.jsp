@@ -28,10 +28,16 @@
                         <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
                     </div>
                     <div class="col-md-3">
-                        <!-- Dropdown Location -->
-                        <select id="locationFilter" class="form-control">
-                            <option value="">Select Location</option>
-                        </select>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="far fa-calendar-alt"></i>
+                                </span>
+                                </div>
+                                <!-- Input Rentang Tanggal -->
+                                <input type="text" class="form-control float-right" id="daterangeForm" placeholder="Select Date Range">
+                            </div>
+                            <!-- /.input group -->
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Search -->
@@ -39,7 +45,7 @@
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Excel -->
-                        <button class="btn btn-info" id="excelhBtn">Excel</button>
+                        <button class="btn btn-info" id="excelhBtnAdjust">Excel</button>
                     </div>
                 </div>
             </div>
@@ -75,15 +81,15 @@
                     </div>
                     <div class="form-group">
                         <label for="adjustDescription">Description</label>
-                        <input type="text" class="form-control" id="adjustDescription" name="adjustDescription" placeholder="Enter Description" required>
+                        <input type="text" class="form-control" id="adjustDescription" name="adjustDescription" placeholder="Enter Description" required disabled>
                     </div>
                     <div class="form-group">
                         <label for="adjustPartNumber">Part Number</label>
-                        <input type="text" class="form-control" id="adjustPartNumber" name="adjustPartNumber" placeholder="Enter Part Number" required>
+                        <input type="text" class="form-control" id="adjustPartNumber" name="adjustPartNumber" placeholder="Enter Part Number" required disabled >  
                     </div>
                     <div class="form-group">
                         <label for="adjustUnit">Unit</label>
-                        <select class="form-control select2" id="adjustUnit" style="width: 100%;" name="adjustUnit" required>
+                        <select class="form-control select2" id="adjustUnit" style="width: 100%;" name="adjustUnit" required disabled>
                             <option value="" selected>Select Unit</option>
                         </select>
                     </div>
@@ -95,16 +101,13 @@
                     </div>
                     <div class="form-group">
                         <label for="adjustQuantity">Quantity</label>
-                        <input type="text" class="form-control" id="adjustQuantity" name="adjustQuantity" required>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="adjustQuantity" name="adjustQuantity" required>
+                            <div class="input-group-append">
+                              <span class="input-group-text" id="currentStockDisplay">Current Stock : 0</span>
+                            </div>
+                        </div>
                     </div>
-                    <!-- <div class="form-group">
-                        <label for="adjustDepartment">Department Pickup</label>
-                        <input type="text" class="form-control" id="adjustDepartment" name="adjustDepartment" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adjustPic">PIC Pickup</label>
-                        <input type="text" class="form-control" id="adjustPic" name="adjustPic" required>
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -213,27 +216,28 @@
             text: "No",
             datafield: "id",
             width: '3%',
+            align: 'center',
             cellsrenderer: function (row, column, value) {
                 // Menggunakan row index untuk menghasilkan nomor urut
                 return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
             }
         },
-        { text: "Transaction No", datafield: "transNo", width: '15%' },
-        { text: "Item Code", datafield: "itemCode", width: '15%' },
-        { text: "Transaction Type", datafield: "transactionType", width: '15%' },
-        { text: "Quantity", datafield: "transQty", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Qty Before", datafield: "qtyBefore", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Qty After", datafield: "qtyAfter", width: '12%', cellsalign: 'right', align: 'center' },
-        { text: "Transaction Date", datafield: "transDate", width: '12%', cellsformat: 'dd-MM-yyyy HH:mm' },
-        { text: "User", datafield: "userId", width: '12%' },
-        { text: "PIC Pickup", datafield: "picPickup", width: '12%' },
-        { text: "Dept Pickup", datafield: "deptPickup", width: '12%' },
+        { text: "Transaction No", datafield: "transNo", width: '11%', align: 'center' },
+        { text: "Item Code", datafield: "itemCode", width: '17%', align: 'center' },
+        { text: "Transaction Type", datafield: "transactionType", width: '11%', align: 'center' },
+        { text: "Quantity", datafield: "transQty", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Qty Before", datafield: "qtyBefore", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Qty After", datafield: "qtyAfter", width: '7%', cellsalign: 'right', align: 'center', align: 'center' },
+        { text: "Transaction Date", datafield: "transDate", width: '12%', cellsformat: 'dd-MM-yyyy HH:mm', align: 'center' },
+        { text: "User", datafield: "userId", width: '10%', hidden:true, align: 'center'  },
+        { text: "PIC Pickup", datafield: "picPickup", width: '12%', align: 'center' },
+        { text: "Dept Pickup", datafield: "deptPickup", width: '12%', align: 'center' },
     ];
 
     function initializeGrid(gridId, columns, dataAdapter) {
         $(gridId).jqxGrid({
             width: '100%',
-            height: 700,  /* Mengatur tinggi grid */
+            height: 600,  /* Mengatur tinggi grid */
             autoheight: false,  /* Nonaktifkan autoheight */
             pageable: true,
             pagesize: 10, // Show 10 rows per page
@@ -244,6 +248,8 @@
             filterable: true,
             sortable: true,
             // selectionmode: 'checkbox',
+            enablebrowserselection: true,
+            keyboardnavigation: false,
             columns: columns
         });
     }
@@ -286,6 +292,65 @@
     }
 
     $(document).ready(function () {
+
+        $('#adjustMaterialCode, #adjustRackLocation').change(function() {
+            // Ambil nilai dari dropdown
+            let itemCode = $('#adjustMaterialCode').val();
+            let location = $('#adjustRackLocation').val();
+
+            // Cek apakah kedua dropdown sudah terisi
+            if (itemCode && location) {
+                // Lakukan AJAX request jika kedua dropdown terisi
+                $.ajax({
+                    url: '/stock/current', // URL controller untuk mendapatkan data
+                    type: 'GET',
+                    data: {
+                        itemCode: itemCode,
+                        location: location
+                    },
+                    success: function(response) {
+                        console.log('hasil respone current', response);
+                        console.log(response.currentQty);
+                        if (response && response.currentQty !== undefined) {
+                            $('#currentStockDisplay').text('Current Stock: ' + response.currentQty);
+                        } else {
+                            $('#currentStockDisplay').text('No stock data available');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching stock:', error);
+                        $('#currentStockDisplay').text('Failed to fetch stock');
+                    }
+                });
+            } else {
+                console.log('Please select both Material Code and Rack Location.');
+            }
+        });
+
+        // Fungsi untuk mengupdate dropdown unit
+        function updateUnitDropdown(selector, selectedUnit) {
+            var dropdown = $(selector);
+            
+            // Jika unit yang dipilih ada dalam opsi, set sebagai selected
+            dropdown.val(selectedUnit);
+            
+            // Jika unit yang dipilih tidak ada dalam opsi, kita bisa menambahkannya
+            if (!dropdown.find('option[value="' + selectedUnit + '"]').length) {
+                dropdown.append('<option value="' + selectedUnit + '" selected>' + selectedUnit + '</option>');
+            }
+            
+            // Memastikan dropdown diperbarui (untuk select2)
+            dropdown.trigger('change');
+        }
+
+        // Fungsi untuk reset dropdown unit kembali ke default
+        function resetUnitDropdown(selector) {
+            var dropdown = $(selector);
+            // Set nilai default dan pastikan dropdown direset
+            dropdown.val('');
+            dropdown.trigger('change');
+        }
+
         // Inisialisasi select2
         $('.select2').select2();
 
@@ -373,45 +438,80 @@
                             // Isi field Description dan Part Number untuk modal adjust
                             $('#adjustDescription').val(response.description);
                             $('#adjustPartNumber').val(response.partNumber);
+                            updateUnitDropdown('#adjustUnit', response.unitCd);
                         } else {
                             // Jika data tidak ditemukan
                             $('#adjustDescription').val('');
                             $('#adjustPartNumber').val('');
+                            updateUnitDropdown('#adjustUnit', response.unitCd);
                             Swal.fire('Error', 'Material code not found', 'error');
                         }
                     },
                     error: function () {
+                        // resetUnitDropdown('#adjustUnit');
                         Swal.fire('Error', 'Failed to fetch data from server', 'error');
                     }
                 });
             } else {
                 // Kosongkan field jika tidak ada itemCode yang dipilih
+                resetUnitDropdown('#adjustUnit');
                 $('#adjustDescription').val('');
                 $('#adjustPartNumber').val('');
+            }
+        });
+
+        $('#daterangeForm').daterangepicker({
+            locale: {
+                format: 'YYYY-MM-DD' // Format tanggal yang dikirim ke server
+            },
+            autoUpdateInput: false,
+        });
+
+         // Mengupdate nilai input hanya saat rentang tanggal dipilih
+        $('#daterangeForm').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+        });
+
+        // Menghapus nilai input saat tombol Cancel diklik
+        $('#daterangeForm').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        // Mengosongkan input jika pengguna menghapus nilai secara manual
+        $('#daterangeForm').on('input', function () {
+            if (!$(this).val()) {
+                $(this).data('daterangepicker').setStartDate(moment()); // Reset ke default
+                $(this).data('daterangepicker').setEndDate(moment());
             }
         });
 
         // Event listener untuk search button
         $("#searchBtn").on("click", function() {
             const itemCodeFilter = $("#itemCodeFilter").val(); // Ambil nilai filter Item Code
-            const locationFilter = $("#locationFilter").val(); // Ambil nilai filter Location
+            const dateRange = $('#daterangeForm').val(); // Ambil nilai filter Date Range
+            let startDate = null, endDate = null;
 
-            console.log('ItemCodeFilter : ', itemCodeFilter);
-            console.log('locationFilter : ', locationFilter);
+            if (dateRange) {
+                const dates = dateRange.split(" - "); // Memisahkan rentang tanggal menjadi start dan end date
+                startDate = dates[0]; // Tanggal awal
+                endDate = dates[1]; // Tanggal akhir
+            }
 
+            // Kirim request dengan parameter yang ada (filter yang dipilih)
             $.ajax({
-                url: '/stock/api/filter',
+                url: '/transactions/adjust',
                 type: 'GET',
                 data: {
-                    itemCode: itemCodeFilter,
-                    location: locationFilter
+                    itemCode: itemCodeFilter || undefined, // Kirim itemCode jika ada, jika tidak undefined
+                    startDate: startDate || undefined,     // Kirim startDate jika ada, jika tidak undefined
+                    endDate: endDate || undefined          // Kirim endDate jika ada, jika tidak undefined
                 },
                 success: function(data) {
                     console.log('Filtered Stock Data:', data);
 
                     const stockData = data.map((item, index) => ({
                         transNo: item.transNo,
-                        itemCode: item.itemCode, // Assuming itemCode is the 'Material'
+                        itemCode: item.itemCode,
                         transactionType: item.transactionType,
                         transQty: item.transQty,
                         qtyBefore: item.qtyBefore,
@@ -443,7 +543,7 @@
 
                     $("#jqxgrid").jqxGrid({
                         width: '100%',
-                        height: 430,
+                        height: 600,
                         source: dataAdapter,
                         autoheight: false,
                         pageable: true,
@@ -452,7 +552,7 @@
                         columnsresize: true,
                         showcolumnlines: true,
                         showcolumnheaderlines: true,
-                        showtoolbar: true,
+                        // showtoolbar: true,
                         pagerMode: 'default',
                         columns: stockColumns
                     });
@@ -463,6 +563,59 @@
             });
         });
 
+        // Event listener untuk tombol Excel
+        $("#excelhBtnAdjust").on("click", function() {
+            // Mendapatkan nilai filter
+            var dateRange = $('#daterangeForm').val();
+            var itemCode = $('#itemCodeFilter').val();
+            var startDate = '';
+            var endDate = '';
+
+            if (dateRange) {
+                var dates = dateRange.split(" - ");
+                startDate = formatDate(dates[0]);  // Mengubah tanggal menjadi format yyyy-MM-dd
+                endDate = formatDate(dates[1]);    // Mengubah tanggal menjadi format yyyy-MM-dd
+            }
+
+            console.log(itemCode);
+            console.log(startDate);
+            console.log(endDate);
+
+            // Menggunakan AJAX untuk permintaan GET untuk export Excel
+            $.ajax({
+                url: `/transactions/api/export-excel-adjust`,  // URL endpoint baru
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob' // Mengatur response sebagai file blob
+                },
+                data: {
+                    itemCode: itemCode,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                success: function(blob) {
+                    // Membuat URL untuk blob dan memulai download
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'stock_adjustment_transactions.xlsx'; // Nama file yang akan diunduh
+                    a.click();
+                    window.URL.revokeObjectURL(url); // Hapus URL setelah download
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error downloading Excel:', error);
+                }
+            });
+        });
+
+        // Fungsi untuk mengubah tanggal ke format yyyy-MM-dd
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var day = ("0" + date.getDate()).slice(-2);  // Tambahkan leading zero jika tanggal hanya satu digit
+            var month = ("0" + (date.getMonth() + 1)).slice(-2); // Bulan dimulai dari 0, tambahkan 1
+            var year = date.getFullYear();
+            return year + '-' + month + '-' + day;
+        }
     });
 
 </script>

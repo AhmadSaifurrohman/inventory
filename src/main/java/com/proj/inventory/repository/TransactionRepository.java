@@ -17,11 +17,17 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Transaction> findByItemCodeAndTransDate(String itemCode, Date transDate);
     List<Transaction> findByItemCode(String itemCode);
     List<Transaction> findByTransDate(Date transDate);
-
-    // Menemukan transaksi dengan tipe transaksi
-    List<Transaction> findByTransactionType(String transactionType);
     List<Transaction> findByTransDateBetween(Date startDate, Date endDate);
     List<Transaction> findByTransDateBetweenAndItemCode(Date startDate, Date endDate, String itemCode);
+
+    // Menemukan transaksi berdasarkan itemCode dan transactionType
+    List<Transaction> findByItemCodeAndTransactionType(String itemCode, String transactionType);
+
+    // Menemukan transaksi berdasarkan tanggal, itemCode dan transactionType
+    List<Transaction> findByTransDateBetweenAndItemCodeAndTransactionType(Date startDate, Date endDate, String itemCode, String transactionType);
+
+    // Menemukan transaksi berdasarkan transactionType
+    List<Transaction> findByTransactionType(String transactionType);
 
     List<Transaction> findByTransDateBetweenAndTransactionType(Date startDate, Date endDate, String transactionType);
 

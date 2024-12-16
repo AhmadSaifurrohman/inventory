@@ -96,7 +96,12 @@
                     </div>
                     <div class="form-group">
                         <label for="quantity">Quantity</label>
-                        <input type="text" class="form-control" id="quantity" name="quantity" required>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="quantity" name="quantity" required>
+                            <div class="input-group-append">
+                              <span class="input-group-text" id="currentStockDisplay">Current Stock : 0</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -150,7 +155,12 @@
                     </div>
                     <div class="form-group">
                         <label for="editQuantity">Out Quantity</label>
-                        <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" id="editQuantity" name="editQuantity" required>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="editCurrentStockDisplay">Current Stock : 0</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="editDepartment">Department Pickup</label>
@@ -324,6 +334,7 @@
                 text: "No",
                 datafield: "id",
                 width: '3%',
+                align: 'center',
                 cellsrenderer: function (row, column, value) {
                     // Menggunakan row index untuk menghasilkan nomor urut
                     return '<div style="text-align: center; margin-top: 7px;">' + (row + 1) + '</div>';
@@ -342,7 +353,7 @@
     function initializeGrid(gridId, columns, dataAdapter) {
             $(gridId).jqxGrid({
                 width: '100%',
-                height: 700,  /* Mengatur tinggi grid */
+                height: 600,  /* Mengatur tinggi grid */
                 autoheight: false,  /* Nonaktifkan autoheight */
                 pageable: true,
                 pagesize: 10, // Show 10 rows per page
@@ -399,6 +410,74 @@
     }
 
     $(document).ready(function () {
+        $('#materialCode, #rackLocation').change(function() {
+            // Ambil nilai dari dropdown
+            let itemCode = $('#materialCode').val();
+            let location = $('#rackLocation').val();
+
+            // Cek apakah kedua dropdown sudah terisi
+            if (itemCode && location) {
+                // Lakukan AJAX request jika kedua dropdown terisi
+                $.ajax({
+                    url: 'stock/current', // URL controller untuk mendapatkan data
+                    type: 'GET',
+                    data: {
+                        itemCode: itemCode,
+                        location: location
+                    },
+                    success: function(response) {
+                        console.log('hasil respone current', response);
+                        console.log(response.currentQty);
+                        if (response && response.currentQty !== undefined) {
+                            $('#currentStockDisplay').text('Current Stock: ' + response.currentQty);
+                        } else {
+                            $('#currentStockDisplay').text('No stock data available');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching stock:', error);
+                        $('#currentStockDisplay').text('Failed to fetch stock');
+                    }
+                });
+            } else {
+                console.log('Please select both Material Code and Rack Location.');
+            }
+        });
+
+        $('#editMaterialCode, #editRackLocation').change(function() {
+            // Ambil nilai dari dropdown
+            let itemCode = $('#editMaterialCode').val();
+            let location = $('#editRackLocation').val();
+
+            // Cek apakah kedua dropdown sudah terisi
+            if (itemCode && location) {
+                // Lakukan AJAX request jika kedua dropdown terisi
+                $.ajax({
+                    url: 'stock/current', // URL controller untuk mendapatkan data
+                    type: 'GET',
+                    data: {
+                        itemCode: itemCode,
+                        location: location
+                    },
+                    success: function(response) {
+                        console.log('hasil respone current', response);
+                        console.log(response.currentQty);
+                        if (response && response.currentQty !== undefined) {
+                            $('#editCurrentStockDisplay').text('Current Stock: ' + response.currentQty);
+                        } else {
+                            $('#editCurrentStockDisplay').text('No stock data available');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching stock:', error);
+                        $('#editCurrentStockDisplay').text('Failed to fetch stock');
+                    }
+                });
+            } else {
+                console.log('Please select both Material Code and Rack Location.');
+            }
+        });
+
         // Inisialisasi select2
         $('.select2').select2();
         loadLocations();
