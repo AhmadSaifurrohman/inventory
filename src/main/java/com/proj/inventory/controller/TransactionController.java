@@ -164,14 +164,24 @@ public class TransactionController {
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,
             @RequestParam(value = "itemCode", required = false) String itemCode) throws IOException {
 
-        System.out.println("Hasil startDate" + startDate);     
-        System.out.println("Hasil endDate" + endDate);     
-        System.out.println("Hasil itemCode" + itemCode);     
+        System.out.println("Hasil startDate: " + startDate);
+        System.out.println("Hasil endDate: " + endDate);
+        System.out.println("Hasil itemCode: " + itemCode);
+
         List<Transaction> transactions;
-        if (startDate != null && endDate != null && itemCode != null) {
-            transactions = transactionService.findTransactionsByDateAndItemCode(startDate, endDate, itemCode);
-        } else if (startDate != null && endDate != null) {
-            transactions = transactionService.findTransactionsByDate(startDate, endDate);
+        
+        // Memastikan startDate dan endDate tidak null
+        if (startDate != null && endDate != null) {
+            // Mengatur waktu untuk awal dan akhir hari
+            Date startOfDay = DateUtils.setTimeToStartOfDay(startDate);
+            Date endOfDay = DateUtils.setTimeToEndOfDay(endDate);
+            
+            // Memeriksa itemCode dan memanggil metode yang sesuai
+            if (itemCode != null && !itemCode.isEmpty()) {
+                transactions = transactionService.findTransactionsByDateAndItemCode(startOfDay, endOfDay, itemCode);
+            } else {
+                transactions = transactionService.findTransactionsByDate(startOfDay, endOfDay);
+            }
         } else if (itemCode != null && !itemCode.isEmpty()) {
             transactions = transactionService.findTransactionsByItemCode(itemCode);
         } else {
@@ -258,16 +268,16 @@ public class TransactionController {
 
         // Pastikan startDate dan endDate diatur waktu ke awal dan akhir hari
         if (startDate != null) {
-            startDate = DateUtils.setTimeToStartOfDay(startDate);  // Mengatur start date ke 00:00:00
+            startDate = DateUtils.setTimeToStartOfDay(startDate); // Mengatur start date ke 00:00:00
         }
         if (endDate != null) {
-            endDate = DateUtils.setTimeToEndOfDay(endDate);  // Mengatur end date ke 23:59:59
+            endDate = DateUtils.setTimeToEndOfDay(endDate); // Mengatur end date ke 23:59:59
         }
 
         List<Transaction> transactions;
 
         // Filter transaksi berdasarkan itemCode dan rentang tanggal
-        if (startDate != null && endDate != null && itemCode != null) {
+        if (startDate != null && endDate != null && itemCode != null && !itemCode.isEmpty()) {
             transactions = transactionService.findTransactionsByDateAndItemCodeAndType(startDate, endDate, itemCode, "adjustment");
         } else if (startDate != null && endDate != null) {
             transactions = transactionService.findTransactionsByDateAndType(startDate, endDate, "adjustment");
@@ -282,8 +292,8 @@ public class TransactionController {
             Sheet sheet = workbook.createSheet("Adjustment Transaction Data");
 
             String[] columns = {
-                "Transaction No", "Item Code", "Transaction Type", "Quality", "Qty Before", "Qty After", "Transaction Date",
-                "User", "PIC Pickup", "Dept Pickup"
+                    "Transaction No", "Item Code", "Transaction Type", "Quality", "Qty Before", "Qty After",
+                    "Transaction Date", "User", "PIC Pickup", "Dept Pickup"
             };
 
             Font headerFont = workbook.createFont();
@@ -320,7 +330,7 @@ public class TransactionController {
                 row.createCell(3).setCellValue(transaction.getTransQty());
                 row.createCell(4).setCellValue(transaction.getQtyBefore());
                 row.createCell(5).setCellValue(transaction.getQtyAfter());
-                row.createCell(6).setCellValue(transaction.getTransDate());
+                row.createCell(6).setCellValue(transaction.getTransDate().toString()); // Pastikan format tanggal sesuai
                 row.createCell(7).setCellValue(transaction.getUserId());
                 row.createCell(8).setCellValue(transaction.getPicPickup());
                 row.createCell(9).setCellValue(transaction.getDeptPickup());
@@ -337,7 +347,8 @@ public class TransactionController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("adjustment_transaction_data.xlsx").build());
+        headers.setContentDisposition(
+                ContentDisposition.builder("attachment").filename("adjustment_transaction_data.xlsx").build());
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);

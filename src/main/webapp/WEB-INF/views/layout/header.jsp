@@ -1,3 +1,5 @@
+<% String username = (String) session.getAttribute("username"); %>
+
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
@@ -53,16 +55,29 @@
             <div class="dropdown show">
                 <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-user-circle" style="padding-right: 5%;"> </i>
-                    <span> Welcome, <span class="user-login"> jhon doe</span></span>
+                    <span> Welcome, 
+                        <span class="user-login" id="username_login"> 
+                            <%= username != null ? username : "Guest" %>
+                        </span>
+                    </span>
                 </a>
               
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                   <a class="dropdown-item" href="#"> <i class="fa fa-user"></i> <span>Profile</span></a>
                   <a class="dropdown-item" href="#"> <i class="fa fa-cogs"></i> <span> Account Setting </span> </a>
-                  <a class="dropdown-item" href="#"> <i class="fa fa-sign-out"></i> <span>Logout</span></a>
+                  <a class="dropdown-item" href="/login/out"> <i class="fa fa-arrow-circle-right"></i> <span>Logout</span></a>
                 </div>
               </div>
         </li>
 
     </ul>
 </nav>
+
+<script>
+    const usernameAB = /*[[${username}]]*/ 'Guest';
+    
+
+    const username = '<%= username != null ? username : "Guest" %>';
+    console.log("Username:", username);
+    document.getElementById('username_login').textContent = username;
+</script>

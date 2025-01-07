@@ -91,7 +91,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
-                        <div class="table-responsive">
+                        <div class="table-responsive"style="height: 500px; overflow-y: auto;">
                             <table class="table table-striped table-valign-middle" id="findStockUnderSafetyQty">
                                 <thead>
                                     <tr>
