@@ -9,51 +9,55 @@
     }
 </style>
 
-<div class="row">
-    <div class="col-md-12">
-         <!-- Tabel menggunakan AdminLTE -->
-        <div class="card">
-            <div class="card-header">
-                <!-- Form untuk Filter dan Search -->
-                    <div class="row">
-                        <div class="col-md-2">
-                            <!-- Filter Item Code -->
-                            <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                        <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                    </div>
-                                    <input type="text" class="form-control float-right" id="daterangeForm">
-                                </div>
-                                <!-- /.input group -->
+<!-- Tabel menggunakan AdminLTE -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between w-100">
+
+            <div class="d-flex">
+                <!-- <a href="#" class="btn btn-primary mr-2" id="addBtn">Add New Users</a> -->
+
+            </div>
+
+            <!-- Form untuk Filter dan Search -->
+            <div class="card-tools">
+                <div class="row">
+                    <div class="col-md-3">
+                        <!-- Filter Item Code -->
+                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Item Code" />
+                    </div>
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
                             </div>
+                            <input type="text" class="form-control float-right" id="daterangeForm" placeholder="Date Range">
                         </div>
-                        <div class="col-md-1">
-                            <!-- Tombol Search -->
-                            <button class="btn btn-success" id="searchBtn">Search</button>
-                        </div>
-                        <div class="col-md-3">
-                            <!-- Tombol Excel -->
-                            <button class="btn btn-info" id="excelBtn" onclick="downloadExcel()">Download Excel</button>
-                        </div>
-                    </div>  
+                        <!-- /.input group -->
+                    </div>
+                    <div class="col-md-3">
+                        <!-- Tombol Search -->
+                        <button class="btn btn-success" id="searchBtn">Search</button>
+                    </div>
+                    <div class="col-md-3">
+                        <!-- Tombol Excel -->
+                        <button class="btn btn-info" id="excelBtn" onclick="downloadExcel()">Download Excel</button>
+                    </div>
+                </div>  
             </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-                <!-- Tabel jqxGrid -->
-                <div id="jqxgrid"></div>
-            </div>
-            <!-- /.card-body -->
         </div>
-    <!-- /.card -->
     </div>
-   
+    <!-- /.card-header -->
+    <div class="card-body">
+        <!-- Tabel jqxGrid -->
+        <div id="jqxgrid"></div>
+    </div>
+    <!-- /.card-body -->
 </div>
+<!-- /.card -->
+
 
 <!-- Script untuk menginisialisasi DataTables -->
 <script type="text/javascript">

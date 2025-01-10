@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Login 08</title>
+		<title>Login Inventory</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -14,13 +14,21 @@
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
-		</head>
+		<style>
+			.login-wrap .icon {
+				background: #656D74;
+			}
+			.login-wrap h3 {
+				color: #656D74;
+			}
+		</style>
+	</head>
 	<body>
 	<section class="ftco-section">
 		<div class="container">
 			<div class="row justify-content-center">
 				<div class="col-md-6 text-center mb-5">
-					<h2 class="heading-section">Login #08 TR</h2>
+					<h2 class="heading-section">Welcome to Inventory System</h2>
 				</div>
 			</div>
 			<div class="row justify-content-center">
@@ -43,7 +51,7 @@
 							</div>
 							<div class="form-group d-md-flex">
 								<div class="w-50">
-									<label class="checkbox-wrap checkbox-primary">Remember Me
+									<label class="checkbox-wrap checkbox-secondary">Remember Me
 										<input type="checkbox" checked>
 										<span class="checkmark"></span>
 									</label>
@@ -53,7 +61,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<button type="submit" class="btn btn-primary rounded submit p-3 px-5" >Login</button>
+								<button type="submit" class="btn btn-secondary rounded submit p-3 px-5" >Login</button>
 							</div>
 						</form>
 					</div>

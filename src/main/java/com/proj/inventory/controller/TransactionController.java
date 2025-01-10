@@ -235,7 +235,7 @@ public class TransactionController {
                 row.createCell(3).setCellValue(transaction.getTransQty());
                 row.createCell(4).setCellValue(transaction.getQtyBefore());
                 row.createCell(5).setCellValue(transaction.getQtyAfter());
-                row.createCell(6).setCellValue(transaction.getTransDate());
+                row.createCell(6).setCellValue(transaction.getTransDate().toString());
                 row.createCell(7).setCellValue(transaction.getUserId());
                 row.createCell(8).setCellValue(transaction.getPicPickup());
                 row.createCell(9).setCellValue(transaction.getDeptPickup());

@@ -25,7 +25,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <!-- Filter Item Code -->
-                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
+                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Item Code" />
                     </div>
                     <div class="col-md-3">
                             <div class="input-group">
@@ -35,7 +35,7 @@
                                 </span>
                                 </div>
                                 <!-- Input Rentang Tanggal -->
-                                <input type="text" class="form-control float-right" id="daterangeForm" placeholder="Select Date Range">
+                                <input type="text" class="form-control float-right" id="daterangeForm" placeholder="Date Range">
                             </div>
                             <!-- /.input group -->
                     </div>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="col-md-3">
                         <!-- Tombol Excel -->
-                        <button class="btn btn-info" id="excelhBtnAdjust">Excel</button>
+                        <button class="btn btn-info" id="excelhBtnAdjust">Download Excel</button>
                     </div>
                 </div>
             </div>

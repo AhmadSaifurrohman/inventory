@@ -26,7 +26,7 @@
                 <div class="row">
                     <div class="col-md-3">
                         <!-- Filter Item Code -->
-                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Filter by Item Code" />
+                        <input type="text" id="itemCodeFilter" class="form-control" placeholder="Item Code" />
                     </div>
                     <div class="col-md-3">
                         <!-- Dropdown Location -->
