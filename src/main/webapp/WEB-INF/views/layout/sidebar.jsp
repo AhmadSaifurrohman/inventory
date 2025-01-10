@@ -39,6 +39,12 @@
                         <p>Master Data</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/users" class="nav-link ${currentUrl == '/users' ? 'active' : ''}">
+                        <i class="nav-icon fas fa-user-alt"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

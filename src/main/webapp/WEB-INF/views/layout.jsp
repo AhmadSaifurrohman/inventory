@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% String username = (String) session.getAttribute("username"); %>
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -17,6 +17,7 @@ import com.proj.inventory.service.StockService;
 import com.proj.inventory.service.TransactionService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class DashboardController {
@@ -32,8 +33,16 @@ public class DashboardController {
 
     // Endpoint untuk menampilkan halaman dashboard
     @GetMapping("/")
-    public String home(Model model, HttpServletRequest request) {
+    public String home(Model model, HttpServletRequest request, HttpSession session) {
+
+        if (session.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
         // Setel judul halaman
+        String username = (String) session.getAttribute("username"); // Ambil username dari sesi
+        model.addAttribute("username", username); // Kirim username ke HTML
+
         model.addAttribute("title", "Dashboard");
         model.addAttribute("currentUrl", request.getRequestURI());
         // Tentukan konten yang akan dimuat ke dalam layout.jsp
