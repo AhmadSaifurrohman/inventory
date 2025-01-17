@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -25,6 +26,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**") // Berlaku untuk semua endpoint
-                .excludePathPatterns("/login", "/login/**", "/css/**", "/js/**", "/images/**"); // Kecualikan halaman tertentu
+                .excludePathPatterns("/login", "/login/**", "/css/**", "/js/**", "/image/**", "/src/**", "/main/**", "/resources/**", "/static/**"); // Kecualikan halaman tertentu
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/image/**")
+                .addResourceLocations("classpath:/static/image/");
     }
 }

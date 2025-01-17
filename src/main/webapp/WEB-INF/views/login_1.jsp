@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<title>Login 08</title>
+		<title>Login Inventory</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -14,46 +14,78 @@
 
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
-		</head>
+		<style>
+			.login-wrap .icon {
+				background: #b7b0b0;
+			}
+			.login-wrap h3 {
+				color: #b7b0b0;
+			}
+
+			.circle-img {
+				width: 125px;
+				height: 125px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid white;
+				background-color: white;
+			}
+
+			body {
+				background-image: url('/static/image/turangga-slide-2098642433.jpg');
+				background-size: cover;
+				background-repeat: no-repeat;
+				background-position: center;
+				background-attachment: fixed;
+			}
+
+		</style>
+	</head>
 	<body>
 	<section class="ftco-section">
 		<div class="container">
 			<div class="row justify-content-center">
 				<div class="col-md-6 text-center mb-5">
-					<h2 class="heading-section">Login #08 TR</h2>
+					<h2 class="heading-section" style=" color: white; ">Welcome !</h2>
 				</div>
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-md-6 col-lg-5">
-					<div class="login-wrap p-4 p-md-5">
+					<div class="login-wrap p-4 p-md-5" style="
+						background-color: #bec0c5;
+						opacity: 90%;
+					">
 		      			<div class="icon d-flex align-items-center justify-content-center">
-							<span class="fa fa-user-o"></span>
+							<span class="image_logo">
+								<!-- width="500" height="600" -->
+								<img src="/static/image/turangga-logo-181372112.png" alt="logo" class="circle-img">
+							</span>
 						</div>
-						<h3 class="text-center mb-4">Welcome !</h3>
+						<h3 class="text-center mb-4" style=" margin-top: 15%; color: white;">INVENTORY MANAGEMENT SYSTEM</h3>
 						<form action="/login/auth" method="POST" id="loginForm" class="login-form">
 							<input type="hidden" name="csrfToken" value="${csrfToken}" />
 							<div class="form-group">
-								<p class="text-left mb-2">Username</p>
-									<input type="text" class="form-control rounded-left" name="username" id="username" placeholder="Username" required>
-								<p class="text-left mt-2">Password</p>
+								<p class="text-left mb-2" style=" color: white; ">Username</p>
+									<input type="text" class="form-control rounded-left" name="username" id="username" placeholder="Username"  style="color: black;">
+								<p class="text-left mt-2" style=" color: white; ">Password</p>
 							</div>
 							<div class="form-group d-flex">
-								<input type="password" class="form-control rounded-left" id="password" placeholder="Password" required>
+								<input type="password" class="form-control rounded-left" id="password" placeholder="Password" style="color: black;" required>
 								<input type="hidden" id="hashedPassword" name="password" />
 							</div>
 							<div class="form-group d-md-flex">
 								<div class="w-50">
-									<label class="checkbox-wrap checkbox-primary">Remember Me
+									<label class="checkbox-wrap checkbox-secondary" style="color: white">Remember Me
 										<input type="checkbox" checked>
 										<span class="checkmark"></span>
 									</label>
 								</div>
 								<div class="w-50 text-md-right">
-									<a href="#">Forgot Password</a>
+									<a href="#" style="color: white;">Forgot Password</a>
 								</div>
 							</div>
 							<div class="form-group">
-								<button type="submit" class="btn btn-primary rounded submit p-3 px-5" >Login</button>
+								<button type="submit" class="btn btn-secondary rounded submit p-3 px-5" >Login</button>
 							</div>
 						</form>
 					</div>
