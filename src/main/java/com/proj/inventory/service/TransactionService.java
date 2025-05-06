@@ -108,7 +108,7 @@ public class TransactionService {
         } else {
             stock = new Stock();
             stock.setItemCode(transaction.getItemCode());
-            stock.setPartNum(transaction.getItemCode());  // Asumsi PartNum berdasarkan ItemCode
+            stock.setPartNum(transaction.getPartNum());  // Asumsi PartNum berdasarkan ItemCode
             stock.setQuantity(0);  // Karena stok awal belum ada, set quantity menjadi 0
         }
     

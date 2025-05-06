@@ -29,6 +29,9 @@ public class Transaction {
     @Column(name = "ITEMCODE")
     private String itemCode;
 
+    @Column(name = "PARTNUM")
+    private String partNum;
+
     @Column(name = "UNITCD")
     private String unitCd;
 
@@ -82,6 +85,14 @@ public class Transaction {
 
     public void setItemCode(String itemCode) {
         this.itemCode = itemCode;
+    }
+
+    public void setPartNum(String partNum) {
+        this.partNum = partNum;
+    }
+
+    public String getPartNum() {
+        return partNum;
     }
 
     public String getUnitCd() {

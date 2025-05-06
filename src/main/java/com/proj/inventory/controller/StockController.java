@@ -73,6 +73,7 @@ public class StockController {
         transaction.setItemCode(stock.getItemCode());
         transaction.setTransQty(stock.getQuantity());
         transaction.setUnitCd(stock.getUnitCd());
+        transaction.setPartNum(stock.getPartNum());
         transaction.setTransDate(new Date()); // Set tanggal transaksi
         transaction.setTransactionType("inbound"); // Set tipe transaksi
 

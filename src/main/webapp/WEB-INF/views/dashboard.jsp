@@ -26,7 +26,7 @@
     <!-- /.col -->
   
     <!-- fix for small devices only -->
-    <div class="clearfix hidden-md-up"></div>
+    <div class="clearfix hidden-sm-up"></div>
   
     <div class="col-12 col-sm-6 col-md-3">
       <div class="info-box mb-3">
@@ -57,15 +57,15 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-sm-6">
         <div class="card card-secondary card-tabs">
             <div class="card-header p-0 pt-1">
                 <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
                   <li class="nav-item">
-                    <a class="nav-link active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Stock mendekati Safety</a>
+                    <a class="nav-link text-sm active" id="custom-tabs-one-home-tab" data-toggle="pill" href="#custom-tabs-one-home" role="tab" aria-controls="custom-tabs-one-home" aria-selected="true">Stock mendekati Safety</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Stock dibawah Safety </a>
+                    <a class="nav-link text-sm" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">Stock dibawah Safety </a>
                   </li>
                 </ul>
               </div>
@@ -73,7 +73,7 @@
                 <div class="tab-content" id="custom-tabs-one-tabContent">
                     <div class="tab-pane fade show active" id="custom-tabs-one-home" role="tabpanel" aria-labelledby="custom-tabs-one-home-tab">
                         <div class="table-responsive" style="height: 500px; overflow-y: auto;">
-                            <table class="table table-striped table-valign-middle" id="findStockApproachSafetyQty">
+                            <table class="table table-striped table-valign-middle table-small" id="findStockApproachSafetyQty">
                                 <thead>
                                     <tr>
                                         <th>Item Code</th>
@@ -91,8 +91,8 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
-                        <div class="table-responsive"style="height: 500px; overflow-y: auto;">
-                            <table class="table table-striped table-valign-middle" id="findStockUnderSafetyQty">
+                        <div class="table-responsive" style="height: 500px; overflow-y: auto;">
+                            <table class="table table-striped table-valign-middle table-small" id="findStockUnderSafetyQty">
                                 <thead>
                                     <tr>
                                         <th>Item Code</th>
@@ -115,19 +115,19 @@
     </div>
 
     <!-- Chart Bar Horizontal -->
-    <div class="col-md-6">
+    <div class="col-sm-6">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Top 10 Barang Paling Banyak Dikeluarkan</h3>
+                <h3 class="card-title text-sm">Top 10 Barang Paling Banyak Dikeluarkan</h3>
                 <!-- Filter Tahun dan Bulan di dalam Card Header -->
                 <div class="card-tools">
                     <div class="form-inline">
-                        <label for="yearFilter" class="mr-2">Tahun</label>
-                        <select id="yearFilter" class="form-control mr-3">
+                        <label for="yearFilter">Tahun</label>
+                        <select id="yearFilter" class="form-control">
                             <!-- Tahun akan diisi secara dinamis dengan JavaScript -->
                         </select>
-    
-                        <label for="monthFilter" class="mr-2">Bulan</label>
+
+                        <label for="monthFilter">Bulan</label>
                         <select id="monthFilter" class="form-control">
                             <option value="1">Januari</option>
                             <option value="2">Februari</option>
@@ -145,8 +145,8 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body" style="height: 500px; overflow-y: auto;">
-                <canvas id="stockChart" width="400" height="300"></canvas>
+            <div class="card-body">
+                <canvas id="stockChart"></canvas>
             </div>
         </div>
     </div>    

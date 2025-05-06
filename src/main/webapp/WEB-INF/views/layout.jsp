@@ -32,7 +32,7 @@
         html, body {
             height: 100%;
             width: 100%;
-            overflow: hidden; /* Prevent unwanted scroll */
+            overflow: auto; /* Prevent unwanted scroll */
         }
 
         /* Content wrapper fills the screen height */
@@ -82,9 +82,41 @@
             overflow: hidden; /* Avoid horizontal/vertical scroll */
         }
 
+        /* Custom Template for smaller tables etc for small screens */
+
+        /* Tambahkan gaya untuk tabel kecil */
+        .table-small {
+            font-size: 12px; /* Ukuran font lebih kecil */
+        }
+        .table-small th, .table-small td {
+            padding: 5px; /* Kurangi padding */
+        }
+
+        /* Gaya untuk header card */
+        .card-header {
+            font-size: 14px; /* Ukuran font lebih kecil */
+            padding: 5px 10px; /* Kurangi padding */
+        }
+
+        /* Gaya untuk filter dropdown */
+        .form-inline label {
+            font-size: 12px; /* Ukuran font label lebih kecil */
+            margin-right: 5px; /* Kurangi margin */
+        }
+        .form-inline .form-control {
+            font-size: 12px; /* Ukuran font dropdown lebih kecil */
+            padding: 2px 5px; /* Kurangi padding */
+            height: auto; /* Sesuaikan tinggi */
+        }
+
+        /* Gaya untuk chart */
+        #stockChart {
+            max-height: 300px; /* Kurangi tinggi chart */
+            max-width: 100%; /* Sesuaikan lebar */
+        }
     </style>
 </head>
-<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer">
 
     <!-- AdminLTE JS -->
     <script src="${pageContext.request.contextPath}/static/plugins/jquery/jquery.min.js"></script>

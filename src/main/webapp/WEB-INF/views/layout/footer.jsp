@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<footer class="main-footer">
+<footer class="main-footer text-sm">
     <div class="float-right d-none d-sm-inline">
         
     </div>
